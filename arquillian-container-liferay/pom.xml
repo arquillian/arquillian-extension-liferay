@@ -12,7 +12,7 @@
 
 	<groupId>com.liferay.arquillian</groupId>
 	<artifactId>arquillian-container-liferay</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0.Alpha1-SNAPSHOT</version>
 
 	<dependencies>
 		<dependency>
