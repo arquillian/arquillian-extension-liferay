@@ -6,8 +6,8 @@
 	<parent>
 		<artifactId>arquillian-extension-liferay</artifactId>
 		<groupId>com.liferay.arquillian</groupId>
-		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>../</relativePath>
+		<version>1.0.0.Alpha1-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<groupId>com.liferay.arquillian</groupId>
