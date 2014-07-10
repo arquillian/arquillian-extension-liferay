@@ -9,8 +9,41 @@
 	<version>1.0.0.Alpha1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
+    <scm>
+        <connection>scm:git:git://git@github.com:arquillian/arquillian-extension-liferay.git</connection>
+        <developerConnection>scm:git:ssh://github.com/arquillian/arquillian-extension-liferay.git</developerConnection>
+        <url>git://github.com/arquillian/arquillian-extension-liferay.git</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
 	<modules>
 		<module>arquillian-container-liferay</module>
 		<module>arquillian-deployment-generator-bnd</module>
 	</modules>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-release-plugin</artifactId>
+                        <configuration>
+                            <autoVersionSubmodules>true</autoVersionSubmodules>
+                            <pushChanges>false</pushChanges>
+                            <localCheckout>true</localCheckout>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 </project>
