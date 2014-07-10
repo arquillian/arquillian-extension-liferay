@@ -18,7 +18,7 @@
 		<dependency>
 			<groupId>org.jboss.arquillian.container</groupId>
 			<artifactId>arquillian-container-karaf-remote</artifactId>
-			<version>2.1.0.CR15</version>
+			<version>1.1.0.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.arquillian.container</groupId>
