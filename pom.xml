@@ -11,5 +11,6 @@
 
 	<modules>
 		<module>arquillian-container-liferay</module>
+		<module>arquillian-deployment-generator-bnd</module>
 	</modules>
 </project>
