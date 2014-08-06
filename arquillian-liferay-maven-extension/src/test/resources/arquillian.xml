@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<arquillian xmlns="http://jboss.org/schema/arquillian"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+
+    <defaultProtocol type="Servlet 3.0"/>
+
+    <container qualifier="jbossas7" default="false">
+        <configuration>
+            <property name="jbossHome">/Users/kameshs/liferay/bundles/cluster/node01/jboss-eap-6.2</property>
+        </configuration>
+    </container>
+
+    <container qualifier="tomcat" default="true">
+        <configuration>
+            <property name="jmxPort">8099</property>
+            <property name="httpPort">8080</property>
+            <property name="user">tomcat</property>
+            <property name="pass">tomcat</property>
+            <property name="workDir">work</property>
+            <property name="tomcatHome">/Users/kameshs/liferay-developer-studio/liferay-portal-6.2-ee-sp3/tomcat-7.0.42</property>
+            <property name="unpackArchive">true</property>
+        </configuration>
+    </container>
+
+    <!-- The Liferay portal configuration required for build the WAR -->
+    <extension qualifier="liferay-deployments">
+        <property name="liferayVersion">6.2.1</property>
+        <property name="appServerClassesPortalDir">${tomcatHome}/webapps/ROOT/classes</property>
+        <property name="appServerLibGlobalDir">${tomcatHome}/lib/ext</property>
+        <property name="appServerPortalDir">${tomcatHome}/webapps/ROOT</property>
+        <property name="appServerLibPortalDir">${tomcatHome}/webapps/ROOT/WEB-INF/lib</property>
+        <property name="appServerTldPortalDir">${tomcatHome}/webapps/ROOT/tld</property>
+        <property name="workDir">/tmp/liferay-work</property>
+        <property name="customPortletXml">false</property>
+    </extension>
+
+</arquillian>
