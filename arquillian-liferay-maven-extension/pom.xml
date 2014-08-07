@@ -16,9 +16,9 @@
   <dependencies>
 
     <dependency>
-      <groupId>org.freemarker</groupId>
-      <artifactId>freemarker</artifactId>
-      <version>2.3.20</version>
+      <groupId>dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+      <version>1.6.1</version>
     </dependency>
 
     <dependency>
@@ -61,7 +61,7 @@
       <artifactId>shrinkwrap-bom</artifactId>
       <type>pom</type>
       <scope>import</scope>
-      <version>${version.org.jboss.shrinkwrap}</version>
+      <version>${version.shrinkwrap_api}</version>
     </dependency>
 
     <dependency>
@@ -150,7 +150,6 @@
       <groupId>org.freemarker</groupId>
       <artifactId>freemarker</artifactId>
       <version>2.3.20</version>
-      <scope>provided</scope>
     </dependency>
 
   </dependencies>

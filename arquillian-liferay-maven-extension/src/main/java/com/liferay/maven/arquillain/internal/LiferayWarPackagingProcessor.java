@@ -14,6 +14,8 @@
 
 package com.liferay.maven.arquillain.internal;
 
+import com.liferay.maven.arquillain.internal.tasks.HookDeployerTask;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +24,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.jar.Manifest;
 
+import org.apache.commons.io.FileUtils;
+
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ArchivePath;
@@ -29,7 +33,10 @@ import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.Filter;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
+import org.jboss.shrinkwrap.api.exporter.ZipExporter;
+import org.jboss.shrinkwrap.api.formatter.Formatters;
 import org.jboss.shrinkwrap.api.importer.ExplodedImporter;
+import org.jboss.shrinkwrap.api.importer.ZipImporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.ResolutionException;
@@ -75,6 +82,18 @@ public class LiferayWarPackagingProcessor
      * (non-Javadoc)
      * @see
      * org.jboss.shrinkwrap.resolver.spi.maven.archive.packaging.PackagingProcessor
+     * #getResultingArchive()
+     */
+    @Override
+    public WebArchive getResultingArchive() {
+        log.trace("Resulting Archive:" + archive.toString(Formatters.VERBOSE));
+        return archive;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.jboss.shrinkwrap.resolver.spi.maven.archive.packaging.PackagingProcessor
      * #configure(org.jboss.shrinkwrap.api.Archive,
      * org.jboss.shrinkwrap.resolver.api.maven.MavenWorkingSession)
      */
@@ -84,7 +103,7 @@ public class LiferayWarPackagingProcessor
         super.configure(session);
         archive =
             ShrinkWrap.create(
-                WebArchive.class, session.getParsedPomFile().getFinalName());
+                WebArchive.class);
         return this;
     }
 
@@ -115,8 +134,16 @@ public class LiferayWarPackagingProcessor
                 ShrinkWrap.create(ExplodedImporter.class, "webinf_clases.jar").importDirectory(
                     pomFile.getBuildOutputDirectory()).as(
                     JavaArchive.class);
+
             archive =
                 archive.merge(classes, ArchivePaths.create("WEB-INF/classes"));
+            // Raise bug with shrink wrap ?Since configure creates the base war
+            // in target classes, we need to delete from the archive
+
+            log.trace("Removing temp file: " + pomFile.getFinalName() +
+                " form archive");
+            archive.delete(ArchivePaths.create(
+                "WEB-INF/classes", pomFile.getFinalName()));
         }
 
         // Add Resources
@@ -168,23 +195,52 @@ public class LiferayWarPackagingProcessor
         LiferayPluginConfiguration liferayPluginConfiguration =
             new LiferayPluginConfiguration(pomFile);
 
-        if ("portlet".equals(liferayPluginConfiguration.getPluginType())) {
-            // Perform Portlet Deployer Task
-        }
-        else if ("hook".equals(liferayPluginConfiguration.getPluginType())) {
-            // Perform Hook Builder Task
+        // Temp Archive for processing by Liferay deployers
+        File tempDestFile =
+            new File(
+                liferayPluginConfiguration.getBaseDir(), pomFile.getFinalName());
+
+        log.debug("Temp Archive:" + tempDestFile.getName());
+
+        archive.as(ZipExporter.class).exportTo(
+            tempDestFile, true);
+
+        FileUtils.deleteQuietly(new File(pomFile.getFinalName()));
+
+        if ("hook".equals(liferayPluginConfiguration.getPluginType())) {
+            // perform hook deployer task
+
+            HookDeployerTask.INSTANCE.execute(session);
         }
         else {
-            // By default its always Deployer Portlet
+            // default is always portletdeployer
+
+        }
+
+        // Call Liferay Deployer
+        LiferayPluginConfiguration configuration =
+            new LiferayPluginConfiguration(pomFile);
+
+        File ddPluginArchiveFile =
+            new File(configuration.getDestDir(), pomFile.getArtifactId() +
+                ".war");
+        archive =
+            ShrinkWrap.create(ZipImporter.class, pomFile.getFinalName()).importFrom(
+                ddPluginArchiveFile).as(
+                WebArchive.class);
+
+        try {
+            FileUtils.forceDelete(ddPluginArchiveFile);
+            FileUtils.forceDelete(new File(
+                configuration.getBaseDir(), pomFile.getFinalName()));
+        }
+        catch (IOException e) {
+            // nothing to do
         }
 
         return this;
     }
 
-    /**
-     * @param warPluginConfiguration
-     * @return
-     */
     private Filter<ArchivePath> applyFilter(
         WarPluginConfiguration warPluginConfiguration) {
 
@@ -236,17 +292,6 @@ public class LiferayWarPackagingProcessor
 
         return includedFiles;
 
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.jboss.shrinkwrap.resolver.spi.maven.archive.packaging.PackagingProcessor
-     * #getResultingArchive()
-     */
-    @Override
-    public WebArchive getResultingArchive() {
-        return archive;
     }
 
 }

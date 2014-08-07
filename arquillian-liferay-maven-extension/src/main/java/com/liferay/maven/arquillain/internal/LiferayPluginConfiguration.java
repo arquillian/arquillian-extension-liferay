@@ -14,16 +14,24 @@
 
 package com.liferay.maven.arquillain.internal;
 
+import java.io.File;
+
 import java.util.Map;
 
 import org.jboss.shrinkwrap.resolver.api.maven.pom.ParsedPomFile;
 import org.jboss.shrinkwrap.resolver.impl.maven.archive.plugins.AbstractPackagingPluginConfiguration;
+import org.jboss.shrinkwrap.resolver.impl.maven.util.Validate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author <a href="mailto:kamesh.sampath@liferay.com">Kamesh Sampath</a>
  */
 public class LiferayPluginConfiguration
     extends AbstractPackagingPluginConfiguration {
+
+    final Logger log =
+        LoggerFactory.getLogger(LiferayPluginConfiguration.class);
 
     public static final String LIFERAY_PLUGIN_GA =
         "com.liferay.maven.plugins:liferay-maven-plugin";
@@ -39,36 +47,84 @@ public class LiferayPluginConfiguration
     private String appServerDeployDir;
     private String destDir;
     private String baseDir;
-    private String filePattern;
+    // TODO change
+    private String appServerType = "tomcat";
+    private boolean customPortletXml;
+
+    private File directDeployArchive;
 
     /**
      * @param pomFile
      */
-    protected LiferayPluginConfiguration(ParsedPomFile pomFile) {
+    public LiferayPluginConfiguration(ParsedPomFile pomFile) {
         super(pomFile);
         Map<String, Object> configValues =
             pomFile.getPluginConfiguration(LIFERAY_PLUGIN_GA);
-        appServerClassesPortalDir =
-            (String)configValues.get("appServerClassesPortalDir");
+
+        log.debug("Liferay Plugin Configuration:" + configValues);
+
         appServerLibGlobalDir =
             (String)configValues.get("appServerLibGlobalDir");
+
+        if (Validate.isNullOrEmpty(appServerLibGlobalDir)) {
+            throw new RuntimeException(
+                "Please configure 'appServerLibGlobalDir' in maven liferay plugin");
+        }
+
         appServerPortalDir =
             (String)configValues.get("appServerPortalDir");
+
+        if (Validate.isNullOrEmpty(appServerPortalDir)) {
+            throw new RuntimeException(
+                "Please configure 'appServerPortalDir' in maven liferay plugin");
+        }
+
+        appServerClassesPortalDir =
+            (String)configValues.get("appServerClassesPortalDir");
+
+        if (Validate.isNullOrEmpty(appServerClassesPortalDir)) {
+            appServerClassesPortalDir = appServerPortalDir + "/WEB-INF/classes";
+        }
+
         appServerLibPortalDir =
             (String)configValues.get("appServerLibPortalDir");
+
+        if (Validate.isNullOrEmpty(appServerLibPortalDir)) {
+            appServerLibPortalDir =
+                appServerPortalDir + "/WEB-INF/lib";
+        }
+
         appServerTldPortalDir =
             (String)configValues.get("appServerTldPortalDir");
+
+        if (Validate.isNullOrEmpty(appServerTldPortalDir)) {
+            appServerTldPortalDir = appServerPortalDir + "/WEB-INF/tld";
+        }
+
         liferayVersion =
             (String)configValues.get("liferayVersion");
+
+        if (Validate.isNullOrEmpty(liferayVersion)) {
+            throw new RuntimeException(
+                "Please configure 'liferayVersion' in maven liferay plugin");
+        }
+
         pluginType =
             (String)configValues.get("pluginType");
+
         autoDeployDir =
             (String)configValues.get("autoDeployDir");
+
         appServerDeployDir =
             (String)configValues.get("appServerDeployDir");
+
+        customPortletXml =
+            new Boolean((String)configValues.get("customPortletXml")).booleanValue();
+
         baseDir = pomFile.getBuildOutputDirectory().getAbsolutePath();
-        destDir = pomFile.getBuildOutputDirectory() + "/tmp";
-        filePattern = pomFile.getFinalName();
+        destDir = pomFile.getBuildOutputDirectory().getAbsolutePath() + "/..";
+        directDeployArchive =
+            new File(pomFile.getBuildOutputDirectory(), pomFile.getFinalName());
 
     }
 
@@ -142,18 +198,8 @@ public class LiferayPluginConfiguration
         return destDir;
     }
 
-    /**
-     * @return the baseDir
-     */
     public String getBaseDir() {
         return baseDir;
-    }
-
-    /**
-     * @return the filePattern
-     */
-    public String getFilePattern() {
-        return filePattern;
     }
 
     /*
@@ -186,6 +232,18 @@ public class LiferayPluginConfiguration
     public String[] getExcludes() {
         // Nothing here
         return new String[0];
+    }
+
+    public String getAppServerType() {
+        return appServerType;
+    }
+
+    public File getDirectDeployArchive() {
+        return directDeployArchive;
+    }
+
+    public boolean isCustomPortletXml() {
+        return customPortletXml;
     }
 
 }

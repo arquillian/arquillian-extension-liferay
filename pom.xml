@@ -107,14 +107,7 @@
     </dependencies>
   </dependencyManagement>
 
-  <modules>
-    <module>arquillian-container-liferay</module>
-    <module>arquillian-deployment-generator-bnd</module>
-    <module>arquillian-liferay-maven-extension</module>
-  </modules>
-
   <build>
-     
     <pluginManagement>
       <plugins>
         <plugin>
@@ -175,5 +168,11 @@
     </repository>
   </repositories>
 
+
+  <modules>
+    <module>arquillian-container-liferay</module>
+    <module>arquillian-deployment-generator-bnd</module>
+    <module>arquillian-liferay-maven-extension</module>
+  </modules>
 
 </project>
