@@ -107,7 +107,7 @@ public enum ToolsClasspathTask
 
         }
 
-        log.debug("Jars count in Tools classpath Archive:" +
+        log.trace("Jars count in Tools classpath Archive:" +
             liferayToolArchives.size());
 
         List<URL> classpathUrls = new ArrayList<URL>();

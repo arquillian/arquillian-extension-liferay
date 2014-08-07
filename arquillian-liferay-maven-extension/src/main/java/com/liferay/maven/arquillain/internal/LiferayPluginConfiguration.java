@@ -61,7 +61,7 @@ public class LiferayPluginConfiguration
         Map<String, Object> configValues =
             pomFile.getPluginConfiguration(LIFERAY_PLUGIN_GA);
 
-        log.debug("Liferay Plugin Configuration:" + configValues);
+        log.trace("Liferay Plugin Configuration:" + configValues);
 
         appServerLibGlobalDir =
             (String)configValues.get("appServerLibGlobalDir");

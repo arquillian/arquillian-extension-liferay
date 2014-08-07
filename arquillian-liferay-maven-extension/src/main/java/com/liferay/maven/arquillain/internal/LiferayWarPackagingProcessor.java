@@ -15,6 +15,7 @@
 package com.liferay.maven.arquillain.internal;
 
 import com.liferay.maven.arquillain.internal.tasks.HookDeployerTask;
+import com.liferay.maven.arquillain.internal.tasks.PorletDeployerTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -200,7 +201,7 @@ public class LiferayWarPackagingProcessor
             new File(
                 liferayPluginConfiguration.getBaseDir(), pomFile.getFinalName());
 
-        log.debug("Temp Archive:" + tempDestFile.getName());
+        log.trace("Temp Archive:" + tempDestFile.getName());
 
         archive.as(ZipExporter.class).exportTo(
             tempDestFile, true);
@@ -214,7 +215,7 @@ public class LiferayWarPackagingProcessor
         }
         else {
             // default is always portletdeployer
-
+            PorletDeployerTask.INSTANCE.execute(session);
         }
 
         // Call Liferay Deployer

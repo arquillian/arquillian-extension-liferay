@@ -16,13 +16,14 @@ package com.liferay.maven.arquillain.extension;
 
 import com.liferay.maven.arquillain.generator.MavenDeploymentScenarioGenerator;
 
+import org.jboss.arquillian.container.test.spi.RemoteLoadableExtension;
 import org.jboss.arquillian.container.test.spi.client.deployment.DeploymentScenarioGenerator;
-import org.jboss.arquillian.core.spi.LoadableExtension;
 
 /**
  * @author <a href="mailto:kamesh.sampath@liferay.com">Kamesh Sampath</a>
  */
-public class MavenDeploymentScenarioExtension implements LoadableExtension {
+public class MavenDeploymentScenarioExtension
+    implements RemoteLoadableExtension {
 
     /*
      * (non-Javadoc)

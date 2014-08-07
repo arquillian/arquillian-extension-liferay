@@ -34,8 +34,8 @@
     <version.arquillian_core>1.0.1.Final</version.arquillian_core>
     <version.arquillian_container_tomcat>1.0.0.CR7</version.arquillian_container_tomcat>
     <version.shrinkwrap_api>1.2.1</version.shrinkwrap_api>
-    <version.shrinkwrap.resolvers>2.2.0-alpha-3-SNAPSHOT</version.shrinkwrap.resolvers>
-    <version.hamcrest>1.2</version.hamcrest>
+    <version.shrinkwrap.resolvers>2.2.0-alpha-2</version.shrinkwrap.resolvers>
+    <version.hamcrest>1.3</version.hamcrest>
     <version.junit>4.11</version.junit>
     <version.jboss_javaee6_spec>2.0.0.Final</version.jboss_javaee6_spec>
     <version.jbossas_7>7.1.1.Final</version.jbossas_7>

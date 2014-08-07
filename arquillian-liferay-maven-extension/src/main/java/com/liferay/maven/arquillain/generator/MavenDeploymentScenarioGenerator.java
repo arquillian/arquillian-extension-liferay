@@ -17,10 +17,7 @@ package com.liferay.maven.arquillain.generator;
 import java.io.File;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
 
 import org.jboss.arquillian.config.descriptor.api.ArquillianDescriptor;
 import org.jboss.arquillian.config.descriptor.api.ContainerDef;
@@ -32,6 +29,7 @@ import org.jboss.arquillian.test.spi.TestClass;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.archive.importer.MavenImporter;
+import org.jboss.shrinkwrap.resolver.impl.maven.util.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,67 +53,27 @@ public class MavenDeploymentScenarioGenerator
     @Override
     public List<DeploymentDescription> generate(TestClass testClass) {
 
+        containerDef();
+
         List<DeploymentDescription> descriptions = super.generate(testClass);
 
         if (descriptions == null) {
             descriptions = new ArrayList<DeploymentDescription>();
         }
 
-        // this will hold all server deployable decriptions
-        List<DeploymentDescription> deployablesDescriptions =
-            new ArrayList<DeploymentDescription>();
-
         log.info("Generating Deployment for Liferay Plugin ");
 
-        if (descriptions.isEmpty()) {
-
-            DeploymentDescription deploymentDecription =
-                createLiferayPluginDeployment();
-            if (deploymentDecription != null) {
-                deployablesDescriptions.add(deploymentDecription);
-            }
-        }
-        else {
-
-            ListIterator<DeploymentDescription> listIterator =
-                descriptions.listIterator();
-
-            while (listIterator.hasNext()) {
-
-                DeploymentDescription deploymentDescription =
-                    listIterator.next();
-                /*
-                 * Proably Liferay Deployables
-                 */
-                if (deploymentDescription.managed() &&
-                    deploymentDescription.testable()) {
-                    deployablesDescriptions.add(deploymentDescription);
-                    descriptions.remove(deploymentDescription);
-                }
-            }
-
-        }
-
-        if (deployablesDescriptions != null &&
-            !deployablesDescriptions.isEmpty()) {
-
-            log.debug("Liferay pluginize archive:" +
-                deployablesDescriptions.size());
-
-            ListIterator<DeploymentDescription> listIterator =
-                deployablesDescriptions.listIterator();
-
-            while (listIterator.hasNext()) {
-
-                DeploymentDescription deploymentDescription =
-                    listIterator.next();
-            }
+        DeploymentDescription deploymentDecription =
+            createLiferayPluginDeployment();
+        if (deploymentDecription != null) {
+            descriptions.add(deploymentDecription);
         }
 
         return descriptions;
     }
 
     private DeploymentDescription createLiferayPluginDeployment() {
+        log.debug("Building Liferay Plugin from porject pom.xml");
         File pomFile = new File("pom.xml");
 
         if (pomFile != null && pomFile.exists()) {
@@ -129,6 +87,7 @@ public class MavenDeploymentScenarioGenerator
 
             DeploymentDescription deploymentDescription =
                 new DeploymentDescription("_DEFAULT", archive);
+            deploymentDescription.shouldBeTestable(true);
 
             return deploymentDescription;
 
@@ -146,38 +105,21 @@ public class MavenDeploymentScenarioGenerator
         for (int i = 0; i < containers.size(); i++) {
             defaultContainer = containers.get(i);
             if (defaultContainer.isDefault()) {
+                String containerName = defaultContainer.getContainerName();
+                Validate.notNullOrEmpty(
+                    containerName,
+                    "Atleast one default container must be defined in arquillain.xml");
+                if (containerName.contains("tomcat")) {
+                    System.setProperty("appServerType", "tomcat");
+                }
+                else if (containerName.contains("jboss")) {
+                    System.setProperty("appServerType", "jboss");
+                }
                 return defaultContainer;
             }
         }
 
         return null;
-    }
-
-    private Map<String, String> configuration() {
-
-        ContainerDef defaultContainer = containerDef();
-
-        if (defaultContainer != null) {
-
-            Map<String, String> configuration = new HashMap<String, String>();
-
-            String containerName = defaultContainer.getContainerName();
-
-            if (containerName != null && containerName.contains("tomcat")) {
-                configuration.put("appServerType", "tomcat");
-            }
-            else if (containerName != null && containerName.contains("jboss")) {
-                configuration.put("appServerType", "jboss");
-            }
-
-            return configuration;
-
-        }
-        else {
-
-            throw new RuntimeException("No default Remote container defined");
-
-        }
     }
 
 }
