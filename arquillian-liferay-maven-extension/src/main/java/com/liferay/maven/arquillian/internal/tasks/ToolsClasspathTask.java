@@ -12,9 +12,9 @@
  * details.
  */
 
-package com.liferay.maven.arquillain.internal.tasks;
+package com.liferay.maven.arquillian.internal.tasks;
 
-import com.liferay.maven.arquillain.internal.LiferayPluginConfiguration;
+import com.liferay.maven.arquillian.internal.LiferayPluginConfiguration;
 
 import java.io.File;
 

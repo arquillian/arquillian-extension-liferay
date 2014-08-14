@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.maven.arquillain.internal;
+package com.liferay.maven.arquillian.internal;
 
 import java.io.File;
 

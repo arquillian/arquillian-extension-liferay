@@ -12,9 +12,9 @@
  * details.
  */
 
-package com.liferay.maven.arquillain.internal.tasks;
+package com.liferay.maven.arquillian.internal.tasks;
 
-import com.liferay.maven.arquillain.internal.LiferayPluginConfiguration;
+import com.liferay.maven.arquillian.internal.LiferayPluginConfiguration;
 
 import java.io.File;
 
@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author <a href="mailto:kamesh.sampath@liferay.com">Kamesh Sampath</a>
  */
-public enum HookDeployerTask
+public enum PortletDeployerTask
     implements MavenWorkingSessionTask<MavenWorkingSession> {
     INSTANCE;
 
@@ -43,18 +43,41 @@ public enum HookDeployerTask
     public MavenWorkingSession execute(MavenWorkingSession session) {
 
         final Logger log =
-            LoggerFactory.getLogger(HookDeployerTask.class);
+            LoggerFactory.getLogger(PortletDeployerTask.class);
 
-        log.debug("Building Hook Archive");
+        log.debug("Building Portlet Archive");
 
         HashMap<String, Object> args = new HashMap<String, Object>();
         args.put(
-            "deployerClassName", "com.liferay.portal.tools.deploy.HookDeployer");
+            "deployerClassName",
+            "com.liferay.portal.tools.deploy.PortletDeployer");
 
         final ParsedPomFile pomFile = session.getParsedPomFile();
 
         LiferayPluginConfiguration configuration =
             new LiferayPluginConfiguration(pomFile);
+
+        String customPortletXml =
+            String.valueOf(configuration.isCustomPortletXml());
+
+        String tldPath = configuration.getAppServerTldPortalDir();
+
+        System.setProperty("deployer.aui.taglib.dtd", tldPath + "/aui.tld");
+
+        System.setProperty("deployer.custom.portlet.xml",
+            String.valueOf(customPortletXml));
+        System.setProperty("deployer.portlet.taglib.dtd",
+            tldPath + "/liferay-portlet.tld");
+        System.setProperty("deployer.portlet-ext.taglib.dtd",
+            tldPath + "/liferay-portlet-ext.tld");
+        System.setProperty("deployer.security.taglib.dtd",
+            tldPath + "/liferay-security.tld");
+        System.setProperty("deployer.theme.taglib.dtd",
+            tldPath + "/liferay-theme.tld");
+        System.setProperty("deployer.ui.taglib.dtd", tldPath +
+            "/liferay-ui.tld");
+        System.setProperty("deployer.util.taglib.dtd",
+            tldPath + "/liferay-util.tld");
 
         File appServerLibPortalDir =
             new File(configuration.getAppServerLibPortalDir());
@@ -62,8 +85,10 @@ public enum HookDeployerTask
         String libPath = appServerLibPortalDir.getAbsolutePath();
 
         String[] jars = {
-            libPath + "/util-java.jar"
+            libPath + "/util-bridges.jar", libPath + "/util-java.jar",
+            libPath + "/util-taglib.jar"
         };
+
         args.put("jars", jars);
 
         ExecuteDeployerTask.INSTANCE.execute(session, configuration, args);

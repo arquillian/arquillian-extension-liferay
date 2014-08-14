@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.maven.arquillain.generator;
+package com.liferay.maven.arquillian.generator;
 
 import java.io.File;
 
@@ -41,6 +41,7 @@ public class MavenDeploymentScenarioGenerator
 
     private static final Logger log =
         LoggerFactory.getLogger(MavenDeploymentScenarioGenerator.class);
+
     @Inject
     private Instance<ArquillianDescriptor> descriptor;
 
@@ -52,7 +53,6 @@ public class MavenDeploymentScenarioGenerator
      */
     @Override
     public List<DeploymentDescription> generate(TestClass testClass) {
-
         containerDef();
 
         List<DeploymentDescription> descriptions = super.generate(testClass);
@@ -73,11 +73,11 @@ public class MavenDeploymentScenarioGenerator
     }
 
     private DeploymentDescription createLiferayPluginDeployment() {
-        log.debug("Building Liferay Plugin from porject pom.xml");
+        log.debug("Building Liferay Plugin from project pom.xml");
+
         File pomFile = new File("pom.xml");
 
         if (pomFile != null && pomFile.exists()) {
-
             log.debug("Loading project from pom file:" +
                 pomFile.getAbsolutePath());
 
@@ -87,13 +87,13 @@ public class MavenDeploymentScenarioGenerator
 
             DeploymentDescription deploymentDescription =
                 new DeploymentDescription("_DEFAULT", archive);
+
             deploymentDescription.shouldBeTestable(true);
 
             return deploymentDescription;
-
         }
-        return null;
 
+        return null;
     }
 
     private ContainerDef containerDef() {
@@ -108,7 +108,7 @@ public class MavenDeploymentScenarioGenerator
                 String containerName = defaultContainer.getContainerName();
                 Validate.notNullOrEmpty(
                     containerName,
-                    "Atleast one default container must be defined in arquillain.xml");
+                    "At least one default container must be defined in arquillian.xml");
                 if (containerName.contains("tomcat")) {
                     System.setProperty("appServerType", "tomcat");
                 }

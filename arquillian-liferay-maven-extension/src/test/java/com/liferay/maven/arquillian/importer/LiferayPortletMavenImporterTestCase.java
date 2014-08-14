@@ -1,5 +1,5 @@
 
-package com.liferay.maven.arquillain.importer;
+package com.liferay.maven.arquillian.importer;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -14,11 +14,11 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.archive.importer.MavenImporter;
 
-public class LiferayHookMavenImporterTestCase {
+public class LiferayPortletMavenImporterTestCase {
 
     @Before
     public void cleanTarget() throws IOException {
-        new File("src/it/demo-hook/target").delete();
+        new File("src/it/demo-portlet/target").delete();
 
     }
 
@@ -26,19 +26,26 @@ public class LiferayHookMavenImporterTestCase {
     public void importWar() {
         // When
         final WebArchive archive =
-            doImport("src/it/demo-hook/pom.xml");
+            doImport("src/it/demo-portlet/pom.xml");
 
         // Then
         assertNotNull(archive.get(ArchivePaths.create(
             "/WEB-INF/lib", "util-java.jar")));
         assertNotNull(archive.get(ArchivePaths.create(
+            "/WEB-INF/lib", "util-taglib.jar")));
+        assertNotNull(archive.get(ArchivePaths.create(
             "/WEB-INF/lib", "commons-logging.jar")));
         assertNotNull(archive.get(ArchivePaths.create(
             "/WEB-INF/lib", "log4j-extras.jar")));
         assertNotNull(archive.get(ArchivePaths.create(
-            "/WEB-INF", "liferay-hook.xml")));
+            "/WEB-INF", "liferay-portlet.xml")));
         assertNotNull(archive.get(ArchivePaths.create(
             "/WEB-INF/classes", "log4j.properties")));
+        assertNotNull(archive.get(ArchivePaths.create("/WEB-INF/tld", "aui.tld")));
+        assertNotNull(archive.get(ArchivePaths.create(
+            "/WEB-INF/tld", "liferay-portlet.tld")));
+        assertNotNull(archive.get(ArchivePaths.create(
+            "/WEB-INF/jsp", "_servlet_context_include.jsp")));
 
     }
 

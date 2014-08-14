@@ -12,9 +12,9 @@
  * details.
  */
 
-package com.liferay.maven.arquillain.extension;
+package com.liferay.maven.arquillian.extension;
 
-import com.liferay.maven.arquillain.generator.MavenDeploymentScenarioGenerator;
+import com.liferay.maven.arquillian.generator.MavenDeploymentScenarioGenerator;
 
 import org.jboss.arquillian.container.test.spi.RemoteLoadableExtension;
 import org.jboss.arquillian.container.test.spi.client.deployment.DeploymentScenarioGenerator;

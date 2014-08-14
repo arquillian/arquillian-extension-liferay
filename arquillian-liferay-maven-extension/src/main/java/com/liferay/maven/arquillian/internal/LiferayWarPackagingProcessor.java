@@ -12,10 +12,10 @@
  * details.
  */
 
-package com.liferay.maven.arquillain.internal;
+package com.liferay.maven.arquillian.internal;
 
-import com.liferay.maven.arquillain.internal.tasks.HookDeployerTask;
-import com.liferay.maven.arquillain.internal.tasks.PorletDeployerTask;
+import com.liferay.maven.arquillian.internal.tasks.HookDeployerTask;
+import com.liferay.maven.arquillian.internal.tasks.PortletDeployerTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -88,6 +88,7 @@ public class LiferayWarPackagingProcessor
     @Override
     public WebArchive getResultingArchive() {
         log.trace("Resulting Archive:" + archive.toString(Formatters.VERBOSE));
+
         return archive;
     }
 
@@ -102,9 +103,9 @@ public class LiferayWarPackagingProcessor
     public LiferayWarPackagingProcessor configure(
         Archive<?> originalArchive, MavenWorkingSession session) {
         super.configure(session);
-        archive =
-            ShrinkWrap.create(
-                WebArchive.class);
+
+        archive = ShrinkWrap.create(WebArchive.class);
+
         return this;
     }
 
@@ -136,8 +137,7 @@ public class LiferayWarPackagingProcessor
                     pomFile.getBuildOutputDirectory()).as(
                     JavaArchive.class);
 
-            archive =
-                archive.merge(classes, ArchivePaths.create("WEB-INF/classes"));
+            archive = archive.merge(classes, ArchivePaths.create("WEB-INF/classes"));
             // Raise bug with shrink wrap ?Since configure creates the base war
             // in target classes, we need to delete from the archive
 
@@ -197,9 +197,19 @@ public class LiferayWarPackagingProcessor
             new LiferayPluginConfiguration(pomFile);
 
         // Temp Archive for processing by Liferay deployers
+        String baseDirPath = liferayPluginConfiguration.getBaseDir();
+
         File tempDestFile =
             new File(
-                liferayPluginConfiguration.getBaseDir(), pomFile.getFinalName());
+                    baseDirPath, pomFile.getFinalName());
+
+        File baseDir = new File(baseDirPath);
+
+        if (!baseDir.exists()) {
+            baseDir.mkdirs();
+
+            log.info("Created dir " + baseDir);
+        }
 
         log.trace("Temp Archive:" + tempDestFile.getName());
 
@@ -215,7 +225,7 @@ public class LiferayWarPackagingProcessor
         }
         else {
             // default is always portletdeployer
-            PorletDeployerTask.INSTANCE.execute(session);
+            PortletDeployerTask.INSTANCE.execute(session);
         }
 
         // Call Liferay Deployer
@@ -223,15 +233,14 @@ public class LiferayWarPackagingProcessor
             new LiferayPluginConfiguration(pomFile);
 
         File ddPluginArchiveFile =
-            new File(configuration.getDestDir(), pomFile.getArtifactId() +
-                ".war");
+            new File(configuration.getDestDir(), pomFile.getArtifactId() + ".war");
         archive =
             ShrinkWrap.create(ZipImporter.class, pomFile.getFinalName()).importFrom(
-                ddPluginArchiveFile).as(
-                WebArchive.class);
+                ddPluginArchiveFile).as(WebArchive.class);
 
         try {
             FileUtils.forceDelete(ddPluginArchiveFile);
+
             FileUtils.forceDelete(new File(
                 configuration.getBaseDir(), pomFile.getFinalName()));
         }
@@ -292,7 +301,6 @@ public class LiferayWarPackagingProcessor
         }
 
         return includedFiles;
-
     }
 
 }
