@@ -74,13 +74,9 @@
     </dependency>
   </dependencies>
 
+  <!-- Liferay specific environment property will be set in test cases  -->
   <properties>
-    <liferay.version>6.2.1</liferay.version>
     <liferay.maven.plugin.version>6.2.10.6</liferay.maven.plugin.version>
-    <liferay.auto.deploy.dir>/Users/kameshs/liferay-developer-studio/liferay-portal-6.2-ee-sp3/deploy</liferay.auto.deploy.dir>
-    <liferay.app.server.deploy.dir>/Users/kameshs/liferay-developer-studio/liferay-portal-6.2-ee-sp3/tomcat-7.0.42/webapps</liferay.app.server.deploy.dir>
-    <liferay.app.server.lib.global.dir>/Users/kameshs/liferay-developer-studio/liferay-portal-6.2-ee-sp3/tomcat-7.0.42/lib/ext</liferay.app.server.lib.global.dir>
-    <liferay.app.server.portal.dir>/Users/kameshs/liferay-developer-studio/liferay-portal-6.2-ee-sp3/tomcat-7.0.42/webapps/ROOT</liferay.app.server.portal.dir>
   </properties>
 
 </project>

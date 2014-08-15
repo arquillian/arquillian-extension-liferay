@@ -2,11 +2,13 @@
 package com.liferay.maven.arquillian.importer;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import org.jboss.shrinkwrap.api.ArchivePaths;
@@ -14,12 +16,18 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.archive.importer.MavenImporter;
 
-public class LiferayPortletMavenImporterTestCase {
+public class LiferayPortletMavenImporterTestCase extends LiferayPluginTestCase {
+
+    @BeforeClass
+    public static void setupPortal() throws IOException {
+        if (!setup) {
+            setupPortalMinimal();
+        }
+    }
 
     @Before
     public void cleanTarget() throws IOException {
         new File("src/it/demo-portlet/target").delete();
-
     }
 
     @Test
@@ -61,9 +69,8 @@ public class LiferayPortletMavenImporterTestCase {
             return archive;
         }
         catch (Exception e) {
-            // TODO Auto-generated catch block
-
             e.printStackTrace();
+            fail(e.getMessage());
         }
         return null;
     }

@@ -166,6 +166,17 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
+    <repository>
+      <id>liferay-public-repository</id>
+      <name>Liferay Repository</name>
+      <url>http://repository.liferay.com/nexus/content/groups/liferay-ce/</url>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
   </repositories>
 
 
