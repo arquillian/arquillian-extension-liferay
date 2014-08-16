@@ -37,7 +37,6 @@
 		<dependency>
 			<groupId>org.jboss.arquillian.container</groupId>
 			<artifactId>arquillian-container-test-spi</artifactId>
-			<version>1.1.2.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.shrinkwrap.osgi</groupId>
@@ -47,12 +46,10 @@
         <dependency>
             <groupId>org.jboss.arquillian.container</groupId>
             <artifactId>arquillian-container-test-impl-base</artifactId>
-            <version>1.1.2.Final</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.arquillian.junit</groupId>
             <artifactId>arquillian-junit-container</artifactId>
-            <version>1.1.2.Final</version>
             <scope>test</scope>
         </dependency>
         <dependency>
