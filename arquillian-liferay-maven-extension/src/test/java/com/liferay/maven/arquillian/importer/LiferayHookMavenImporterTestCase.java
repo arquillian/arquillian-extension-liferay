@@ -61,10 +61,7 @@ public class LiferayHookMavenImporterTestCase extends LiferayPluginTestCase {
             return archive;
         }
         catch (Exception e) {
-            // TODO Auto-generated catch block
-
-            e.printStackTrace();
+           throw new RuntimeException(e);
         }
-        return null;
     }
 }

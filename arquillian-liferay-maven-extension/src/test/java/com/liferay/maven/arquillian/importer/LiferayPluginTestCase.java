@@ -128,8 +128,7 @@ public class LiferayPluginTestCase {
 
         }
         catch (Exception e) {
-            e.printStackTrace();
-            fail(e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 

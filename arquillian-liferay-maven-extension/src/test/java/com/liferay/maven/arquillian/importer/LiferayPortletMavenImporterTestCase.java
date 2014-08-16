@@ -69,9 +69,7 @@ public class LiferayPortletMavenImporterTestCase extends LiferayPluginTestCase {
             return archive;
         }
         catch (Exception e) {
-            e.printStackTrace();
-            fail(e.getMessage());
+            throw new RuntimeException(e);
         }
-        return null;
     }
 }
