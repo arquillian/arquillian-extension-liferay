@@ -26,8 +26,34 @@ public class LiferayRemoteContainerConfiguration extends KarafRemoteContainerCon
 	public static final String DEFAULT_JMX_USERNAME = "";
 	public static final String DEFAULT_JMX_PASSWORD = "";
 
-	@Override
+    public static final String DEFAULT_HTTP_HOST = "localhost";
+    public static final int DEFAULT_HTTP_PORT = 8080;
+
+    private String httpHost;
+    private Integer httpPort;
+
+    public String getHttpHost() {
+        return httpHost;
+    }
+
+    public void setHttpHost(String httpHost) {
+        this.httpHost = httpHost;
+    }
+
+    public int getHttpPort() {
+        return httpPort;
+    }
+
+    public void setHttpPort(int httpPort) {
+        this.httpPort = httpPort;
+    }
+
+    @Override
 	public void validate() throws ConfigurationException {
+        if (httpHost == null)
+            setHttpHost(DEFAULT_HTTP_HOST);
+        if (httpPort == null)
+            setHttpPort(DEFAULT_HTTP_PORT);
 		if (jmxServiceURL == null)
 			setJmxServiceURL(DEFAULT_JMX_SERVICE_URL);
 		if (jmxUsername == null)
@@ -35,5 +61,7 @@ public class LiferayRemoteContainerConfiguration extends KarafRemoteContainerCon
 		if (jmxPassword == null)
 			setJmxPassword(DEFAULT_JMX_PASSWORD);
 	}
+
+
 
 }

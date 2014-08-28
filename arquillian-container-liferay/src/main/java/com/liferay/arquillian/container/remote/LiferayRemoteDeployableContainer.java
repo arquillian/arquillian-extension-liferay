@@ -15,12 +15,18 @@
 package com.liferay.arquillian.container.remote;
 
 import org.jboss.arquillian.container.osgi.karaf.remote.KarafRemoteDeployableContainer;
+import org.jboss.arquillian.container.spi.client.container.DeploymentException;
+import org.jboss.arquillian.container.spi.client.protocol.metadata.HTTPContext;
+import org.jboss.arquillian.container.spi.client.protocol.metadata.ProtocolMetaData;
+import org.jboss.shrinkwrap.api.Archive;
 
 /**
  * @author Carlos Sierra Andrés
  */
 public class LiferayRemoteDeployableContainer<T extends LiferayRemoteContainerConfiguration>
 	extends KarafRemoteDeployableContainer<T> {
+
+    LiferayRemoteContainerConfiguration config;
 
 	@Override
 	public Class<T> getConfigurationClass() {
@@ -29,4 +35,19 @@ public class LiferayRemoteDeployableContainer<T extends LiferayRemoteContainerCo
 		return clazz;
 	}
 
+    @Override
+    public ProtocolMetaData deploy(Archive<?> archive) throws DeploymentException {
+        ProtocolMetaData protocolMetaData = super.deploy(archive);
+
+        protocolMetaData.addContext(new HTTPContext(config.getHttpHost(), config.getHttpPort()));
+
+        return protocolMetaData;
+    }
+
+    @Override
+    public void setup(T config) {
+        this.config = config;
+
+        super.setup(config);
+    }
 }
