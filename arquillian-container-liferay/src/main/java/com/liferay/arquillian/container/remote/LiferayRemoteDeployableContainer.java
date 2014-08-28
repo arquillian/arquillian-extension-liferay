@@ -19,6 +19,10 @@ import org.jboss.arquillian.container.spi.client.container.DeploymentException;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.HTTPContext;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.ProtocolMetaData;
 import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.Node;
+
+import java.io.IOException;
+import java.util.jar.Manifest;
 
 /**
  * @author Carlos Sierra Andrés
@@ -40,6 +44,21 @@ public class LiferayRemoteDeployableContainer<T extends LiferayRemoteContainerCo
         ProtocolMetaData protocolMetaData = super.deploy(archive);
 
         protocolMetaData.addContext(new HTTPContext(config.getHttpHost(), config.getHttpPort()));
+
+        Node node = archive.get("META-INF/MANIFEST.MF");
+
+        try {
+            Manifest manifest = new Manifest(node.getAsset().openStream());
+
+            String symbolicName = manifest.getMainAttributes().getValue("Bundle-SymbolicName");
+            String version = manifest.getMainAttributes().getValue("Bundle-Version");
+
+            startBundle(symbolicName, version);
+        } catch (IOException e) {
+            throw new DeploymentException(e.getMessage(), e);
+        } catch (Exception e) {
+            throw new DeploymentException(e.getMessage(), e);
+        }
 
         return protocolMetaData;
     }
