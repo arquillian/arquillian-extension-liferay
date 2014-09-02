@@ -46,6 +46,7 @@ public class BndDeploymentScenarioGeneratorTest {
         };
 
         bndDeploymentScenarioGenerator.setBndFile(new File("target/test-classes/test.bnd"));
+
         List<DeploymentDescription> deploymentDescriptions = bndDeploymentScenarioGenerator.generate(new TestClass(ATest.class));
 
         assertEquals(1, deploymentDescriptions.size());
@@ -64,7 +65,7 @@ public class BndDeploymentScenarioGeneratorTest {
 
         String exportPackageValue = mainAttributes.getValue("Export-Package");
 
-        assertTrue("Package form test class must be exported",
+        assertTrue("Package from test class must be exported",
                         exportPackageValue.contains("com.liferay.arquillian.test"));
 
         String importPackageValue = mainAttributes.getValue("Import-Package");
@@ -80,4 +81,119 @@ public class BndDeploymentScenarioGeneratorTest {
                 archive.get("com/liferay/arquillian/test/extras/b/B.class"));
 
     }
+
+    @Test
+    public void testBundleGenerationWithCommonBnd() throws IOException {
+        BndDeploymentScenarioGenerator bndDeploymentScenarioGenerator = new BndDeploymentScenarioGenerator() {
+            @Override
+            protected DeploymentScenarioGenerator getDefaultDeploymentScenarioGenerator() {
+                return null;
+            }
+        };
+
+        bndDeploymentScenarioGenerator.setBndFile(new File("target/test-classes/test.bnd"));
+
+        File commonBndFile = new File("target/test-classes/common.bnd");
+
+        bndDeploymentScenarioGenerator.setCommonBndFile(commonBndFile);
+
+        List<DeploymentDescription> deploymentDescriptions = bndDeploymentScenarioGenerator.generate(new TestClass(ATest.class));
+
+        assertEquals(1, deploymentDescriptions.size());
+
+        DeploymentDescription deploymentDescription = deploymentDescriptions.get(0);
+
+        Archive<?> archive = deploymentDescription.getArchive();
+
+        Node object = archive.get("META-INF/MANIFEST.MF");
+
+        assertNotNull("We must have a MANIFEST.MF", object);
+
+        Manifest manifest = new Manifest(object.getAsset().openStream());
+
+        Attributes mainAttributes = manifest.getMainAttributes();
+
+        String exportPackageValue = mainAttributes.getValue("Export-Package");
+
+        assertTrue("Package from test class must be exported",
+                        exportPackageValue.contains("com.liferay.arquillian.test"));
+
+        String importPackageValue = mainAttributes.getValue("Import-Package");
+
+        assertFalse("Package from the classes must not be imported",
+                importPackageValue.contains("com.liferay.arquillian.test.extras.a"));
+        assertFalse("Package from the classes must not be imported",
+                importPackageValue.contains("com.liferay.arquillian.test.extras.b"));
+
+        String fooProperty = mainAttributes.getValue("Foo-Property");
+
+        assertEquals("test", fooProperty);
+
+        String fooBadProperty = mainAttributes.getValue("Foo-Bad-Property");
+
+        assertEquals("${a.non.existant.property}", fooBadProperty);
+
+        assertNotNull("Classes must be included",
+                archive.get("com/liferay/arquillian/test/extras/a/A.class"));
+        assertNotNull("Classes must be included",
+                archive.get("com/liferay/arquillian/test/extras/b/B.class"));
+
+    }
+
+    @Test
+    public void testBundleGenerationWithCommonBndFromSystemProperty() throws IOException {
+        System.setProperty("sdk.dir", "target/test-classes");
+
+        BndDeploymentScenarioGenerator bndDeploymentScenarioGenerator = new BndDeploymentScenarioGenerator() {
+            @Override
+            protected DeploymentScenarioGenerator getDefaultDeploymentScenarioGenerator() {
+                return null;
+            }
+        };
+
+        bndDeploymentScenarioGenerator.setBndFile(new File("target/test-classes/test.bnd"));
+
+        List<DeploymentDescription> deploymentDescriptions = bndDeploymentScenarioGenerator.generate(new TestClass(ATest.class));
+
+        assertEquals(1, deploymentDescriptions.size());
+
+        DeploymentDescription deploymentDescription = deploymentDescriptions.get(0);
+
+        Archive<?> archive = deploymentDescription.getArchive();
+
+        Node object = archive.get("META-INF/MANIFEST.MF");
+
+        assertNotNull("We must have a MANIFEST.MF", object);
+
+        Manifest manifest = new Manifest(object.getAsset().openStream());
+
+        Attributes mainAttributes = manifest.getMainAttributes();
+
+        String exportPackageValue = mainAttributes.getValue("Export-Package");
+
+        assertTrue("Package from test class must be exported",
+                exportPackageValue.contains("com.liferay.arquillian.test"));
+
+        String importPackageValue = mainAttributes.getValue("Import-Package");
+
+        assertFalse("Package from the classes must not be imported",
+                importPackageValue.contains("com.liferay.arquillian.test.extras.a"));
+        assertFalse("Package from the classes must not be imported",
+                importPackageValue.contains("com.liferay.arquillian.test.extras.b"));
+
+        String fooProperty = mainAttributes.getValue("Foo-Property");
+
+        assertEquals("test", fooProperty);
+
+        String fooBadProperty = mainAttributes.getValue("Foo-Bad-Property");
+
+        assertEquals("${a.non.existant.property}", fooBadProperty);
+
+        assertNotNull("Classes must be included",
+                archive.get("com/liferay/arquillian/test/extras/a/A.class"));
+        assertNotNull("Classes must be included",
+                archive.get("com/liferay/arquillian/test/extras/b/B.class"));
+
+    }
+
 }
