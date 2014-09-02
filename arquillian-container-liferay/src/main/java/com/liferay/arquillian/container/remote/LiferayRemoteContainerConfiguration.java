@@ -32,6 +32,11 @@ public class LiferayRemoteContainerConfiguration extends KarafRemoteContainerCon
     private String httpHost;
     private Integer httpPort;
 
+    @Override
+    public boolean isAutostartBundle() {
+        return true;
+    }
+
     public String getHttpHost() {
         return httpHost;
     }
@@ -61,7 +66,5 @@ public class LiferayRemoteContainerConfiguration extends KarafRemoteContainerCon
 		if (jmxPassword == null)
 			setJmxPassword(DEFAULT_JMX_PASSWORD);
 	}
-
-
 
 }
