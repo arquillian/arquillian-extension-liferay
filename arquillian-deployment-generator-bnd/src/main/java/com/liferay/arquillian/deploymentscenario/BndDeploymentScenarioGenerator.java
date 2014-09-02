@@ -34,6 +34,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.jar.Manifest;
 
 /**
@@ -47,6 +48,16 @@ public class BndDeploymentScenarioGenerator implements DeploymentScenarioGenerat
     public static final String MANIFEST_PATH = "META-INF/MANIFEST.MF";
 
     private File bndFile = new File("bnd.bnd");
+
+    private File commonBndFile;
+
+    public BndDeploymentScenarioGenerator() {
+        String sdkDir = System.getProperty("sdk.dir");
+
+        if (sdkDir != null && !sdkDir.isEmpty()) {
+            commonBndFile = new File(sdkDir, "common.bnd");
+        }
+    }
 
     public File getBndFile() {
         return bndFile;
@@ -73,13 +84,38 @@ public class BndDeploymentScenarioGenerator implements DeploymentScenarioGenerat
         try {
             bndFile = getBndFile();
 
-			JavaArchive javaArchive = ShrinkWrap.create(BndProjectBuilder.class).setBndFile(bndFile).generateManifest(false).as(JavaArchive.class);
+            BndProjectBuilder bndProjectBuilder = ShrinkWrap.create(BndProjectBuilder.class);
+
+            File commonBndFile = getCommonBndFile();
+
+            if (commonBndFile != null) {
+
+                File rootDir = commonBndFile.getAbsoluteFile().getParentFile();
+
+                bndProjectBuilder.setBase(rootDir);
+
+                bndProjectBuilder.addProjectPropertiesFile(commonBndFile);
+            }
+
+            bndProjectBuilder.setBndFile(bndFile);
+
+            bndProjectBuilder.generateManifest(false);
+
+            JavaArchive javaArchive = bndProjectBuilder.as(JavaArchive.class);
 
             addTestClass(testClass, javaArchive);
 
             Analyzer analyzer = new Analyzer();
 
-            analyzer.setProperties(bndFile);
+            Properties analyzerProperties = new Properties();
+
+            if (commonBndFile != null) {
+                analyzerProperties.putAll(analyzer.loadProperties(commonBndFile));
+            }
+
+            analyzerProperties.putAll(analyzer.loadProperties(bndFile));
+
+            analyzer.setProperties(analyzerProperties);
 
             //FIXME: Is this still needed with latest version of arquillian-osgi-bundle?
             fixExportPackage(testClass, analyzer);
@@ -113,6 +149,14 @@ public class BndDeploymentScenarioGenerator implements DeploymentScenarioGenerat
 		}
 
 	}
+
+    public File getCommonBndFile() {
+        return commonBndFile;
+    }
+
+    public void setCommonBndFile(File commonBndFile) {
+        this.commonBndFile = commonBndFile;
+    }
 
     protected DeploymentScenarioGenerator getDefaultDeploymentScenarioGenerator() {
         //FIXME: is there a way to request a specific service, not an interface?
