@@ -109,7 +109,6 @@ public class BndDeploymentScenarioGenerator implements DeploymentScenarioGenerat
 
             JavaArchive javaArchive = bndProjectBuilder.as(JavaArchive.class);
 
-            addTestClass(testClass, javaArchive);
             javaArchive.addClass(BndFile.class);
 
             Analyzer analyzer = new Analyzer();
@@ -124,8 +123,14 @@ public class BndDeploymentScenarioGenerator implements DeploymentScenarioGenerat
 
             analyzer.setProperties(analyzerProperties);
 
-            //FIXME: Is this still needed with latest version of arquillian-osgi-bundle?
-            fixExportPackage(testClass, analyzer);
+            boolean testable = isTestable(testClass);
+
+            if (testable) {
+                addTestClass(testClass, javaArchive);
+
+                //FIXME: Is this still needed with latest version of arquillian-osgi-bundle?
+                fixExportPackage(testClass, analyzer);
+            }
 
             ZipExporter zipExporter = javaArchive.as(ZipExporter.class);
 
@@ -135,7 +140,9 @@ public class BndDeploymentScenarioGenerator implements DeploymentScenarioGenerat
 
             DeploymentDescription deploymentDescription = new DeploymentDescription(javaArchive.getName(), javaArchive);
 
-			deploymentDescription.shouldBeTestable(true).shouldBeManaged(true);
+			deploymentDescription.
+                    shouldBeTestable(testable).
+                    shouldBeManaged(true);
 
 			deployments.add(deploymentDescription);
 
@@ -156,6 +163,10 @@ public class BndDeploymentScenarioGenerator implements DeploymentScenarioGenerat
 		}
 
 	}
+
+    private boolean isTestable(TestClass testClass) {
+        return !testClass.isAnnotationPresent(RunAsClient.class);
+    }
 
     public File getCommonBndFile() {
         return commonBndFile;
