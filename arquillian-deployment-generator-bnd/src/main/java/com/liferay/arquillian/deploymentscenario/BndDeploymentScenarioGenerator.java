@@ -96,6 +96,8 @@ public class BndDeploymentScenarioGenerator implements DeploymentScenarioGenerat
 
             bndProjectBuilder.setBndFile(bndFile);
 
+            bndProjectBuilder.generateManifest(true);
+
             File commonBndFile = getCommonBndFile();
 
             if (commonBndFile != null) {
@@ -104,8 +106,6 @@ public class BndDeploymentScenarioGenerator implements DeploymentScenarioGenerat
 
                 bndProjectBuilder.addProjectPropertiesFile(commonBndFile);
             }
-
-            bndProjectBuilder.generateManifest(false);
 
             JavaArchive javaArchive = bndProjectBuilder.as(JavaArchive.class);
 
@@ -145,6 +145,12 @@ public class BndDeploymentScenarioGenerator implements DeploymentScenarioGenerat
                     shouldBeManaged(true);
 
 			deployments.add(deploymentDescription);
+
+            Manifest firstPassManifest = new Manifest(javaArchive.get(MANIFEST_PATH).getAsset().openStream());
+
+            firstPassManifest.getMainAttributes().remove("Import-Package");
+
+            analyzer.mergeManifest(firstPassManifest);
 
             Manifest manifest = analyzer.calcManifest();
 
