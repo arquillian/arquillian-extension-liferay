@@ -102,8 +102,6 @@ public class BndDeploymentScenarioGenerator implements DeploymentScenarioGenerat
 
             if (commonBndFile != null) {
 
-                File rootDir = commonBndFile.getAbsoluteFile().getParentFile();
-
                 bndProjectBuilder.addProjectPropertiesFile(commonBndFile);
             }
 
