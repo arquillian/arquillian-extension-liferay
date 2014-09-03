@@ -16,7 +16,9 @@ package com.liferay.arquillian.deploymentscenario;
 
 import aQute.bnd.osgi.Analyzer;
 import aQute.bnd.osgi.Jar;
+import com.liferay.arquillian.deploymentscenario.annotations.BndFile;
 import org.jboss.arquillian.container.spi.client.deployment.DeploymentDescription;
+import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.container.test.impl.client.deployment.AnnotationDeploymentScenarioGenerator;
 import org.jboss.arquillian.container.test.spi.client.deployment.DeploymentScenarioGenerator;
 import org.jboss.arquillian.core.api.Injector;
@@ -59,7 +61,13 @@ public class BndDeploymentScenarioGenerator implements DeploymentScenarioGenerat
         }
     }
 
-    public File getBndFile() {
+    public File getBndFile(TestClass testClass) {
+        if (testClass.isAnnotationPresent(BndFile.class)) {
+            BndFile annotation = testClass.getAnnotation(BndFile.class);
+
+            return new File(annotation.value());
+        }
+
         return bndFile;
     }
 
@@ -82,9 +90,11 @@ public class BndDeploymentScenarioGenerator implements DeploymentScenarioGenerat
         }
 
         try {
-            bndFile = getBndFile();
+            bndFile = getBndFile(testClass);
 
             BndProjectBuilder bndProjectBuilder = ShrinkWrap.create(BndProjectBuilder.class);
+
+            bndProjectBuilder.setBndFile(bndFile);
 
             File commonBndFile = getCommonBndFile();
 
@@ -92,18 +102,15 @@ public class BndDeploymentScenarioGenerator implements DeploymentScenarioGenerat
 
                 File rootDir = commonBndFile.getAbsoluteFile().getParentFile();
 
-                bndProjectBuilder.setBase(rootDir);
-
                 bndProjectBuilder.addProjectPropertiesFile(commonBndFile);
             }
-
-            bndProjectBuilder.setBndFile(bndFile);
 
             bndProjectBuilder.generateManifest(false);
 
             JavaArchive javaArchive = bndProjectBuilder.as(JavaArchive.class);
 
             addTestClass(testClass, javaArchive);
+            javaArchive.addClass(BndFile.class);
 
             Analyzer analyzer = new Analyzer();
 
