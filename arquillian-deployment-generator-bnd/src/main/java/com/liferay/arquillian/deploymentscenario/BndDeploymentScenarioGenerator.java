@@ -37,6 +37,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 /**
@@ -146,7 +147,7 @@ public class BndDeploymentScenarioGenerator implements DeploymentScenarioGenerat
 
             Manifest firstPassManifest = new Manifest(javaArchive.get(MANIFEST_PATH).getAsset().openStream());
 
-            firstPassManifest.getMainAttributes().remove("Import-Package");
+            firstPassManifest.getMainAttributes().remove(new Attributes.Name("Import-Package"));
 
             analyzer.mergeManifest(firstPassManifest);
 
