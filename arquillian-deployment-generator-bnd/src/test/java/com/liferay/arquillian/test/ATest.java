@@ -16,14 +16,18 @@ package com.liferay.arquillian.test;
 
 import com.liferay.arquillian.test.extras.a.A;
 import com.liferay.arquillian.test.extras.b.B;
+import org.osgi.framework.BundleException;
 
 /**
  * @author Carlos Sierra Andrés
  */
 public class ATest {
 
-	public void testSomething() {
+	public void testSomething() throws BundleException {
 		A a = new A();
 		B b = new B();
+
+        if (1==1)
+            throw new BundleException("test");
 	}
 }

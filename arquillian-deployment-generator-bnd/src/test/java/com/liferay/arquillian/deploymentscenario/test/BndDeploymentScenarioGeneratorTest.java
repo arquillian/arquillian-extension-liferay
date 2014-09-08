@@ -75,6 +75,8 @@ public class BndDeploymentScenarioGeneratorTest {
         assertFalse("Package from the classes must not be imported",
                 importPackageValue.contains("com.liferay.arquillian.test.extras.b"));
 
+        assertTrue("Should contain org.osgi.framework", importPackageValue.contains("org.osgi.framework"));
+
         assertNotNull("Classes must be included",
                 archive.get("com/liferay/arquillian/test/extras/a/A.class"));
         assertNotNull("Classes must be included",

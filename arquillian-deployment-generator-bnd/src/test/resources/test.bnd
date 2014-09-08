@@ -1,2 +1,2 @@
 Bundle-SymbolicName: A test bundle
-Include-Resource: com=com
+Include-Resource: com/liferay/arquillian/test/extras=com/liferay/arquillian/test/extras
