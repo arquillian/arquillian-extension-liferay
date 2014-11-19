@@ -14,6 +14,7 @@
 
 package org.arquillian.container.liferay.remote;
 
+import com.liferay.arquillian.container.enricher.LiferayEnricherAuxiliaryAppender;
 import com.liferay.arquillian.container.wait.LiferayWaitForServiceAuxiliaryAppender;
 
 import org.jboss.arquillian.container.osgi.karaf.remote.KarafRemoteDeployableContainer;
@@ -31,6 +32,10 @@ public class LiferayRemoteContainerExtension implements LoadableExtension {
 		builder.override(
 			DeployableContainer.class, KarafRemoteDeployableContainer.class,
 			LiferayRemoteDeployableContainer.class);
+
+		builder.service(
+			AuxiliaryArchiveAppender.class,
+			LiferayEnricherAuxiliaryAppender.class);
 
 		builder.service(
 			AuxiliaryArchiveAppender.class,
