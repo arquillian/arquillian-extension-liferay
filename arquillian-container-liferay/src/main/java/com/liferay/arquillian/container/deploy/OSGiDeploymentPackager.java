@@ -488,6 +488,13 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 								manifestConfig.getImports().add(importValue);
 							}
 						}
+
+						String bundleActivator = mainAttributes.getValue(
+							"Bundle-Activator");
+
+						if (bundleActivator != null) {
+							manifestConfig.getActivators().add(bundleActivator);
+						}
 					}
 				}
 			}

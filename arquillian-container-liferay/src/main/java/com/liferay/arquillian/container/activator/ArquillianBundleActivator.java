@@ -14,9 +14,18 @@
 
 package com.liferay.arquillian.container.activator;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import java.lang.management.ManagementFactory;
 
+import java.net.URL;
+
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.management.MBeanServer;
@@ -55,9 +64,25 @@ public class ArquillianBundleActivator implements BundleActivator {
 			}
 		};
 		testRunner.registerMBean(mbeanServer);
+
+		// Execute all activators
+
+		Set<BundleActivator> bundleActivators = loadActivators();
+
+		for (BundleActivator bundleActivator : bundleActivators) {
+			bundleActivator.start(context);
+		}
 	}
 
 	public void stop(BundleContext context) throws Exception {
+
+		// Execute all activators
+
+		Set<BundleActivator> bundleActivators = loadActivators();
+
+		for (BundleActivator bundleActivator : bundleActivators) {
+			bundleActivator.stop(context);
+		}
 
 		// Unregister the JMXTestRunner
 
@@ -86,6 +111,84 @@ public class ArquillianBundleActivator implements BundleActivator {
 
 		return mbeanServer;
 	}
+
+	private Set<BundleActivator> loadActivators() {
+		String serviceFile =
+			_SERVICES + "/" + BundleActivator.class.getCanonicalName();
+
+		LinkedHashSet<BundleActivator> activators = new LinkedHashSet<>();
+
+		try {
+			ClassLoader classLoader = getClass().getClassLoader();
+
+			Enumeration<URL> enumeration = classLoader.getResources(
+				serviceFile);
+
+			while (enumeration.hasMoreElements()) {
+				final URL url = enumeration.nextElement();
+				final InputStream is = url.openStream();
+				BufferedReader reader = null;
+
+				try {
+					reader = new BufferedReader(
+						new InputStreamReader(is, "UTF-8"));
+					String line = reader.readLine();
+					while (null != line) {
+						line = skipCommentAndTrim(line);
+
+						if (line.length() > 0) {
+							try {
+								boolean mustBeVetoed = line.startsWith("!");
+
+								if (mustBeVetoed) {
+									line = line.substring(1);
+								}
+
+								Class<? extends BundleActivator> activator =
+									classLoader.loadClass(line).asSubclass(
+										BundleActivator.class);
+
+								activators.add(activator.newInstance());
+							}
+							catch (ClassCastException e) {
+								throw new IllegalStateException(
+									"Activator " + line +
+										" does not implement expected type " +
+										BundleActivator.class.
+											getCanonicalName());
+							}
+						}
+
+						line = reader.readLine();
+					}
+				}
+				finally {
+					if (reader != null) {
+						reader.close();
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			throw new RuntimeException("Could not load bundle activators", e);
+		}
+
+		return activators;
+	}
+
+	private String skipCommentAndTrim(String line) {
+		final int comment = line.indexOf('#');
+
+		if (comment > -1)
+		{
+			line = line.substring(0, comment);
+		}
+
+		line = line.trim();
+		return line;
+	}
+
+	private static final String _SERVICES = "/META-INF/services";
 
 	// Provide logging
 
