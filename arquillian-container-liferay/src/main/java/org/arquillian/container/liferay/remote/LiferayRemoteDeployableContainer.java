@@ -30,7 +30,7 @@ import org.jboss.shrinkwrap.api.Archive;
  * @author Carlos Sierra Andrés
  */
 public class LiferayRemoteDeployableContainer
-	    <T extends LiferayRemoteContainerConfiguration>
+	<T extends LiferayRemoteContainerConfiguration>
 	extends KarafRemoteDeployableContainer<T> {
 
 	@Override
@@ -72,7 +72,7 @@ public class LiferayRemoteDeployableContainer
 
 		//On purpose: It is not needed to install an Arquillian Bundle
 	}
-    
+
 	protected LiferayRemoteContainerConfiguration config;
 
 }

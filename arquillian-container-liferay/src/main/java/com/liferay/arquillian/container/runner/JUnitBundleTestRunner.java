@@ -29,10 +29,14 @@ public class JUnitBundleTestRunner extends JUnitTestRunner {
 		ClassLoader ctxLoader = currentThread.getContextClassLoader();
 
 		try {
-			//Make sure we run in the context of the arquillian-bundle class loader
+			//Make sure we run in the context of the arquillian-bundle
+
+			// class loader
+
 			currentThread.setContextClassLoader(getClass().getClassLoader());
 			return super.execute(testClass, methodName);
-		} finally {
+		}
+		finally {
 			currentThread.setContextClassLoader(ctxLoader);
 		}
 	}
