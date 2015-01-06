@@ -9,7 +9,7 @@
         <repository>
           <id>liferay-public-repository</id>
           <name>Liferay Repository</name>
-          <url>http://repository.liferay.com/nexus/content/groups/liferay-ce/</url>
+          <url>http://repository.liferay.com/nexus/content/groups/public/</url>
           <releases>
             <updatePolicy>never</updatePolicy>
           </releases>
