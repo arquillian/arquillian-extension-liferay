@@ -14,9 +14,6 @@
 
 package org.arquillian.liferay.maven.internal;
 
-import org.arquillian.liferay.maven.internal.tasks.HookDeployerTask;
-import org.arquillian.liferay.maven.internal.tasks.PortletDeployerTask;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +24,11 @@ import java.util.jar.Manifest;
 
 import org.apache.commons.io.FileUtils;
 
+import org.arquillian.liferay.maven.internal.tasks.HookDeployerTask;
+import org.arquillian.liferay.maven.internal.tasks.PortletDeployerTask;
+
 import org.codehaus.plexus.util.DirectoryScanner;
+
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ArchivePath;
 import org.jboss.shrinkwrap.api.ArchivePaths;
@@ -53,6 +54,7 @@ import org.jboss.shrinkwrap.resolver.impl.maven.archive.packaging.ArchiveFilteri
 import org.jboss.shrinkwrap.resolver.impl.maven.archive.plugins.WarPluginConfiguration;
 import org.jboss.shrinkwrap.resolver.impl.maven.util.Validate;
 import org.jboss.shrinkwrap.resolver.spi.maven.archive.packaging.PackagingProcessor;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,7 +103,8 @@ public class LiferayWarPackagingProcessor
      */
     @Override
     public LiferayWarPackagingProcessor configure(
-        Archive<?> originalArchive, MavenWorkingSession session) {
+            Archive<?> originalArchive, MavenWorkingSession session) {
+
         super.configure(session);
 
         archive = ShrinkWrap.create(WebArchive.class);
@@ -118,7 +121,7 @@ public class LiferayWarPackagingProcessor
      */
     @Override
     public LiferayWarPackagingProcessor importBuildOutput(
-        MavenResolutionStrategy strategy)
+            MavenResolutionStrategy strategy)
         throws IllegalArgumentException, ResolutionException {
 
         log.debug("Building Liferay Plugin Archive");
@@ -133,9 +136,10 @@ public class LiferayWarPackagingProcessor
                 ScopeType.COMPILE, ScopeType.RUNTIME, ScopeType.SYSTEM,
                 ScopeType.IMPORT, ScopeType.PROVIDED);
             JavaArchive classes =
-                ShrinkWrap.create(ExplodedImporter.class, "webinf_clases.jar").importDirectory(
-                    pomFile.getBuildOutputDirectory()).as(
-                    JavaArchive.class);
+                ShrinkWrap.create(ExplodedImporter.class, "webinf_clases.jar").
+                    importDirectory(
+                        pomFile.getBuildOutputDirectory()).as(
+                            JavaArchive.class);
 
             archive = archive.merge(classes, ArchivePaths.create("WEB-INF/classes"));
             // Raise bug with shrink wrap ?Since configure creates the base war

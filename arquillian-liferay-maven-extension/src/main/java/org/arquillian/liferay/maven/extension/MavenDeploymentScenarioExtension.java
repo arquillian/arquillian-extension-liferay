@@ -23,17 +23,19 @@ import org.jboss.arquillian.container.test.spi.client.deployment.DeploymentScena
  * @author <a href="mailto:kamesh.sampath@liferay.com">Kamesh Sampath</a>
  */
 public class MavenDeploymentScenarioExtension
-    implements RemoteLoadableExtension {
+	implements RemoteLoadableExtension {
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.jboss.arquillian.core.spi.LoadableExtension#register(org.jboss.arquillian
-     * .core.spi.LoadableExtension.ExtensionBuilder)
-     */
-    @Override
-    public void register(ExtensionBuilder builder) {
-        builder.service(DeploymentScenarioGenerator.class,
-            MavenDeploymentScenarioGenerator.class);
-    }
+	/**
+	 * (non-Javadoc)
+	 * @see
+	 * org.jboss.arquillian.core.spi.LoadableExtension#register(org.jboss.arquillian
+	 * .core.spi.LoadableExtension.ExtensionBuilder)
+	 */
+	@Override
+	public void register(ExtensionBuilder builder) {
+		builder.service(
+			DeploymentScenarioGenerator.class,
+			MavenDeploymentScenarioGenerator.class);
+	}
+
 }

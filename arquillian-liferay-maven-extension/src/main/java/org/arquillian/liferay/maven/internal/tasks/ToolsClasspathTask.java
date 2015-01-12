@@ -14,27 +14,28 @@
 
 package org.arquillian.liferay.maven.internal.tasks;
 
-import org.arquillian.liferay.maven.internal.LiferayPluginConfiguration;
-
 import java.io.File;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.ListIterator;
 
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.ListIterator;
+
 import org.apache.commons.io.FileUtils;
+
+import org.arquillian.liferay.maven.internal.LiferayPluginConfiguration;
 
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.jboss.shrinkwrap.resolver.api.maven.MavenWorkingSession;
 import org.jboss.shrinkwrap.resolver.api.maven.pom.ParsedPomFile;
 import org.jboss.shrinkwrap.resolver.api.maven.strategy.AcceptAllStrategy;
 import org.jboss.shrinkwrap.resolver.impl.maven.task.MavenWorkingSessionTask;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,93 +43,94 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:kamesh.sampath@liferay.com">Kamesh Sampath</a>
  */
 public enum ToolsClasspathTask
-    implements MavenWorkingSessionTask<URLClassLoader> {
-    INSTANCE;
+	implements MavenWorkingSessionTask<URLClassLoader> {
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.jboss.shrinkwrap.resolver.impl.maven.task.MavenWorkingSessionTask
-     * #execute(org.jboss.shrinkwrap.resolver.api.maven.MavenWorkingSession)
-     */
-    @Override
-    public URLClassLoader execute(MavenWorkingSession session) {
+	INSTANCE;
 
-        final Logger log =
-            LoggerFactory.getLogger(ToolsClasspathTask.class);
+	/**
+	 * (non-Javadoc)
+	 * @see
+	 * org.jboss.shrinkwrap.resolver.impl.maven.task.MavenWorkingSessionTask
+	 * #execute(org.jboss.shrinkwrap.resolver.api.maven.MavenWorkingSession)
+	 */
+	@Override
+	public URLClassLoader execute(MavenWorkingSession session) {
+		final Logger log = LoggerFactory.getLogger(ToolsClasspathTask.class);
 
-        final ParsedPomFile pomFile = session.getParsedPomFile();
+		final ParsedPomFile pomFile = session.getParsedPomFile();
 
-        LiferayPluginConfiguration configuration =
-            new LiferayPluginConfiguration(pomFile);
+		LiferayPluginConfiguration configuration =
+			new LiferayPluginConfiguration(pomFile);
 
-        System.setProperty("liferayVersion", configuration.getLiferayVersion());
+		System.setProperty("liferayVersion", configuration.getLiferayVersion());
 
-        File appServerLibGlobalDir =
-            new File(configuration.getAppServerLibGlobalDir());
+		File appServerLibGlobalDir = new File(
+			configuration.getAppServerLibGlobalDir());
 
-        File appServerLibPortalDir =
-            new File(configuration.getAppServerLibPortalDir());
+		File appServerLibPortalDir = new File(
+			configuration.getAppServerLibPortalDir());
 
-        List<URI> liferayToolArchives =
-            new ArrayList<URI>();
+		List<URI> liferayToolArchives = new ArrayList<>();
 
-        if (appServerLibGlobalDir != null && appServerLibGlobalDir.exists()) {
+		if ((appServerLibGlobalDir != null) && appServerLibGlobalDir.exists()) {
 
-            // app server global libraries
-            Collection<File> appServerLibs =
-                FileUtils.listFiles(appServerLibGlobalDir, new String[] {
-                    "jar"
-                }, true);
+			// app server global libraries
 
-            for (File file : appServerLibs) {
-                liferayToolArchives.add(file.toURI());
-            }
+			Collection<File> appServerLibs =
+				FileUtils.listFiles(appServerLibGlobalDir, new String[] {
+					"jar"
+				}, true);
 
-            // All Liferay Portal Lib jars
-            Collection<File> liferayPortalLibs =
-                FileUtils.listFiles(appServerLibPortalDir, new String[] {
-                    "jar"
-                }, true);
+			for (File file : appServerLibs) {
+				liferayToolArchives.add(file.toURI());
+			}
 
-            for (File file : liferayPortalLibs) {
-                liferayToolArchives.add(file.toURI());
-            }
+			// All Liferay Portal Lib jars
 
-            // Util jars
-            File[] utilJars =
-                Maven.resolver().loadPomFromClassLoaderResource(
-                    "liferay-tool-deps.xml").importCompileAndRuntimeDependencies().resolve().using(
-                    AcceptAllStrategy.INSTANCE).asFile();
+			Collection<File> liferayPortalLibs =
+				FileUtils.listFiles(appServerLibPortalDir, new String[] {
+					"jar"
+				}, true);
 
-            for (int i = 0; i < utilJars.length; i++) {
-                liferayToolArchives.add(utilJars[i].toURI());
-            }
+			for (File file : liferayPortalLibs) {
+				liferayToolArchives.add(file.toURI());
+			}
 
-        }
+			// Util jars
 
-        log.trace("Jars count in Tools classpath Archive:" +
-            liferayToolArchives.size());
+			File[] utilJars =
+				Maven.resolver().loadPomFromClassLoaderResource(
+					"liferay-tool-deps.xml").
+					importCompileAndRuntimeDependencies().resolve().using(
+						AcceptAllStrategy.INSTANCE).asFile();
 
-        List<URL> classpathUrls = new ArrayList<URL>();
+			for (int i = 0; i < utilJars.length; i++) {
+				liferayToolArchives.add(utilJars[i].toURI());
+			}
+		}
 
-        try {
-            if (!liferayToolArchives.isEmpty()) {
+		log.trace(
+			"Jars count in Tools classpath Archive:" +
+				liferayToolArchives.size());
 
-                ListIterator<URI> toolsJarItr =
-                    liferayToolArchives.listIterator();
-                while (toolsJarItr.hasNext()) {
-                    URI jarURI = toolsJarItr.next();
-                    classpathUrls.add(jarURI.toURL());
-                }
+		List<URL> classpathUrls = new ArrayList<>();
 
-            }
-        }
-        catch (MalformedURLException e) {
-            log.error("Error building Tools classpath", e);
-        }
+		try {
+			if (!liferayToolArchives.isEmpty()) {
+				ListIterator<URI> toolsJarItr =
+					liferayToolArchives.listIterator();
+				while (toolsJarItr.hasNext()) {
+					URI jarURI = toolsJarItr.next();
+					classpathUrls.add(jarURI.toURL());
+				}
+			}
+		}
+		catch (MalformedURLException e) {
+			log.error("Error building Tools classpath", e);
+		}
 
-        return new URLClassLoader(
-            classpathUrls.toArray(new URL[classpathUrls.size()]), null);
-    }
+		return new URLClassLoader(
+			classpathUrls.toArray(new URL[classpathUrls.size()]), null);
+	}
+
 }
