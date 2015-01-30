@@ -14,6 +14,8 @@
   <artifactId>arquillian-extension-liferay</artifactId>
   <version>1.0.0.Alpha1-SNAPSHOT</version>
   <packaging>pom</packaging>
+  <name>Arquillian Liferay</name>
+  <description>Arquillian Extension for Liferay Portal Server. OSGi incontainer deployment.</description>
 
   <scm>
     <connection>scm:git:git://git@github.com:arquillian/arquillian-extension-liferay.git</connection>
