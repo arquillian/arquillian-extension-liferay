@@ -5,12 +5,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>arquillian-extension-liferay</artifactId>
-		<groupId>com.liferay.arquillian</groupId>
+		<groupId>org.arquillian.liferay</groupId>
 		<version>1.0.0.Alpha1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<groupId>com.liferay.arquillian</groupId>
+	<groupId>org.arquillian.liferay</groupId>
 	<artifactId>arquillian-container-liferay</artifactId>
 	<version>1.0.0.Alpha1-SNAPSHOT</version>
 

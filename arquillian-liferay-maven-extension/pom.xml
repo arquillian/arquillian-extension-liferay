@@ -4,12 +4,13 @@
 
   <parent>
     <artifactId>arquillian-extension-liferay</artifactId>
-    <groupId>com.liferay.arquillian</groupId>
+    <groupId>org.arquillian.liferay</groupId>
     <version>1.0.0.Alpha1-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>arquillian-liferay-maven-extension</artifactId>
+  <groupId>org.arquillian.liferay.maven</groupId>
   <name>Arquillian Maven Extension for Liferay</name>
   <description>The Deployment Scenario for Liferay Maven projects</description>
 

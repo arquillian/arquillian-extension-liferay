@@ -10,7 +10,7 @@
     <relativePath />
   </parent>
 
-  <groupId>com.liferay.arquillian</groupId>
+  <groupId>org.arquillian.liferay</groupId>
   <artifactId>arquillian-extension-liferay</artifactId>
   <version>1.0.0.Alpha1-SNAPSHOT</version>
   <packaging>pom</packaging>

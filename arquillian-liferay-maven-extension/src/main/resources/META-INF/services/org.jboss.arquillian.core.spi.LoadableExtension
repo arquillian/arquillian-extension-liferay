@@ -1,1 +1,1 @@
-com.liferay.maven.arquillian.extension.MavenDeploymentScenarioExtension
+org.arquillian.liferay.maven.extension.MavenDeploymentScenarioExtension
