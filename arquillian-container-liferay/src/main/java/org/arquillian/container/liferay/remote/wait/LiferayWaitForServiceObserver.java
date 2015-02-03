@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.arquillian.container.wait;
+package org.arquillian.container.liferay.remote.wait;
 
 import org.jboss.arquillian.core.api.annotation.Observes;
 import org.jboss.arquillian.core.spi.EventContext;

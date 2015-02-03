@@ -14,9 +14,9 @@
 
 package org.arquillian.container.liferay.remote;
 
-import com.liferay.arquillian.container.deploy.JMXOSGiProtocol;
-import com.liferay.arquillian.container.enricher.LiferayEnricherAuxiliaryAppender;
-import com.liferay.arquillian.container.wait.LiferayWaitForServiceAuxiliaryAppender;
+import org.arquillian.container.liferay.remote.deploy.JMXOSGiProtocol;
+import org.arquillian.container.liferay.remote.enricher.LiferayEnricherAuxiliaryAppender;
+import org.arquillian.container.liferay.remote.wait.LiferayWaitForServiceAuxiliaryAppender;
 
 import org.jboss.arquillian.container.osgi.karaf.remote.KarafRemoteDeployableContainer;
 import org.jboss.arquillian.container.spi.client.container.DeployableContainer;

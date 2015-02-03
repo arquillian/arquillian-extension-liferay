@@ -12,27 +12,21 @@
  * details.
  */
 
-package com.liferay.arquillian.container.deploy;
+package org.arquillian.container.liferay.remote.enricher;
 
-import org.jboss.arquillian.container.test.spi.client.deployment.DeploymentPackager;
-import org.jboss.arquillian.protocol.jmx.AbstractJMXProtocol;
+import org.jboss.arquillian.container.test.spi.RemoteLoadableExtension;
+import org.jboss.arquillian.test.spi.TestEnricher;
 
 /**
- * JMXOSGiProtocol
- *
- * @author thomas.diesler@jboss.com
- * @since 21-Apr-2011
+ * @author Carlos Sierra Andrés
  */
-public class JMXOSGiProtocol extends AbstractJMXProtocol {
+public class LiferayEnricherRemoteExtension implements RemoteLoadableExtension {
 
 	@Override
-	public DeploymentPackager getPackager() {
-		return new OSGiDeploymentPackager();
-	}
-
-	@Override
-	public String getProtocolName() {
-		return "jmx-osgi";
+	public void register(ExtensionBuilder builder) {
+		if (Validate.classExists("org.osgi.framework.Bundle")) {
+			builder.service(TestEnricher.class, LiferayTestEnricher.class);
+		}
 	}
 
 }

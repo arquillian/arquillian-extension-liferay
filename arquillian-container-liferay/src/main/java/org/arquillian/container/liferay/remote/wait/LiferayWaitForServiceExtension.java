@@ -12,14 +12,20 @@
  * details.
  */
 
-package com.liferay.arquillian.container.enricher;
+package org.arquillian.container.liferay.remote.wait;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import org.jboss.arquillian.container.test.spi.RemoteLoadableExtension;
 
 /**
- * @author Carlos Sierra Andrés
+ * @author Cristina González
  */
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Inject {
+public class LiferayWaitForServiceExtension implements RemoteLoadableExtension {
+
+	@Override
+	public void register(ExtensionBuilder builder) {
+		if (Validate.classExists("org.osgi.framework.Bundle")) {
+			builder.observer(LiferayWaitForServiceObserver.class);
+		}
+	}
+
 }

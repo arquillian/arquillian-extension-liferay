@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.arquillian.container.runner;
+package org.arquillian.container.liferay.remote.runner;
 
 import org.jboss.arquillian.junit.container.JUnitTestRunner;
 import org.jboss.arquillian.test.spi.TestResult;

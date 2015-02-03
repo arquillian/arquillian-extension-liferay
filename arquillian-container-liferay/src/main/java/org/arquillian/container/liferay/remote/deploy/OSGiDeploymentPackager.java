@@ -12,11 +12,11 @@
  * details.
  */
 
-package com.liferay.arquillian.container.deploy;
+package org.arquillian.container.liferay.remote.deploy;
 
-import com.liferay.arquillian.container.activator.ArquillianBundleActivator;
-import com.liferay.arquillian.container.enricher.Inject;
-import com.liferay.arquillian.container.runner.JUnitBundleTestRunner;
+import org.arquillian.container.liferay.remote.activator.ArquillianBundleActivator;
+import org.arquillian.container.liferay.remote.enricher.Inject;
+import org.arquillian.container.liferay.remote.runner.JUnitBundleTestRunner;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

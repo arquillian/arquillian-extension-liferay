@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.arquillian.container.activator;
+package org.arquillian.container.liferay.remote.activator;
 
 import java.io.BufferedReader;
 import java.io.InputStream;

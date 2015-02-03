@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.arquillian.container.enricher;
+package org.arquillian.container.liferay.remote.enricher;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;

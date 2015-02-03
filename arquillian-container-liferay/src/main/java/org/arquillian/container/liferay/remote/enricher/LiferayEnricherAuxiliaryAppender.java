@@ -12,9 +12,7 @@
  * details.
  */
 
-package com.liferay.arquillian.container.wait;
-
-import com.liferay.arquillian.container.enricher.Inject;
+package org.arquillian.container.liferay.remote.enricher;
 
 import org.jboss.arquillian.container.test.spi.RemoteLoadableExtension;
 import org.jboss.arquillian.container.test.spi.client.deployment.AuxiliaryArchiveAppender;
@@ -23,23 +21,23 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 
 /**
- * @author Cristina González
+ * @author Carlos Sierra Andrés
  */
-public class LiferayWaitForServiceAuxiliaryAppender
+public class LiferayEnricherAuxiliaryAppender
 	implements AuxiliaryArchiveAppender {
 
 	@Override
 	public Archive<?> createAuxiliaryArchive() {
 		JavaArchive archive = ShrinkWrap.create(
-			JavaArchive.class, "arquillian-wait4service-liferay-osgi.jar");
+			JavaArchive.class, "arquillian-testenricher-liferay-osgi.jar");
 
 		archive.addAsServiceProvider(
 			RemoteLoadableExtension.class,
-			LiferayWaitForServiceExtension.class);
+			LiferayEnricherRemoteExtension.class);
 
 		archive.addClasses(
-			Inject.class, LiferayWaitForServiceObserver.class,
-			LiferayWaitForServiceExtension.class);
+			Inject.class, LiferayTestEnricher.class,
+			LiferayEnricherRemoteExtension.class);
 
 		return archive;
 	}

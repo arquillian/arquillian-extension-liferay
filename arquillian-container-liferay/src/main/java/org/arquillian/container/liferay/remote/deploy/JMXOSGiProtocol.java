@@ -12,20 +12,27 @@
  * details.
  */
 
-package com.liferay.arquillian.container.wait;
+package org.arquillian.container.liferay.remote.deploy;
 
-import org.jboss.arquillian.container.test.spi.RemoteLoadableExtension;
+import org.jboss.arquillian.container.test.spi.client.deployment.DeploymentPackager;
+import org.jboss.arquillian.protocol.jmx.AbstractJMXProtocol;
 
 /**
- * @author Cristina González
+ * JMXOSGiProtocol
+ *
+ * @author thomas.diesler@jboss.com
+ * @since 21-Apr-2011
  */
-public class LiferayWaitForServiceExtension implements RemoteLoadableExtension {
+public class JMXOSGiProtocol extends AbstractJMXProtocol {
 
 	@Override
-	public void register(ExtensionBuilder builder) {
-		if (Validate.classExists("org.osgi.framework.Bundle")) {
-			builder.observer(LiferayWaitForServiceObserver.class);
-		}
+	public DeploymentPackager getPackager() {
+		return new OSGiDeploymentPackager();
+	}
+
+	@Override
+	public String getProtocolName() {
+		return "jmx-osgi";
 	}
 
 }
