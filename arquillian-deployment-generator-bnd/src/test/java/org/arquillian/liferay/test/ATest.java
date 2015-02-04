@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -16,6 +16,7 @@ package org.arquillian.liferay.test;
 
 import org.arquillian.liferay.test.extras.a.A;
 import org.arquillian.liferay.test.extras.b.B;
+
 import org.osgi.framework.BundleException;
 
 /**
@@ -27,7 +28,7 @@ public class ATest {
 		A a = new A();
 		B b = new B();
 
-        if (1==1)
-            throw new BundleException("test");
+		if (1 == 1) throw new BundleException("test");
 	}
+
 }

@@ -14,177 +14,183 @@
 
 package org.arquillian.liferay.maven.internal.tasks;
 
-import org.arquillian.liferay.maven.internal.LiferayPluginConfiguration;
-
 import java.io.File;
-
-import java.util.Map;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
 import java.net.URLClassLoader;
+
 import java.security.Permission;
+
+import java.util.Map;
+
+import org.arquillian.liferay.maven.internal.LiferayPluginConfiguration;
 
 import org.dom4j.Document;
 import org.dom4j.io.SAXReader;
+
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.importer.ZipImporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.MavenWorkingSession;
 import org.jboss.shrinkwrap.resolver.api.maven.pom.ParsedPomFile;
 import org.jboss.shrinkwrap.resolver.impl.maven.util.Validate;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.xml.sax.EntityResolver;
 
 /**
  * @author <a href="mailto:kamesh.sampath@liferay.com">Kamesh Sampath</a>
  */
 public enum ExecuteDeployerTask {
-    INSTANCE;
 
-    public WebArchive execute(
-        MavenWorkingSession session, LiferayPluginConfiguration configuration,
-        Map<String, Object> params) {
+	INSTANCE;
 
-        final Logger log =
-            LoggerFactory.getLogger(ExecuteDeployerTask.class);
+	public WebArchive execute(
+		MavenWorkingSession session, LiferayPluginConfiguration configuration,
+		Map<String, Object> params) {
 
-        final ParsedPomFile pomFile = session.getParsedPomFile();
+		final Logger log = LoggerFactory.getLogger(ExecuteDeployerTask.class);
 
-        URLClassLoader classLoader =
-            ToolsClasspathTask.INSTANCE.execute(session);
+		final ParsedPomFile pomFile = session.getParsedPomFile();
 
-        if (classLoader == null) {
-            throw new RuntimeException("Error loading classloader");
-        }
+		URLClassLoader classLoader = ToolsClasspathTask.INSTANCE.execute(
+			session);
 
-        System.setProperty("deployer.app.server.type",
-            configuration.getAppServerType());
+		if (classLoader == null) {
+			throw new RuntimeException("Error loading classloader");
+		}
 
-        System.setProperty("deployer.base.dir", configuration.getBaseDir());
+		System.setProperty(
+			"deployer.app.server.type", configuration.getAppServerType());
 
-        System.setProperty("deployer.unpack.war", "false");
+		System.setProperty("deployer.base.dir", configuration.getBaseDir());
 
-        System.setProperty("deployer.dest.dir",
-            configuration.getDestDir());
+		System.setProperty("deployer.unpack.war", "false");
 
-        System.setProperty("deployer.file.pattern",
-            pomFile.getFinalName());
+		System.setProperty("deployer.dest.dir", configuration.getDestDir());
 
-        String deployerClassName = (String)params.get("deployerClassName");
-        if (Validate.isNullOrEmpty(deployerClassName)) {
-            throw new RuntimeException("Unable to load deployer classname");
-        }
-        String[] jars = (String[])params.get("jars");
+		System.setProperty("deployer.file.pattern", pomFile.getFinalName());
 
-        try {
+		String deployerClassName = (String)params.get("deployerClassName");
 
-            initUtils(classLoader);
-        }
-        catch (Exception e) {
-            log.error("Error executing deployer task :" + deployerClassName, e);
-        }
+		if (Validate.isNullOrEmpty(deployerClassName)) {
+			throw new RuntimeException("Unable to load deployer classname");
+		}
 
-        // START Execute Deployer
+		String[] jars = (String[])params.get("jars");
 
-        try {
-            executeTool(deployerClassName, classLoader, jars);
-        }
-        catch (Exception e) {
-            log.error("Error executing deployer task :" + deployerClassName, e);
-        }
+		try {
+			initUtils(classLoader);
+		}
+		catch (Exception e) {
+			log.error("Error executing deployer task :" + deployerClassName, e);
+		}
 
-        // END Execute Deployer
+		// START Execute Deployer
 
-        File ddPluginArchiveFile = configuration.getDirectDeployArchive();
+		try {
+			executeTool(deployerClassName, classLoader, jars);
+		}
+		catch (Exception e) {
+			log.error("Error executing deployer task :" + deployerClassName, e);
+		}
 
-        System.setProperty("deployer.file.pattern", pomFile.getFinalName());
+		// END Execute Deployer
 
-        return ShrinkWrap.create(ZipImporter.class, pomFile.getFinalName()).importFrom(
-            ddPluginArchiveFile).as(
-            WebArchive.class);
-    }
+		File ddPluginArchiveFile = configuration.getDirectDeployArchive();
 
-    protected void initUtils(ClassLoader classLoader) throws Exception {
+		System.setProperty("deployer.file.pattern", pomFile.getFinalName());
 
-        Class<?> clazz = classLoader.loadClass(
-            "com.liferay.portal.util.EntityResolver");
+		return ShrinkWrap.create(ZipImporter.class, pomFile.getFinalName()).
+			importFrom(ddPluginArchiveFile).as(WebArchive.class);
+	}
 
-        EntityResolver entityResolver = (EntityResolver)clazz.newInstance();
+	public static final class SAXReaderUtil {
 
-        SAXReaderUtil.setEntityResolver(entityResolver);
-    }
+		public static Document read(File file, boolean validate)
+			throws Exception {
 
-    protected void executeTool(
-        String deployerClassName, ClassLoader classLoader,
-        String[] args) throws Exception {
+			SAXReader saxReader = new SAXReader(validate);
 
-        Thread currentThread = Thread.currentThread();
+			saxReader.setEntityResolver(_entityResolver);
 
-        ClassLoader contextClassLoader = currentThread.getContextClassLoader();
+			return saxReader.read(file);
+		}
 
-        currentThread.setContextClassLoader(classLoader);
+		public static void setEntityResolver(EntityResolver entityResolver) {
+			_entityResolver = entityResolver;
+		}
 
-        SecurityManager currentSecurityManager = System.getSecurityManager();
+		private static EntityResolver _entityResolver;
 
-        // Required to prevent premature exit by DBBuilder. See LPS-7524.
-        SecurityManager securityManager = new SecurityManager() {
+	}
 
-            @Override
-            public void checkPermission(Permission permission) {
-            }
+	protected void executeTool(
+		String deployerClassName, ClassLoader classLoader,
+		String[] args) throws Exception {
 
-            @Override
-            public void checkExit(int status) {
-                throw new SecurityException();
-            }
-        };
+		Thread currentThread = Thread.currentThread();
 
-        System.setSecurityManager(securityManager);
+		ClassLoader contextClassLoader = currentThread.getContextClassLoader();
 
-        try {
-            System.setProperty("external-properties",
-                "com/liferay/portal/tools/dependencies" +
-                    "/portal-tools.properties");
-            System.setProperty("org.apache.commons.logging.Log",
-                "org.apache.commons.logging.impl.Log4JLogger");
+		currentThread.setContextClassLoader(classLoader);
 
-            Class<?> clazz = classLoader.loadClass(deployerClassName);
+		SecurityManager currentSecurityManager = System.getSecurityManager();
 
-            Method method = clazz.getMethod("main", String[].class);
+		// Required to prevent premature exit by DBBuilder. See LPS-7524.
 
-            method.invoke(null, (Object)args);
-        }
-        catch (InvocationTargetException ite) {
-            if (!(ite.getCause() instanceof SecurityException)) {
-                throw ite;
-            }
-        }
-        finally {
-            currentThread.setContextClassLoader(contextClassLoader);
+		SecurityManager securityManager = new SecurityManager() {
 
-            System.setSecurityManager(currentSecurityManager);
-        }
-    }
+			@Override
+			public void checkPermission(Permission permission) {
+			}
 
-    public static final class SAXReaderUtil {
+			@Override
+			public void checkExit(int status) {
+				throw new SecurityException();
+			}
+		};
 
-        private static EntityResolver _entityResolver;
+		System.setSecurityManager(securityManager);
 
-        public static Document read(File file, boolean validate)
-            throws Exception {
-            SAXReader saxReader = new SAXReader(validate);
+		try {
+			System.setProperty(
+				"external-properties",
+				"com/liferay/portal/tools/dependencies" +
+					"/portal-tools.properties");
+			System.setProperty(
+				"org.apache.commons.logging.Log",
+				"org.apache.commons.logging.impl.Log4JLogger");
 
-            saxReader.setEntityResolver(_entityResolver);
+			Class<?> clazz = classLoader.loadClass(deployerClassName);
 
-            return saxReader.read(file);
-        }
+			Method method = clazz.getMethod("main", String[].class);
 
-        public static void setEntityResolver(EntityResolver entityResolver) {
-            _entityResolver = entityResolver;
-        }
+			method.invoke(null, (Object)args);
+		}
+		catch (InvocationTargetException ite) {
+			if (!(ite.getCause() instanceof SecurityException)) {
+				throw ite;
+			}
+		}
+		finally {
+			currentThread.setContextClassLoader(contextClassLoader);
 
-    }
+			System.setSecurityManager(currentSecurityManager);
+		}
+	}
+
+	protected void initUtils(ClassLoader classLoader) throws Exception {
+		Class<?> clazz = classLoader.loadClass(
+			"com.liferay.portal.util.EntityResolver");
+
+		EntityResolver entityResolver = (EntityResolver)clazz.newInstance();
+
+		SAXReaderUtil.setEntityResolver(entityResolver);
+	}
 
 }

@@ -21,6 +21,7 @@ import java.util.Map;
 import org.jboss.shrinkwrap.resolver.api.maven.pom.ParsedPomFile;
 import org.jboss.shrinkwrap.resolver.impl.maven.archive.plugins.AbstractPackagingPluginConfiguration;
 import org.jboss.shrinkwrap.resolver.impl.maven.util.Validate;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +69,8 @@ public class LiferayPluginConfiguration
 
         if (Validate.isNullOrEmpty(appServerLibGlobalDir)) {
             throw new RuntimeException(
-                "Please configure 'appServerLibGlobalDir' in maven liferay plugin");
+                "Please configure 'appServerLibGlobalDir' in maven liferay " +
+                    "plugin");
         }
 
         appServerPortalDir =
@@ -76,7 +78,8 @@ public class LiferayPluginConfiguration
 
         if (Validate.isNullOrEmpty(appServerPortalDir)) {
             throw new RuntimeException(
-                "Please configure 'appServerPortalDir' in maven liferay plugin");
+                "Please configure 'appServerPortalDir' in maven liferay " +
+                    "plugin");
         }
 
         appServerClassesPortalDir =

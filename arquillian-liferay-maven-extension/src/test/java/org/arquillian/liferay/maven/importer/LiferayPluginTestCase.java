@@ -22,119 +22,122 @@ import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
-import org.junit.AfterClass;
-
 import org.codehaus.plexus.DefaultPlexusContainer;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.PlexusContainerException;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
+
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.jboss.shrinkwrap.resolver.api.maven.MavenResolverSystem;
+
+import org.junit.AfterClass;
 
 /**
  * @author <a href="mailto:kamesh.sampath@liferay.com">Kamesh Sampath</a>
  */
 public class LiferayPluginTestCase {
 
-    /**
-     * 
-     */
-    protected static final String LIFERAY_VERSION = "6.2.1";
-    protected static final String PORTAL_AUTO_DEPLOY_DIR =
-        "target/lportal/deploy";
-    protected static final String PORTAL_SERVER_DEPLOY_DIR =
-        "target/lportal/webapps";
-    protected static final String PORTAL_SERVER_LIB_GLOBAL_DIR =
-        "target/lportal/lib/ext";
-    protected static final String SERVER_PORTAL_DIR =
-        "target/lportal/webapps/ROOT";
+	@AfterClass
+	public static void cleanup() {
+		plexusContainer.dispose();
+	}
 
-    protected static boolean setup;
+	protected static void setupPortalMinimal() {
+		System.setProperty("liferay.version", LIFERAY_VERSION);
 
-    protected static PlexusContainer plexusContainer;
+		System.setProperty("liferay.auto.deploy.dir", PORTAL_AUTO_DEPLOY_DIR);
 
-    static {
-        try {
-            plexusContainer = new DefaultPlexusContainer();
-        }
-        catch (PlexusContainerException e) {
-            e.printStackTrace();
-            fail(e.getMessage());
-        }
-    }
+		System.setProperty(
+			"liferay.app.server.deploy.dir", PORTAL_SERVER_DEPLOY_DIR);
 
-    protected static void setupPortalMinimal() {
+		System.setProperty(
+			"liferay.app.server.lib.global.dir", PORTAL_SERVER_LIB_GLOBAL_DIR);
 
-        System.setProperty("liferay.version", LIFERAY_VERSION);
+		System.setProperty("liferay.app.server.portal.dir", SERVER_PORTAL_DIR);
 
-        System.setProperty("liferay.auto.deploy.dir", PORTAL_AUTO_DEPLOY_DIR);
+		try {
+			ArchiverManager archiverManager = plexusContainer.lookup(
+				ArchiverManager.class);
 
-        System.setProperty(
-            "liferay.app.server.deploy.dir", PORTAL_SERVER_DEPLOY_DIR);
+			assertNotNull(archiverManager);
 
-        System.setProperty(
-            "liferay.app.server.lib.global.dir", PORTAL_SERVER_LIB_GLOBAL_DIR);
+			FileUtils.forceMkdir(new File(PORTAL_AUTO_DEPLOY_DIR));
+			FileUtils.forceMkdir(new File(PORTAL_SERVER_DEPLOY_DIR));
+			FileUtils.forceMkdir(new File(PORTAL_SERVER_LIB_GLOBAL_DIR));
+			FileUtils.forceMkdir(new File(SERVER_PORTAL_DIR));
 
-        System.setProperty("liferay.app.server.portal.dir", SERVER_PORTAL_DIR);
+			final MavenResolverSystem mavenResolverSystem =
+				Maven.configureResolver().fromClassloaderResource(
+					"settings.xml");
 
-        try {
+			File[] dependencies =
+				mavenResolverSystem.loadPomFromClassLoaderResource(
+					"liferay-setup.xml").importRuntimeAndTestDependencies().
+					resolve().withoutTransitivity().asFile();
 
-            ArchiverManager archiverManager =
-                plexusContainer.lookup(ArchiverManager.class);
+			File warFile = null;
 
-            assertNotNull(archiverManager);
+			for (File file : dependencies) {
+				String fileName = file.getName();
+				String fileExtension = FilenameUtils.getExtension(fileName);
 
-            FileUtils.forceMkdir(new File(PORTAL_AUTO_DEPLOY_DIR));
-            FileUtils.forceMkdir(new File(PORTAL_SERVER_DEPLOY_DIR));
-            FileUtils.forceMkdir(new File(PORTAL_SERVER_LIB_GLOBAL_DIR));
-            FileUtils.forceMkdir(new File(SERVER_PORTAL_DIR));
+				if (fileExtension.equalsIgnoreCase("jar")) {
+					FileUtils.copyFile(
+						file, new File(PORTAL_SERVER_LIB_GLOBAL_DIR,
+						file.getName()));
+				}
+				else if (fileExtension.equalsIgnoreCase("war") &&
+						 fileName.contains("portal-web")) {
 
-            final MavenResolverSystem mavenResolverSystem =
-                Maven.configureResolver().fromClassloaderResource(
-                    "settings.xml");
+					warFile = file;
+				}
+			}
 
-            File[] dependencies =
-                mavenResolverSystem.loadPomFromClassLoaderResource(
-                    "liferay-setup.xml").importRuntimeAndTestDependencies().resolve().withoutTransitivity().asFile();
+			assertNotNull(warFile);
 
-            File warFile = null;
+			// extract portal war
 
-            for (File file : dependencies) {
+			UnArchiver unArchiver = archiverManager.getUnArchiver(warFile);
+			unArchiver.setDestDirectory(new File(SERVER_PORTAL_DIR));
+			unArchiver.setSourceFile(warFile);
+			unArchiver.setOverwrite(false);
+			unArchiver.extract();
+			setup = true;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-                String fileName = file.getName();
-                String fileExtension = FilenameUtils.getExtension(fileName);
+	/**
+	 *
+	 */
+	protected static final String LIFERAY_VERSION = "6.2.1";
 
-                if ("jar".equalsIgnoreCase(fileExtension)) {
-                    FileUtils.copyFile(file, new File(
-                        PORTAL_SERVER_LIB_GLOBAL_DIR, file.getName()));
-                }
-                else if ("war".equalsIgnoreCase(fileExtension) &&
-                    fileName.contains("portal-web")) {
-                    warFile = file;
-                }
+	protected static final String PORTAL_AUTO_DEPLOY_DIR =
+		"target/lportal/deploy";
 
-            }
+	protected static final String PORTAL_SERVER_DEPLOY_DIR =
+		"target/lportal/webapps";
 
-            assertNotNull(warFile);
+	protected static final String PORTAL_SERVER_LIB_GLOBAL_DIR =
+		"target/lportal/lib/ext";
 
-            // extract portal war
-            UnArchiver unArchiver = archiverManager.getUnArchiver(warFile);
-            unArchiver.setDestDirectory(new File(SERVER_PORTAL_DIR));
-            unArchiver.setSourceFile(warFile);
-            unArchiver.setOverwrite(false);
-            unArchiver.extract();
-            setup = true;
+	protected static final String SERVER_PORTAL_DIR =
+		"target/lportal/webapps/ROOT";
 
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+	protected static PlexusContainer plexusContainer;
+	protected static boolean setup;
 
-    @AfterClass
-    public static void cleanup() {
-        plexusContainer.dispose();
-    }
+	static {
+		try {
+			plexusContainer = new DefaultPlexusContainer();
+		}
+		catch (PlexusContainerException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+	}
 
 }

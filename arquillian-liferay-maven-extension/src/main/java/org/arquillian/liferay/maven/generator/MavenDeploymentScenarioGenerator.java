@@ -30,6 +30,7 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.archive.importer.MavenImporter;
 import org.jboss.shrinkwrap.resolver.impl.maven.util.Validate;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,89 +38,93 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:kamesh.sampath@liferay.com">Kamesh Sampath</a>
  */
 public class MavenDeploymentScenarioGenerator
-    extends AnnotationDeploymentScenarioGenerator {
+	extends AnnotationDeploymentScenarioGenerator {
 
-    private static final Logger log =
-        LoggerFactory.getLogger(MavenDeploymentScenarioGenerator.class);
+	/**
+	 * (non-Javadoc)
+	 * @see org.jboss.arquillian.container.test.impl.client.deployment.
+	 * AnnotationDeploymentScenarioGenerator
+	 * #generate(org.jboss.arquillian.test.spi.TestClass)
+	 */
+	@Override
+	public List<DeploymentDescription> generate(TestClass testClass) {
+		containerDef();
 
-    @Inject
-    private Instance<ArquillianDescriptor> descriptor;
+		List<DeploymentDescription> descriptions = super.generate(testClass);
 
-    /*
-     * (non-Javadoc)
-     * @see org.jboss.arquillian.container.test.impl.client.deployment.
-     * AnnotationDeploymentScenarioGenerator
-     * #generate(org.jboss.arquillian.test.spi.TestClass)
-     */
-    @Override
-    public List<DeploymentDescription> generate(TestClass testClass) {
-        containerDef();
+		if (descriptions == null) {
+			descriptions = new ArrayList<>();
+		}
 
-        List<DeploymentDescription> descriptions = super.generate(testClass);
+		log.info("Generating Deployment for Liferay Plugin ");
 
-        if (descriptions == null) {
-            descriptions = new ArrayList<DeploymentDescription>();
-        }
+		DeploymentDescription deploymentDecription =
+			createLiferayPluginDeployment();
 
-        log.info("Generating Deployment for Liferay Plugin ");
+		if (deploymentDecription != null) {
+			descriptions.add(deploymentDecription);
+		}
 
-        DeploymentDescription deploymentDecription =
-            createLiferayPluginDeployment();
-        if (deploymentDecription != null) {
-            descriptions.add(deploymentDecription);
-        }
+		return descriptions;
+	}
 
-        return descriptions;
-    }
+	private ContainerDef containerDef() {
+		List<ContainerDef> containers = descriptor.get().getContainers();
 
-    private DeploymentDescription createLiferayPluginDeployment() {
-        log.debug("Building Liferay Plugin from project pom.xml");
+		ContainerDef defaultContainer = null;
 
-        File pomFile = new File("pom.xml");
+		for (int i = 0; i < containers.size(); i++) {
+			defaultContainer = containers.get(i);
 
-        if (pomFile != null && pomFile.exists()) {
-            log.debug("Loading project from pom file:" +
-                pomFile.getAbsolutePath());
+			if (defaultContainer.isDefault()) {
+				String containerName = defaultContainer.getContainerName();
+				Validate.notNullOrEmpty(
+					containerName,
+					"At least one default container must be defined in " +
+						"arquillian.xml");
 
-            WebArchive archive =
-                ShrinkWrap.create(MavenImporter.class).loadPomFromFile(
-                    pomFile).importBuildOutput().as(WebArchive.class);
+				if (containerName.contains("tomcat")) {
+					System.setProperty("appServerType", "tomcat");
+				}
+				else if (containerName.contains("jboss")) {
+					System.setProperty("appServerType", "jboss");
+				}
 
-            DeploymentDescription deploymentDescription =
-                new DeploymentDescription("_DEFAULT", archive);
+				return defaultContainer;
+			}
+		}
 
-            deploymentDescription.shouldBeTestable(true);
+		return null;
+	}
 
-            return deploymentDescription;
-        }
+	private DeploymentDescription createLiferayPluginDeployment() {
+		log.debug("Building Liferay Plugin from project pom.xml");
 
-        return null;
-    }
+		File pomFile = new File("pom.xml");
 
-    private ContainerDef containerDef() {
+		if ((pomFile != null) && pomFile.exists()) {
+			log.debug(
+				"Loading project from pom file:" + pomFile.getAbsolutePath());
 
-        List<ContainerDef> containers = descriptor.get().getContainers();
+			WebArchive archive =
+				ShrinkWrap.create(MavenImporter.class).loadPomFromFile(
+					pomFile).importBuildOutput().as(WebArchive.class);
 
-        ContainerDef defaultContainer = null;
+			DeploymentDescription deploymentDescription =
+				new DeploymentDescription("_DEFAULT", archive);
 
-        for (int i = 0; i < containers.size(); i++) {
-            defaultContainer = containers.get(i);
-            if (defaultContainer.isDefault()) {
-                String containerName = defaultContainer.getContainerName();
-                Validate.notNullOrEmpty(
-                    containerName,
-                    "At least one default container must be defined in arquillian.xml");
-                if (containerName.contains("tomcat")) {
-                    System.setProperty("appServerType", "tomcat");
-                }
-                else if (containerName.contains("jboss")) {
-                    System.setProperty("appServerType", "jboss");
-                }
-                return defaultContainer;
-            }
-        }
+			deploymentDescription.shouldBeTestable(true);
 
-        return null;
-    }
+			return deploymentDescription;
+		}
+
+		return null;
+	}
+
+	private static final Logger log = LoggerFactory.getLogger(
+		MavenDeploymentScenarioGenerator.class);
+
+	@Inject
+	private Instance<ArquillianDescriptor> descriptor;
 
 }

@@ -12,10 +12,21 @@
  * details.
  */
 
-package org.arquillian.liferay.test.extras.a;
+package org.arquillian.container.liferay.remote.enricher;
+
+import org.jboss.arquillian.container.test.spi.RemoteLoadableExtension;
+import org.jboss.arquillian.test.spi.TestEnricher;
 
 /**
  * @author Carlos Sierra Andrés
  */
-public class A {
+public class LiferayEnricherRemoteExtension implements RemoteLoadableExtension {
+
+	@Override
+	public void register(ExtensionBuilder builder) {
+		if (Validate.classExists("org.osgi.framework.Bundle")) {
+			builder.service(TestEnricher.class, LiferayTestEnricher.class);
+		}
+	}
+
 }

@@ -12,10 +12,14 @@
  * details.
  */
 
-package org.arquillian.liferay.test.extras.a;
+package org.arquillian.container.liferay.remote.enricher;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * @author Carlos Sierra Andrés
  */
-public class A {
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Inject {
 }
