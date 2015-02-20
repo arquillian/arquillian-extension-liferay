@@ -23,7 +23,9 @@ public class LiferayWaitForServiceExtension implements RemoteLoadableExtension {
 
 	@Override
 	public void register(ExtensionBuilder builder) {
-		if (Validate.classExists("org.osgi.framework.Bundle")) {
+		if (Validate.classExists(
+				"org.springframework.context.ApplicationContext")) {
+
 			builder.observer(LiferayWaitForServiceObserver.class);
 		}
 	}
