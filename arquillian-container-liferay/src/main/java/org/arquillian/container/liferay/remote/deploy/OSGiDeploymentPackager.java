@@ -120,72 +120,72 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.core", "arquillian-core-api",
-				"1.1.6.Final"));
+				"1.1.7.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.core",
-				"arquillian-core-impl-base","1.1.6.Final"));
+				"arquillian-core-impl-base","1.1.7.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.core", "arquillian-core-spi",
-				"1.1.6.Final"));
+				"1.1.7.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.test", "arquillian-test-api",
-				"1.1.6.Final"));
+				"1.1.7.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.test",
-				"arquillian-test-impl-base","1.1.6.Final"));
+				"arquillian-test-impl-base","1.1.7.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.test", "arquillian-test-spi",
-				"1.1.6.Final"));
+				"1.1.7.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.container",
-				"arquillian-container-spi","1.1.6.Final"));
+				"arquillian-container-spi","1.1.7.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.container",
-				"arquillian-container-impl-base","1.1.6.Final"));
+				"arquillian-container-impl-base","1.1.7.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.container",
-				"arquillian-container-spi","1.1.6.Final"));
+				"arquillian-container-spi","1.1.7.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.container",
-				"arquillian-container-test-api","1.1.6.Final"));
+				"arquillian-container-test-api","1.1.7.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.container",
-				"arquillian-container-test-impl-base","1.1.6.Final"));
+				"arquillian-container-test-impl-base","1.1.7.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.container",
-				"arquillian-container-test-spi","1.1.6.Final"));
+				"arquillian-container-test-spi","1.1.7.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.junit",
-				"arquillian-junit-core","1.1.6.Final"));
+				"arquillian-junit-core","1.1.7.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.junit",
-				"arquillian-junit-container","1.1.6.Final"));
+				"arquillian-junit-container","1.1.7.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
@@ -195,7 +195,7 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.protocol",
-				"arquillian-protocol-jmx","1.1.6.Final"));
+				"arquillian-protocol-jmx","1.1.7.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
