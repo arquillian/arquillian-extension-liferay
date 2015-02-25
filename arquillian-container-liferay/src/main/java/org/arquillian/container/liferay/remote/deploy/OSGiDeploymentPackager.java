@@ -157,11 +157,7 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 
 		javaArchive.addAsResource(new FileAsset(resolved[0]), path);
 
-		Node manifestNode = javaArchive.get(_MANIFEST_FILE);
-
-		Asset manifestAsset = manifestNode.getAsset();
-
-		Manifest manifest = new Manifest(manifestAsset.openStream());
+		Manifest manifest = getManifest(javaArchive);
 
 		Attributes mainAttributes = manifest.getMainAttributes();
 
@@ -240,11 +236,7 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 	}
 
 	private void addOsgiImports(JavaArchive javaArchive) throws IOException {
-		Node manifestNode = javaArchive.get(_MANIFEST_FILE);
-
-		Asset manifestAsset = manifestNode.getAsset();
-
-		Manifest manifest = new Manifest(manifestAsset.openStream());
+		Manifest manifest = getManifest(javaArchive);
 
 		Attributes mainAttributes = manifest.getMainAttributes();
 
@@ -268,14 +260,18 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 		replaceManifest(javaArchive, manifest);
 	}
 
+	private Manifest getManifest(JavaArchive javaArchive) throws IOException {
+		Node manifestNode = javaArchive.get(_MANIFEST_FILE);
+
+		Asset manifestAsset = manifestNode.getAsset();
+
+		return new Manifest(manifestAsset.openStream());
+	}
+
 	private ManifestConfig getManifestConfig(JavaArchive javaArchive)
 		throws Exception {
 
-		Node manifestFile = javaArchive.get(_MANIFEST_FILE);
-
-		Asset manifestAsset = manifestFile.getAsset();
-
-		Manifest manifest = new Manifest(manifestAsset.openStream());
+		Manifest manifest = getManifest(javaArchive);
 
 		List<String> imports = new ArrayList<>();
 		List<String> exports = new ArrayList<>();
