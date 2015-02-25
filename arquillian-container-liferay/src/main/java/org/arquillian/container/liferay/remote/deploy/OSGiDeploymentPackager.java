@@ -14,6 +14,8 @@
 
 package org.arquillian.container.liferay.remote.deploy;
 
+import aQute.bnd.osgi.Jar;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -30,7 +32,6 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.arquillian.container.liferay.remote.activator.ArquillianBundleActivator;
-import org.arquillian.container.liferay.remote.enricher.Inject;
 
 import org.jboss.arquillian.container.test.spi.RemoteLoadableExtension;
 import org.jboss.arquillian.container.test.spi.TestDeployment;
@@ -198,22 +199,11 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 			JavaArchive javaArchive, ManifestConfig manifestConfig)
 		throws IOException {
 
-		List<String> filteredImports = new ArrayList<>();
-
-		for (String importValue : manifestConfig.getImports()) {
-			if (!importValue.contains("org.jboss.arquillian") &&
-				!importValue.contains("junit") &&
-				!importValue.contains(Inject.class.getPackage().getName())) {
-
-				filteredImports.add(importValue);
-			}
-		}
-
 		OSGiManifestBuilder builder = manifestConfig.getBuilder();
 
 		builder.addImportPackages(
-			(String[])filteredImports.toArray(
-				new String[filteredImports.size()]));
+			(String[])manifestConfig.getImports().toArray(
+				new String[manifestConfig.getImports().size()]));
 
 		List<String> exports = manifestConfig.getExports();
 
@@ -263,6 +253,47 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 
 		addAttributeValueToListAttributeInManifest(
 			javaArchive, "Import-Package", extensionsImports, "");
+	}
+
+	private void deleteImportsIncludedInClassPath(
+			JavaArchive javaArchive, Collection<Archive<?>> auxiliaryArchives)
+		throws IOException {
+
+		try {
+			List<String> packages = new ArrayList<>();
+
+			for (Archive auxiliaryArchive : auxiliaryArchives) {
+				InputStream auxiliaryArchiveInputStream = auxiliaryArchive.as(
+					ZipExporter.class).exportAsInputStream();
+
+				Jar jar = new Jar(
+					auxiliaryArchive.getName(), auxiliaryArchiveInputStream);
+
+				packages.addAll(jar.getPackages());
+			}
+
+			Manifest manifest = getManifest(javaArchive);
+
+			Attributes mainAttributes = manifest.getMainAttributes();
+
+			String imports = mainAttributes.getValue("Import-Package");
+
+			mainAttributes.remove(new Attributes.Name("Import-Package"));
+
+			replaceManifest(javaArchive, manifest);
+
+			String[] importsArray = imports.split(",");
+
+			for (String importValue : importsArray) {
+				if (!packages.contains(importValue)) {
+					addAttributeValueToListAttributeInManifest(
+						javaArchive, "Import-Package", importValue, "");
+				}
+			}
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private Manifest getManifest(JavaArchive javaArchive) throws IOException {
@@ -345,6 +376,8 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 				javaArchive, manifestConfig, auxiliaryArchives);
 
 			addManifestToArchive(javaArchive, manifestConfig);
+
+			deleteImportsIncludedInClassPath(javaArchive, auxiliaryArchives);
 
 			return javaArchive;
 		}
