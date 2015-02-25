@@ -111,14 +111,12 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 
 	}
 
-	private void addArquillianDependencies(
-			ManifestConfig manifestConfig, JavaArchive javaArchive)
+	private void addArquillianDependencies(JavaArchive javaArchive)
 		throws Exception {
 
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.protocol",
-				"arquillian-protocol-jmx","1.1.7.Final"));
+		addDependencyToArchive(
+			javaArchive, "org.jboss.arquillian.protocol",
+			"arquillian-protocol-jmx", "1.1.7.Final");
 	}
 
 	private void addBundleClasspath(ManifestConfig manifestConfig) {
@@ -131,7 +129,7 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 		manifestConfig.getBuilder().addBundleClasspath(bundleClassPath);
 	}
 
-	private String addDependencyToArchive(
+	private void addDependencyToArchive(
 			JavaArchive javaArchive, String groupId, String artifactId,
 			String version)
 		throws Exception {
@@ -159,7 +157,26 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 
 		javaArchive.addAsResource(new FileAsset(resolved[0]), path);
 
-		return path;
+		Node manifestNode = javaArchive.get(_MANIFEST_FILE);
+
+		Asset manifestAsset = manifestNode.getAsset();
+
+		Manifest manifest = new Manifest(manifestAsset.openStream());
+
+		Attributes mainAttributes = manifest.getMainAttributes();
+
+		String bundleClasspath = mainAttributes.getValue("Bundle-ClassPath");
+
+		if ((bundleClasspath == null) || bundleClasspath.isEmpty()) {
+			bundleClasspath = ".," + path;
+		}
+		else {
+			bundleClasspath += "," + path;
+		}
+
+		mainAttributes.putValue("Bundle-ClassPath", bundleClasspath);
+
+		replaceManifest(javaArchive, manifest);
 	}
 
 	private void addManifestToArchive(
@@ -263,6 +280,7 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 		List<String> imports = new ArrayList<>();
 		List<String> exports = new ArrayList<>();
 		List<String> activators = new ArrayList<>();
+		List<String> classPaths = new ArrayList<>();
 
 		OSGiManifestBuilder builder = OSGiManifestBuilder.newInstance();
 
@@ -278,6 +296,11 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 
 			if (key.equals("Bundle-Activator")) {
 				activators.add(value);
+				continue;
+			}
+
+			if (key.equals("Bundle-ClassPath")) {
+				classPaths.add(value);
 				continue;
 			}
 
@@ -300,7 +323,7 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 		}
 
 		return new ManifestConfig(
-			activators, builder, new ArrayList<String>(), exports, imports);
+			activators, builder, classPaths, exports, imports);
 	}
 
 	private Archive<?> handleArchive(
@@ -313,12 +336,12 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 
 			addOsgiImports(javaArchive);
 
+			addArquillianDependencies(javaArchive);
+
 			ManifestConfig manifestConfig = getManifestConfig(javaArchive);
 
 			handleAuxiliaryArchives(
 				javaArchive, manifestConfig, auxiliaryArchives);
-
-			addArquillianDependencies(manifestConfig, javaArchive);
 
 			addManifestToArchive(javaArchive, manifestConfig);
 
