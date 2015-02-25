@@ -31,11 +31,9 @@ import java.util.jar.Manifest;
 
 import org.arquillian.container.liferay.remote.activator.ArquillianBundleActivator;
 import org.arquillian.container.liferay.remote.enricher.Inject;
-import org.arquillian.container.liferay.remote.runner.JUnitBundleTestRunner;
 
 import org.jboss.arquillian.container.test.spi.RemoteLoadableExtension;
 import org.jboss.arquillian.container.test.spi.TestDeployment;
-import org.jboss.arquillian.container.test.spi.TestRunner;
 import org.jboss.arquillian.container.test.spi.client.deployment.DeploymentPackager;
 import org.jboss.arquillian.container.test.spi.client.deployment.ProtocolArchiveProcessor;
 import org.jboss.osgi.metadata.OSGiManifestBuilder;
@@ -119,103 +117,8 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.core", "arquillian-core-api",
-				"1.1.7.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.core",
-				"arquillian-core-impl-base","1.1.7.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.core", "arquillian-core-spi",
-				"1.1.7.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.test", "arquillian-test-api",
-				"1.1.7.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.test",
-				"arquillian-test-impl-base","1.1.7.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.test", "arquillian-test-spi",
-				"1.1.7.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.container",
-				"arquillian-container-spi","1.1.7.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.container",
-				"arquillian-container-impl-base","1.1.7.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.container",
-				"arquillian-container-spi","1.1.7.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.container",
-				"arquillian-container-test-api","1.1.7.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.container",
-				"arquillian-container-test-impl-base","1.1.7.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.container",
-				"arquillian-container-test-spi","1.1.7.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.junit",
-				"arquillian-junit-core","1.1.7.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.junit",
-				"arquillian-junit-container","1.1.7.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.testenricher",
-				"arquillian-testenricher-osgi","2.1.0.CR16"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.protocol",
 				"arquillian-protocol-jmx","1.1.7.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.shrinkwrap","shrinkwrap-api","1.1.2"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.shrinkwrap", "shrinkwrap-impl-base",
-				"1.1.2"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.shrinkwrap", "shrinkwrap-spi","1.1.2"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.hamcrest","hamcrest-core","1.3"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(javaArchive, "junit","junit","4.12"));
 	}
 
 	private void addBundleClasspath(ManifestConfig manifestConfig) {
@@ -401,13 +304,6 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 
 			addManifestToArchive(javaArchive, manifestConfig);
 
-			javaArchive.addAsResource(
-				new ByteArrayAsset(
-					getClass().getResourceAsStream(_TEST_RUNNER_EXTENSION_FILE))
-				, _TEST_RUNNER_EXTENSION_FILE);
-
-			javaArchive.addClass(JUnitBundleTestRunner.class);
-
 			return javaArchive;
 		}
 		catch (RuntimeException rte) {
@@ -448,53 +344,52 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 				javaArchive.add(
 					remoteLoadableExtensionsNext.getAsset(),
 					_REMOTE_LOADABLE_EXTENSION_FILE);
+			}
 
-				ZipExporter auxiliaryArchiveZipExporter = auxiliaryArchive.as(
-					ZipExporter.class);
+			ZipExporter auxiliaryArchiveZipExporter = auxiliaryArchive.as(
+				ZipExporter.class);
 
-				InputStream auxiliaryArchiveInputStream =
-					auxiliaryArchiveZipExporter.exportAsInputStream();
+			InputStream auxiliaryArchiveInputStream =
+				auxiliaryArchiveZipExporter.exportAsInputStream();
 
-				ByteArrayAsset byteArrayAsset = new ByteArrayAsset(
-					auxiliaryArchiveInputStream);
+			ByteArrayAsset byteArrayAsset = new ByteArrayAsset(
+				auxiliaryArchiveInputStream);
 
-				String path = "extension/" + auxiliaryArchive.getName();
+			String path = "extension/" + auxiliaryArchive.getName();
 
-				javaArchive.addAsResource(byteArrayAsset, path);
+			javaArchive.addAsResource(byteArrayAsset, path);
 
-				manifestConfig.getClassPaths().add(path);
+			manifestConfig.getClassPaths().add(path);
 
-				Node manifestFile = auxiliaryArchive.get(_MANIFEST_FILE);
+			Node manifestFile = auxiliaryArchive.get(_MANIFEST_FILE);
 
-				if (manifestFile != null) {
-					Asset ManifestFileAsset = manifestFile.getAsset();
+			if (manifestFile != null) {
+				Asset ManifestFileAsset = manifestFile.getAsset();
 
-					Manifest auxiliaryArchiveManifest = new Manifest(
-						ManifestFileAsset.openStream());
+				Manifest auxiliaryArchiveManifest = new Manifest(
+					ManifestFileAsset.openStream());
 
-					if (OSGiManifestBuilder.isValidBundleManifest(
-							auxiliaryArchiveManifest)) {
+				if (OSGiManifestBuilder.isValidBundleManifest(
+						auxiliaryArchiveManifest)) {
 
-						Attributes mainAttributes =
-							auxiliaryArchiveManifest.getMainAttributes();
+					Attributes mainAttributes =
+						auxiliaryArchiveManifest.getMainAttributes();
 
-						String value = mainAttributes.getValue(
-							"Import-package");
+					String value = mainAttributes.getValue("Import-package");
 
-						if (value != null) {
-							String[] importsValue = value.split(",");
+					if (value != null) {
+						String[] importsValue = value.split(",");
 
-							for (String importValue : importsValue) {
-								manifestConfig.getImports().add(importValue);
-							}
+						for (String importValue : importsValue) {
+							manifestConfig.getImports().add(importValue);
 						}
+					}
 
-						String bundleActivator = mainAttributes.getValue(
-							"Bundle-Activator");
+					String bundleActivator = mainAttributes.getValue(
+						"Bundle-Activator");
 
-						if (bundleActivator != null) {
-							manifestConfig.getActivators().add(bundleActivator);
-						}
+					if (bundleActivator != null) {
+						manifestConfig.getActivators().add(bundleActivator);
 					}
 				}
 			}
@@ -521,8 +416,5 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 	private static final String _REMOTE_LOADABLE_EXTENSION_FILE =
 		"/META-INF/services/" +
 		RemoteLoadableExtension.class.getCanonicalName();
-
-	private static final String _TEST_RUNNER_EXTENSION_FILE =
-		"/META-INF/services/" + TestRunner.class.getCanonicalName();
 
 }
