@@ -119,6 +119,39 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 			"arquillian-protocol-jmx", "1.1.7.Final");
 	}
 
+	private void addAttributeValueToListAttributeInManifest(
+			JavaArchive javaArchive, String attributeName,
+			String attributeValue, String startValue)
+		throws IOException {
+
+		Manifest manifest = getManifest(javaArchive);
+
+		Attributes mainAttributes = manifest.getMainAttributes();
+
+		String attributeValueStringList = mainAttributes.getValue(
+			attributeName);
+
+		if ((attributeValueStringList == null) ||
+			attributeValueStringList.isEmpty()) {
+
+			if ((startValue == null) || startValue.isEmpty()) {
+				startValue = "";
+			}
+			else {
+				startValue = startValue + ",";
+			}
+
+			attributeValueStringList = startValue + attributeValue;
+		}
+		else {
+			attributeValueStringList += "," + attributeValue;
+		}
+
+		mainAttributes.putValue(attributeName, attributeValueStringList);
+
+		replaceManifest(javaArchive, manifest);
+	}
+
 	private void addBundleClasspath(ManifestConfig manifestConfig) {
 		String bundleClassPath = ".";
 
@@ -157,22 +190,8 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 
 		javaArchive.addAsResource(new FileAsset(resolved[0]), path);
 
-		Manifest manifest = getManifest(javaArchive);
-
-		Attributes mainAttributes = manifest.getMainAttributes();
-
-		String bundleClasspath = mainAttributes.getValue("Bundle-ClassPath");
-
-		if ((bundleClasspath == null) || bundleClasspath.isEmpty()) {
-			bundleClasspath = ".," + path;
-		}
-		else {
-			bundleClasspath += "," + path;
-		}
-
-		mainAttributes.putValue("Bundle-ClassPath", bundleClasspath);
-
-		replaceManifest(javaArchive, manifest);
+		addAttributeValueToListAttributeInManifest(
+			javaArchive, "Bundle-ClassPath", path, ".");
 	}
 
 	private void addManifestToArchive(
@@ -236,28 +255,14 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 	}
 
 	private void addOsgiImports(JavaArchive javaArchive) throws IOException {
-		Manifest manifest = getManifest(javaArchive);
-
-		Attributes mainAttributes = manifest.getMainAttributes();
-
-		String imports = mainAttributes.getValue("Import-Package");
-
 		String extensionsImports =
 			"org.osgi.framework" + "," + "javax.management" + "," +
-			"javax.management.*" + "," + "javax.naming.*" + ","  +
+			"javax.management.*" + "," + "javax.naming.*" + "," +
 			"org.osgi.service.packageadmin" + "," +
 			"org.osgi.service.startlevel" + "," + "org.osgi.util.tracker";
 
-		if ((imports == null) || imports.isEmpty()) {
-			imports = extensionsImports;
-		}
-		else {
-			imports += "," + extensionsImports;
-		}
-
-		mainAttributes.putValue("Import-Package", imports);
-
-		replaceManifest(javaArchive, manifest);
+		addAttributeValueToListAttributeInManifest(
+			javaArchive, "Import-Package", extensionsImports, "");
 	}
 
 	private Manifest getManifest(JavaArchive javaArchive) throws IOException {
