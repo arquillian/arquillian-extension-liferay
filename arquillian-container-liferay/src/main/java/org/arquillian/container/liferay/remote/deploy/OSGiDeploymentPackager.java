@@ -222,15 +222,33 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 		javaArchive.add(manifestAsset, _ACTIVATORS_FILE);
 	}
 
-	private void addOsgiImports(ManifestConfig manifestConfig) {
-		manifestConfig.getImports().add("org.osgi.framework");
-		manifestConfig.getImports().add("javax.management");
-		manifestConfig.getImports().add("javax.management.*");
-		manifestConfig.getImports().add("javax.naming.*");
-		manifestConfig.getImports().add("org.osgi.framework");
-		manifestConfig.getImports().add("org.osgi.service.packageadmin");
-		manifestConfig.getImports().add("org.osgi.service.startlevel");
-		manifestConfig.getImports().add("org.osgi.util.tracker");
+	private void addOsgiImports(JavaArchive javaArchive) throws IOException {
+		Node manifestNode = javaArchive.get(_MANIFEST_FILE);
+
+		Asset manifestAsset = manifestNode.getAsset();
+
+		Manifest manifest = new Manifest(manifestAsset.openStream());
+
+		Attributes mainAttributes = manifest.getMainAttributes();
+
+		String imports = mainAttributes.getValue("Import-Package");
+
+		String extensionsImports =
+			"org.osgi.framework" + "," + "javax.management" + "," +
+			"javax.management.*" + "," + "javax.naming.*" + ","  +
+			"org.osgi.service.packageadmin" + "," +
+			"org.osgi.service.startlevel" + "," + "org.osgi.util.tracker";
+
+		if ((imports == null) || imports.isEmpty()) {
+			imports = extensionsImports;
+		}
+		else {
+			imports += "," + extensionsImports;
+		}
+
+		mainAttributes.putValue("Import-Package", imports);
+
+		replaceManifest(javaArchive, manifest);
 	}
 
 	private ManifestConfig getManifestConfig(JavaArchive javaArchive)
@@ -293,12 +311,12 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 
 			JavaArchive javaArchive = (JavaArchive)archive;
 
+			addOsgiImports(javaArchive);
+
 			ManifestConfig manifestConfig = getManifestConfig(javaArchive);
 
 			handleAuxiliaryArchives(
 				javaArchive, manifestConfig, auxiliaryArchives);
-
-			addOsgiImports(manifestConfig);
 
 			addArquillianDependencies(manifestConfig, javaArchive);
 
@@ -394,6 +412,20 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 				}
 			}
 		}
+	}
+
+	private void replaceManifest(Archive archive, Manifest manifest )
+		throws IOException {
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+		manifest.write(baos);
+
+		ByteArrayAsset byteArrayAsset = new ByteArrayAsset(baos.toByteArray());
+
+		archive.delete(_MANIFEST_FILE);
+
+		archive.add(byteArrayAsset, _MANIFEST_FILE);
 	}
 
 	private void validateBundleArchive(Archive<?> archive) throws Exception {
