@@ -355,7 +355,7 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 	private void handleAuxiliaryArchives(
 			JavaArchive javaArchive, ManifestConfig manifestConfig,
 			Collection<Archive<?>> auxiliaryArchives)
-		throws IOException {
+		throws Exception {
 
 		for (Archive auxiliaryArchive : auxiliaryArchives) {
 			Map<ArchivePath, Node> remoteLoadableExtensionMap =
@@ -398,37 +398,35 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 
 			manifestConfig.getClassPaths().add(path);
 
-			Node manifestFile = auxiliaryArchive.get(JarFile.MANIFEST_NAME);
+			try {
+				validateBundleArchive(auxiliaryArchive);
 
-			if (manifestFile != null) {
-				Asset ManifestFileAsset = manifestFile.getAsset();
+				Manifest auxiliaryArchiveManifest = getManifest(
+					(JavaArchive)auxiliaryArchive);
 
-				Manifest auxiliaryArchiveManifest = new Manifest(
-					ManifestFileAsset.openStream());
+				Attributes mainAttributes =
+					auxiliaryArchiveManifest.getMainAttributes();
 
-				if (OSGiManifestBuilder.isValidBundleManifest(
-						auxiliaryArchiveManifest)) {
+				String value = mainAttributes.getValue("Import-package");
 
-					Attributes mainAttributes =
-						auxiliaryArchiveManifest.getMainAttributes();
+				if (value != null) {
+					String[] importsValue = value.split(",");
 
-					String value = mainAttributes.getValue("Import-package");
-
-					if (value != null) {
-						String[] importsValue = value.split(",");
-
-						for (String importValue : importsValue) {
-							manifestConfig.getImports().add(importValue);
-						}
-					}
-
-					String bundleActivator = mainAttributes.getValue(
-						"Bundle-Activator");
-
-					if (bundleActivator != null) {
-						manifestConfig.getActivators().add(bundleActivator);
+					for (String importValue : importsValue) {
+						manifestConfig.getImports().add(importValue);
 					}
 				}
+
+				String bundleActivator = mainAttributes.getValue(
+					"Bundle-Activator");
+
+				if (bundleActivator != null) {
+					manifestConfig.getActivators().add(bundleActivator);
+				}
+			}
+			catch (BundleException e) {
+				//If this jar is not a bundle, we should not process
+				//the manifest
 			}
 		}
 	}
@@ -456,7 +454,12 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 			manifest = new Manifest(node.getAsset().openStream());
 		}
 
-		OSGiManifestBuilder.validateBundleManifest(manifest);
+		if (manifest != null) {
+			OSGiManifestBuilder.validateBundleManifest(manifest);
+		}
+		else {
+			throw new BundleException("can't obtain Manifest");
+		}
 	}
 
 	private static final String _ACTIVATORS_FILE =
