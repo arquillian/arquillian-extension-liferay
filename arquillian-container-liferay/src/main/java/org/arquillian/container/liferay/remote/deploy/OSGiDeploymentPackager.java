@@ -216,9 +216,9 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 		ByteArrayAsset manifestAsset = new ByteArrayAsset(
 			manifestOutputStream.toByteArray());
 
-		javaArchive.delete(_MANIFEST_FILE);
+		javaArchive.delete(JarFile.MANIFEST_NAME);
 
-		javaArchive.add(manifestAsset, _MANIFEST_FILE);
+		javaArchive.add(manifestAsset, JarFile.MANIFEST_NAME);
 
 		String activatorsString = "";
 
@@ -261,7 +261,7 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 	}
 
 	private Manifest getManifest(JavaArchive javaArchive) throws IOException {
-		Node manifestNode = javaArchive.get(_MANIFEST_FILE);
+		Node manifestNode = javaArchive.get(JarFile.MANIFEST_NAME);
 
 		Asset manifestAsset = manifestNode.getAsset();
 
@@ -398,7 +398,7 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 
 			manifestConfig.getClassPaths().add(path);
 
-			Node manifestFile = auxiliaryArchive.get(_MANIFEST_FILE);
+			Node manifestFile = auxiliaryArchive.get(JarFile.MANIFEST_NAME);
 
 			if (manifestFile != null) {
 				Asset ManifestFileAsset = manifestFile.getAsset();
@@ -442,9 +442,9 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 
 		ByteArrayAsset byteArrayAsset = new ByteArrayAsset(baos.toByteArray());
 
-		archive.delete(_MANIFEST_FILE);
+		archive.delete(JarFile.MANIFEST_NAME);
 
-		archive.add(byteArrayAsset, _MANIFEST_FILE);
+		archive.add(byteArrayAsset, JarFile.MANIFEST_NAME);
 	}
 
 	private void validateBundleArchive(Archive<?> archive) throws Exception {
@@ -461,8 +461,6 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 
 	private static final String _ACTIVATORS_FILE =
 		"/META-INF/services/" + BundleActivator.class.getCanonicalName();
-
-	private static final String _MANIFEST_FILE = "/META-INF/MANIFEST.MF";
 
 	private static final String _REMOTE_LOADABLE_EXTENSION_FILE =
 		"/META-INF/services/" +
