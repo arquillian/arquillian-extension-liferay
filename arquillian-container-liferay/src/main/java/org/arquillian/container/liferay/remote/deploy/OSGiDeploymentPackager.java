@@ -17,7 +17,6 @@ package org.arquillian.container.liferay.remote.deploy;
 import aQute.bnd.osgi.Jar;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -37,6 +36,7 @@ import org.jboss.arquillian.container.test.spi.RemoteLoadableExtension;
 import org.jboss.arquillian.container.test.spi.TestDeployment;
 import org.jboss.arquillian.container.test.spi.client.deployment.DeploymentPackager;
 import org.jboss.arquillian.container.test.spi.client.deployment.ProtocolArchiveProcessor;
+import org.jboss.arquillian.protocol.jmx.JMXTestRunner;
 import org.jboss.osgi.metadata.OSGiManifestBuilder;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ArchivePath;
@@ -44,13 +44,8 @@ import org.jboss.shrinkwrap.api.Filters;
 import org.jboss.shrinkwrap.api.Node;
 import org.jboss.shrinkwrap.api.asset.Asset;
 import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;
-import org.jboss.shrinkwrap.api.asset.FileAsset;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.jboss.shrinkwrap.resolver.api.maven.Maven;
-import org.jboss.shrinkwrap.resolver.api.maven.MavenFormatStage;
-import org.jboss.shrinkwrap.resolver.api.maven.MavenResolverSystem;
-import org.jboss.shrinkwrap.resolver.api.maven.MavenStrategyStage;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleException;
@@ -73,9 +68,7 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 	private void addArquillianDependencies(JavaArchive javaArchive)
 		throws Exception {
 
-		addDependencyToArchive(
-			javaArchive, "org.jboss.arquillian.protocol",
-			"arquillian-protocol-jmx", "1.1.7.Final");
+		javaArchive.addPackage(JMXTestRunner.class.getPackage());
 	}
 
 	private void addAttributeValueToListAttributeInManifest(
@@ -136,38 +129,6 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 		javaArchive.delete(_ACTIVATORS_FILE);
 
 		javaArchive.add(byteArrayAsset, _ACTIVATORS_FILE);
-	}
-
-	private void addDependencyToArchive(
-			JavaArchive javaArchive, String groupId, String artifactId,
-			String version)
-		throws Exception {
-
-		String filespec = groupId + ":" + artifactId + ":jar:" + version;
-
-		MavenResolverSystem resolver = Maven.resolver();
-
-		MavenStrategyStage mavenStrategyStage = resolver.resolve(filespec);
-
-		MavenFormatStage mavenFormatStage =
-			mavenStrategyStage.withoutTransitivity();
-
-		File[] resolved = mavenFormatStage.asFile();
-
-		if (resolved == null || resolved.length == 0)
-			throw new BundleException(
-				"Cannot obtain maven artifact: " + filespec);
-
-		if (resolved.length > 1)
-			throw new BundleException(
-				"Multiple maven artifacts for: " + filespec);
-
-		String path = "lib/" + resolved[0].getName();
-
-		javaArchive.addAsResource(new FileAsset(resolved[0]), path);
-
-		addAttributeValueToListAttributeInManifest(
-			javaArchive, "Bundle-ClassPath", path, ".");
 	}
 
 	private void addOsgiImports(JavaArchive javaArchive) throws IOException {
