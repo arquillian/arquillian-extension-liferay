@@ -14,17 +14,13 @@
 
 package org.arquillian.container.liferay.remote.deploy;
 
-import org.arquillian.container.liferay.remote.activator.ArquillianBundleActivator;
-import org.arquillian.container.liferay.remote.enricher.Inject;
-import org.arquillian.container.liferay.remote.runner.JUnitBundleTestRunner;
+import aQute.bnd.osgi.Jar;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -33,11 +29,14 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
+import org.arquillian.container.liferay.remote.activator.ArquillianBundleActivator;
+import org.arquillian.container.liferay.remote.deploy.processor.BundleActivatorsManager;
+
 import org.jboss.arquillian.container.test.spi.RemoteLoadableExtension;
 import org.jboss.arquillian.container.test.spi.TestDeployment;
-import org.jboss.arquillian.container.test.spi.TestRunner;
 import org.jboss.arquillian.container.test.spi.client.deployment.DeploymentPackager;
 import org.jboss.arquillian.container.test.spi.client.deployment.ProtocolArchiveProcessor;
+import org.jboss.arquillian.protocol.jmx.JMXTestRunner;
 import org.jboss.osgi.metadata.OSGiManifestBuilder;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ArchivePath;
@@ -45,13 +44,8 @@ import org.jboss.shrinkwrap.api.Filters;
 import org.jboss.shrinkwrap.api.Node;
 import org.jboss.shrinkwrap.api.asset.Asset;
 import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;
-import org.jboss.shrinkwrap.api.asset.FileAsset;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.jboss.shrinkwrap.resolver.api.maven.Maven;
-import org.jboss.shrinkwrap.resolver.api.maven.MavenFormatStage;
-import org.jboss.shrinkwrap.resolver.api.maven.MavenResolverSystem;
-import org.jboss.shrinkwrap.resolver.api.maven.MavenStrategyStage;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleException;
@@ -68,345 +62,164 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 		Archive<?> bundleArchive = testDeployment.getApplicationArchive();
 
 		return handleArchive(
-			bundleArchive, testDeployment.getAuxiliaryArchives());
+			(JavaArchive)bundleArchive, testDeployment.getAuxiliaryArchives());
 	}
 
-	public class ManifestConfig {
-
-		public ManifestConfig(
-			List<String> activators, OSGiManifestBuilder builder,
-			List<String> classPaths, List<String> exports,
-			List<String> imports) {
-
-			_activators = activators;
-			_builder = builder;
-			_classPaths = classPaths;
-			_exports = exports;
-			_imports = imports;
-		}
-
-		public List<String> getActivators() {
-			return _activators;
-		}
-
-		public OSGiManifestBuilder getBuilder() {
-			return _builder;
-		}
-
-		public List<String> getClassPaths() {
-			return _classPaths;
-		}
-
-		public List<String> getExports() {
-			return _exports;
-		}
-
-		public List<String> getImports() {
-			return _imports;
-		}
-
-		private final List<String> _activators;
-		private final OSGiManifestBuilder _builder;
-		private final List<String> _classPaths;
-		private final List<String> _exports;
-		private final List<String> _imports;
-
-	}
-
-	private void addArquillianDependencies(
-			ManifestConfig manifestConfig, JavaArchive javaArchive)
+	private void addArquillianDependencies(JavaArchive javaArchive)
 		throws Exception {
 
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.core", "arquillian-core-api",
-				"1.1.6.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.core",
-				"arquillian-core-impl-base","1.1.6.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.core", "arquillian-core-spi",
-				"1.1.6.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.test", "arquillian-test-api",
-				"1.1.6.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.test",
-				"arquillian-test-impl-base","1.1.6.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.test", "arquillian-test-spi",
-				"1.1.6.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.container",
-				"arquillian-container-spi","1.1.6.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.container",
-				"arquillian-container-impl-base","1.1.6.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.container",
-				"arquillian-container-spi","1.1.6.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.container",
-				"arquillian-container-test-api","1.1.6.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.container",
-				"arquillian-container-test-impl-base","1.1.6.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.container",
-				"arquillian-container-test-spi","1.1.6.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.junit",
-				"arquillian-junit-core","1.1.6.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.junit",
-				"arquillian-junit-container","1.1.6.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.testenricher",
-				"arquillian-testenricher-osgi","2.1.0.CR16"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.arquillian.protocol",
-				"arquillian-protocol-jmx","1.1.6.Final"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.shrinkwrap","shrinkwrap-api","1.1.2"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.shrinkwrap", "shrinkwrap-impl-base",
-				"1.1.2"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.jboss.shrinkwrap", "shrinkwrap-spi","1.1.2"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.hamcrest","hamcrest-core","1.3"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(javaArchive, "junit","junit","4.12"));
+		javaArchive.addPackage(JMXTestRunner.class.getPackage());
 	}
 
-	private void addBundleClasspath(ManifestConfig manifestConfig) {
-		String bundleClassPath = ".";
-
-		for (String classPath : manifestConfig.getClassPaths()) {
-			bundleClassPath = bundleClassPath + "," + classPath;
-		}
-
-		manifestConfig.getBuilder().addBundleClasspath(bundleClassPath);
-	}
-
-	private String addDependencyToArchive(
-			JavaArchive javaArchive, String groupId, String artifactId,
-			String version)
-		throws Exception {
-
-		String filespec = groupId + ":" + artifactId + ":jar:" + version;
-
-		MavenResolverSystem resolver = Maven.resolver();
-
-		MavenStrategyStage mavenStrategyStage = resolver.resolve(filespec);
-
-		MavenFormatStage mavenFormatStage =
-			mavenStrategyStage.withoutTransitivity();
-
-		File[] resolved = mavenFormatStage.asFile();
-
-		if (resolved == null || resolved.length == 0)
-			throw new BundleException(
-				"Cannot obtain maven artifact: " + filespec);
-
-		if (resolved.length > 1)
-			throw new BundleException(
-				"Multiple maven artifacts for: " + filespec);
-
-		String path = "lib/" + resolved[0].getName();
-
-		javaArchive.addAsResource(new FileAsset(resolved[0]), path);
-
-		return path;
-	}
-
-	private void addManifestToArchive(
-			JavaArchive javaArchive, ManifestConfig manifestConfig)
+	private void addAttributeValueToListAttributeInManifest(
+			JavaArchive javaArchive, String attributeName,
+			String attributeValue, String startValue)
 		throws IOException {
 
-		List<String> filteredImports = new ArrayList<>();
-
-		for (String importValue : manifestConfig.getImports()) {
-			if (!importValue.contains("org.jboss.arquillian") &&
-				!importValue.contains("junit") &&
-				!importValue.contains(Inject.class.getPackage().getName())) {
-
-				filteredImports.add(importValue);
-			}
-		}
-
-		OSGiManifestBuilder builder = manifestConfig.getBuilder();
-
-		builder.addImportPackages(
-			(String[])filteredImports.toArray(
-				new String[filteredImports.size()]));
-
-		List<String> exports = manifestConfig.getExports();
-
-		builder.addExportPackages(
-			(String[])exports.toArray(new String[exports.size()]));
-
-		addBundleClasspath(manifestConfig);
-
-		builder.addBundleActivator(ArquillianBundleActivator.class);
-		javaArchive.addClass(ArquillianBundleActivator.class);
-
-		Manifest manifest = builder.getManifest();
-
-		ByteArrayOutputStream manifestOutputStream =
-			new ByteArrayOutputStream();
-
-		manifest.write(manifestOutputStream);
-
-		ByteArrayAsset manifestAsset = new ByteArrayAsset(
-			manifestOutputStream.toByteArray());
-
-		javaArchive.delete(_MANIFEST_FILE);
-
-		javaArchive.add(manifestAsset, _MANIFEST_FILE);
-
-		String activatorsString = "";
-
-		for (String activator : manifestConfig.getActivators()) {
-			activatorsString += activator + "\n";
-		}
-
-		manifestOutputStream = new ByteArrayOutputStream();
-
-		manifestOutputStream.write(activatorsString.getBytes());
-
-		manifestAsset = new ByteArrayAsset(manifestOutputStream.toByteArray());
-
-		javaArchive.add(manifestAsset, _ACTIVATORS_FILE);
-	}
-
-	private void addOsgiImports(ManifestConfig manifestConfig) {
-		manifestConfig.getImports().add("org.osgi.framework");
-		manifestConfig.getImports().add("javax.management");
-		manifestConfig.getImports().add("javax.management.*");
-		manifestConfig.getImports().add("javax.naming.*");
-		manifestConfig.getImports().add("org.osgi.framework");
-		manifestConfig.getImports().add("org.osgi.service.packageadmin");
-		manifestConfig.getImports().add("org.osgi.service.startlevel");
-		manifestConfig.getImports().add("org.osgi.util.tracker");
-	}
-
-	private ManifestConfig getManifestConfig(JavaArchive javaArchive)
-		throws Exception {
-
-		Node manifestFile = javaArchive.get(_MANIFEST_FILE);
-
-		Asset manifestAsset = manifestFile.getAsset();
-
-		Manifest manifest = new Manifest(manifestAsset.openStream());
-
-		List<String> imports = new ArrayList<>();
-		List<String> exports = new ArrayList<>();
-		List<String> activators = new ArrayList<>();
-
-		OSGiManifestBuilder builder = OSGiManifestBuilder.newInstance();
+		Manifest manifest = getManifest(javaArchive);
 
 		Attributes mainAttributes = manifest.getMainAttributes();
 
-		for (Map.Entry<Object, Object> entry : mainAttributes.entrySet()) {
-			String key = entry.getKey().toString();
-			String value = (String)entry.getValue();
+		String attributeValues = mainAttributes.getValue(attributeName);
 
-			if (key.equals("Manifest-Version")) {
-				continue;
+		if ((attributeValues == null) ||
+			attributeValues.isEmpty()) {
+
+			if ((startValue != null) && !startValue.isEmpty()) {
+				startValue = startValue + ",";
 			}
 
-			if (key.equals("Bundle-Activator")) {
-				activators.add(value);
-				continue;
-			}
-
-			if (key.equals("Import-Package")) {
-				String[] importsValue = value.split(",");
-
-				for (String importValue : importsValue) {
-					imports.add(importValue);
-				}
-
-				continue;
-			}
-
-			if (key.equals("Export-Package")) {
-				exports.addAll(Arrays.asList(value.split(",")));
-				continue;
-			}
-
-			builder.addManifestHeader(key, value);
+			attributeValues = startValue + attributeValue;
+		}
+		else {
+			attributeValues += "," + attributeValue;
 		}
 
-		return new ManifestConfig(
-			activators, builder, new ArrayList<String>(), exports, imports);
+		mainAttributes.putValue(attributeName, attributeValues);
+
+		replaceManifest(javaArchive, manifest);
+	}
+
+	private void addBundleActivator(
+			JavaArchive javaArchive, String bundleActivatorValue)
+		throws IOException {
+
+		Node node = javaArchive.get(_ACTIVATORS_FILE);
+
+		BundleActivatorsManager bundleActivatorsManager =
+			new BundleActivatorsManager();
+
+		if (node != null) {
+			Asset asset = node.getAsset();
+
+			bundleActivatorsManager = new BundleActivatorsManager(
+				asset.openStream());
+		}
+
+		List<String> bundleActivators =
+			bundleActivatorsManager.getBundleActivators();
+
+		bundleActivators.add(bundleActivatorValue);
+
+		ByteArrayOutputStream bundleActivatorAsOutputStream =
+			bundleActivatorsManager.getBundleActivatorAsOutputStream();
+
+		ByteArrayAsset byteArrayAsset = new ByteArrayAsset(
+			bundleActivatorAsOutputStream.toByteArray());
+
+		javaArchive.delete(_ACTIVATORS_FILE);
+
+		javaArchive.add(byteArrayAsset, _ACTIVATORS_FILE);
+	}
+
+	private void addOsgiImports(JavaArchive javaArchive) throws IOException {
+		String extensionsImports =
+			"org.osgi.framework" + "," + "javax.management" + "," +
+			"javax.management.*" + "," + "javax.naming.*" + "," +
+			"org.osgi.service.packageadmin" + "," +
+			"org.osgi.service.startlevel" + "," + "org.osgi.util.tracker";
+
+		addAttributeValueToListAttributeInManifest(
+			javaArchive, "Import-Package", extensionsImports, "");
+	}
+
+	private void deleteImportsIncludedInClassPath(
+			JavaArchive javaArchive, Collection<Archive<?>> auxiliaryArchives)
+		throws IOException {
+
+		try {
+			List<String> packages = new ArrayList<>();
+
+			for (Archive auxiliaryArchive : auxiliaryArchives) {
+				ZipExporter zipExporter = auxiliaryArchive.as(
+					ZipExporter.class);
+
+				InputStream auxiliaryArchiveInputStream =
+					zipExporter.exportAsInputStream();
+
+				Jar jar = new Jar(
+					auxiliaryArchive.getName(), auxiliaryArchiveInputStream);
+
+				packages.addAll(jar.getPackages());
+			}
+
+			Manifest manifest = getManifest(javaArchive);
+
+			Attributes mainAttributes = manifest.getMainAttributes();
+
+			String importString = mainAttributes.getValue("Import-Package");
+
+			mainAttributes.remove(new Attributes.Name("Import-Package"));
+
+			replaceManifest(javaArchive, manifest);
+
+			String[] imports = importString.split(",");
+
+			for (String importValue : imports) {
+				if (!packages.contains(importValue)) {
+					addAttributeValueToListAttributeInManifest(
+						javaArchive, "Import-Package", importValue, "");
+				}
+			}
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private Manifest getManifest(JavaArchive javaArchive) throws IOException {
+		Node manifestNode = javaArchive.get(JarFile.MANIFEST_NAME);
+
+		Asset manifestAsset = manifestNode.getAsset();
+
+		return new Manifest(manifestAsset.openStream());
 	}
 
 	private Archive<?> handleArchive(
-		Archive<?> archive, Collection<Archive<?>> auxiliaryArchives) {
+		JavaArchive javaArchive, Collection<Archive<?>> auxiliaryArchives) {
 
 		try {
-			validateBundleArchive(archive);
+			validateBundleArchive(javaArchive);
 
-			JavaArchive javaArchive = (JavaArchive)archive;
+			addOsgiImports(javaArchive);
 
-			ManifestConfig manifestConfig = getManifestConfig(javaArchive);
+			addArquillianDependencies(javaArchive);
 
-			handleAuxiliaryArchives(
-				javaArchive, manifestConfig, auxiliaryArchives);
+			handleAuxiliaryArchives(javaArchive, auxiliaryArchives);
 
-			addOsgiImports(manifestConfig);
+			deleteImportsIncludedInClassPath(javaArchive, auxiliaryArchives);
 
-			addArquillianDependencies(manifestConfig, javaArchive);
+			Manifest manifest = getManifest(javaArchive);
 
-			addManifestToArchive(javaArchive, manifestConfig);
+			Attributes mainAttributes = manifest.getMainAttributes();
 
-			javaArchive.addAsResource(
-				new ByteArrayAsset(
-					getClass().getResourceAsStream(_TEST_RUNNER_EXTENSION_FILE))
-				, _TEST_RUNNER_EXTENSION_FILE);
+			mainAttributes.put(
+				new Attributes.Name("Bundle-Activator"),
+				ArquillianBundleActivator.class.getCanonicalName());
 
-			javaArchive.addClass(JUnitBundleTestRunner.class);
+			replaceManifest(javaArchive, manifest);
+
+			javaArchive.addClass(ArquillianBundleActivator.class);
 
 			return javaArchive;
 		}
@@ -415,14 +228,13 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 		}
 		catch (Exception ex) {
 			throw new IllegalArgumentException(
-				"Not a valid OSGi bundle: " + archive, ex);
+				"Not a valid OSGi bundle: " + javaArchive, ex);
 		}
 	}
 
 	private void handleAuxiliaryArchives(
-			JavaArchive javaArchive, ManifestConfig manifestConfig,
-			Collection<Archive<?>> auxiliaryArchives)
-		throws IOException {
+			JavaArchive javaArchive, Collection<Archive<?>> auxiliaryArchives)
+		throws Exception {
 
 		for (Archive auxiliaryArchive : auxiliaryArchives) {
 			Map<ArchivePath, Node> remoteLoadableExtensionMap =
@@ -448,57 +260,75 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 				javaArchive.add(
 					remoteLoadableExtensionsNext.getAsset(),
 					_REMOTE_LOADABLE_EXTENSION_FILE);
+			}
 
-				ZipExporter auxiliaryArchiveZipExporter = auxiliaryArchive.as(
-					ZipExporter.class);
+			ZipExporter auxiliaryArchiveZipExporter = auxiliaryArchive.as(
+				ZipExporter.class);
 
-				InputStream auxiliaryArchiveInputStream =
-					auxiliaryArchiveZipExporter.exportAsInputStream();
+			InputStream auxiliaryArchiveInputStream =
+				auxiliaryArchiveZipExporter.exportAsInputStream();
 
-				ByteArrayAsset byteArrayAsset = new ByteArrayAsset(
-					auxiliaryArchiveInputStream);
+			ByteArrayAsset byteArrayAsset = new ByteArrayAsset(
+				auxiliaryArchiveInputStream);
 
-				String path = "extension/" + auxiliaryArchive.getName();
+			String path = "extension/" + auxiliaryArchive.getName();
 
-				javaArchive.addAsResource(byteArrayAsset, path);
+			javaArchive.addAsResource(byteArrayAsset, path);
 
-				manifestConfig.getClassPaths().add(path);
+			addAttributeValueToListAttributeInManifest(
+				javaArchive, "Bundle-ClassPath", path, ".");
 
-				Node manifestFile = auxiliaryArchive.get(_MANIFEST_FILE);
+			try {
+				validateBundleArchive(auxiliaryArchive);
 
-				if (manifestFile != null) {
-					Asset ManifestFileAsset = manifestFile.getAsset();
+				Manifest auxiliaryArchiveManifest = getManifest(
+					(JavaArchive)auxiliaryArchive);
 
-					Manifest auxiliaryArchiveManifest = new Manifest(
-						ManifestFileAsset.openStream());
+				Attributes mainAttributes =
+					auxiliaryArchiveManifest.getMainAttributes();
 
-					if (OSGiManifestBuilder.isValidBundleManifest(
-							auxiliaryArchiveManifest)) {
+				String value = mainAttributes.getValue("Import-package");
 
-						Attributes mainAttributes =
-							auxiliaryArchiveManifest.getMainAttributes();
+				if (value != null) {
+					String[] importValues = value.split(",");
 
-						String value = mainAttributes.getValue(
-							"Import-package");
-
-						if (value != null) {
-							String[] importsValue = value.split(",");
-
-							for (String importValue : importsValue) {
-								manifestConfig.getImports().add(importValue);
-							}
-						}
-
-						String bundleActivator = mainAttributes.getValue(
-							"Bundle-Activator");
-
-						if (bundleActivator != null) {
-							manifestConfig.getActivators().add(bundleActivator);
-						}
+					for (String importValue : importValues) {
+						addAttributeValueToListAttributeInManifest(
+							javaArchive, "Import-Package", importValue, "");
 					}
 				}
+
+				String bundleActivatorValue = mainAttributes.getValue(
+					"Bundle-Activator");
+
+				if ((bundleActivatorValue != null) &&
+					!bundleActivatorValue.isEmpty()) {
+
+					addBundleActivator(javaArchive, bundleActivatorValue);
+				}
+			}
+			catch (BundleException e) {
+				//If this jar is not a bundle, we should not process
+				//the manifest
+
+				System.err.println(
+					"Skipping " + javaArchive +":" + e.getMessage());
 			}
 		}
+	}
+
+	private void replaceManifest(Archive archive, Manifest manifest )
+		throws IOException {
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+		manifest.write(baos);
+
+		ByteArrayAsset byteArrayAsset = new ByteArrayAsset(baos.toByteArray());
+
+		archive.delete(JarFile.MANIFEST_NAME);
+
+		archive.add(byteArrayAsset, JarFile.MANIFEST_NAME);
 	}
 
 	private void validateBundleArchive(Archive<?> archive) throws Exception {
@@ -510,18 +340,19 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 			manifest = new Manifest(node.getAsset().openStream());
 		}
 
-		OSGiManifestBuilder.validateBundleManifest(manifest);
+		if (manifest != null) {
+			OSGiManifestBuilder.validateBundleManifest(manifest);
+		}
+		else {
+			throw new BundleException("can't obtain Manifest");
+		}
 	}
 
 	private static final String _ACTIVATORS_FILE =
 		"/META-INF/services/" + BundleActivator.class.getCanonicalName();
 
-	private static final String _MANIFEST_FILE = "/META-INF/MANIFEST.MF";
-
 	private static final String _REMOTE_LOADABLE_EXTENSION_FILE =
-		"/META-INF/services/" + RemoteLoadableExtension.class.getCanonicalName();
-
-	private static final String _TEST_RUNNER_EXTENSION_FILE =
-		"/META-INF/services/" + TestRunner.class.getCanonicalName();
+		"/META-INF/services/" +
+		RemoteLoadableExtension.class.getCanonicalName();
 
 }
