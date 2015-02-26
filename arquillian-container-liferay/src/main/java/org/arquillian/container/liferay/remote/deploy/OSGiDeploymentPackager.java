@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -69,48 +68,6 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 
 		return handleArchive(
 			bundleArchive, testDeployment.getAuxiliaryArchives());
-	}
-
-	public class ManifestConfig {
-
-		public ManifestConfig(
-			List<String> activators, OSGiManifestBuilder builder,
-			List<String> classPaths, List<String> exports,
-			List<String> imports) {
-
-			_activators = activators;
-			_builder = builder;
-			_classPaths = classPaths;
-			_exports = exports;
-			_imports = imports;
-		}
-
-		public List<String> getActivators() {
-			return _activators;
-		}
-
-		public OSGiManifestBuilder getBuilder() {
-			return _builder;
-		}
-
-		public List<String> getClassPaths() {
-			return _classPaths;
-		}
-
-		public List<String> getExports() {
-			return _exports;
-		}
-
-		public List<String> getImports() {
-			return _imports;
-		}
-
-		private final List<String> _activators;
-		private final OSGiManifestBuilder _builder;
-		private final List<String> _classPaths;
-		private final List<String> _exports;
-		private final List<String> _imports;
-
 	}
 
 	private void addArquillianDependencies(JavaArchive javaArchive)
@@ -181,16 +138,6 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 		javaArchive.add(byteArrayAsset, _ACTIVATORS_FILE);
 	}
 
-	private void addBundleClasspath(ManifestConfig manifestConfig) {
-		String bundleClassPath = ".";
-
-		for (String classPath : manifestConfig.getClassPaths()) {
-			bundleClassPath = bundleClassPath + "," + classPath;
-		}
-
-		manifestConfig.getBuilder().addBundleClasspath(bundleClassPath);
-	}
-
 	private void addDependencyToArchive(
 			JavaArchive javaArchive, String groupId, String artifactId,
 			String version)
@@ -221,52 +168,6 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 
 		addAttributeValueToListAttributeInManifest(
 			javaArchive, "Bundle-ClassPath", path, ".");
-	}
-
-	private void addManifestToArchive(
-			JavaArchive javaArchive, ManifestConfig manifestConfig)
-		throws IOException {
-
-		OSGiManifestBuilder builder = manifestConfig.getBuilder();
-
-		builder.addImportPackages(
-			(String[])manifestConfig.getImports().toArray(
-				new String[manifestConfig.getImports().size()]));
-
-		List<String> exports = manifestConfig.getExports();
-
-		builder.addExportPackages(
-			(String[])exports.toArray(new String[exports.size()]));
-
-		addBundleClasspath(manifestConfig);
-
-		Manifest manifest = builder.getManifest();
-
-		ByteArrayOutputStream manifestOutputStream =
-			new ByteArrayOutputStream();
-
-		manifest.write(manifestOutputStream);
-
-		ByteArrayAsset manifestAsset = new ByteArrayAsset(
-			manifestOutputStream.toByteArray());
-
-		javaArchive.delete(JarFile.MANIFEST_NAME);
-
-		javaArchive.add(manifestAsset, JarFile.MANIFEST_NAME);
-
-		String activatorsString = "";
-
-		for (String activator : manifestConfig.getActivators()) {
-			activatorsString += activator + "\n";
-		}
-
-		manifestOutputStream = new ByteArrayOutputStream();
-
-		manifestOutputStream.write(activatorsString.getBytes());
-
-		manifestAsset = new ByteArrayAsset(manifestOutputStream.toByteArray());
-
-		javaArchive.add(manifestAsset, _ACTIVATORS_FILE);
 	}
 
 	private void addOsgiImports(JavaArchive javaArchive) throws IOException {
@@ -327,60 +228,6 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 		Asset manifestAsset = manifestNode.getAsset();
 
 		return new Manifest(manifestAsset.openStream());
-	}
-
-	private ManifestConfig getManifestConfig(JavaArchive javaArchive)
-		throws Exception {
-
-		Manifest manifest = getManifest(javaArchive);
-
-		List<String> imports = new ArrayList<>();
-		List<String> exports = new ArrayList<>();
-		List<String> activators = new ArrayList<>();
-		List<String> classPaths = new ArrayList<>();
-
-		OSGiManifestBuilder builder = OSGiManifestBuilder.newInstance();
-
-		Attributes mainAttributes = manifest.getMainAttributes();
-
-		for (Map.Entry<Object, Object> entry : mainAttributes.entrySet()) {
-			String key = entry.getKey().toString();
-			String value = (String)entry.getValue();
-
-			if (key.equals("Manifest-Version")) {
-				continue;
-			}
-
-			if (key.equals("Bundle-Activator")) {
-				activators.add(value);
-				continue;
-			}
-
-			if (key.equals("Bundle-ClassPath")) {
-				classPaths.add(value);
-				continue;
-			}
-
-			if (key.equals("Import-Package")) {
-				String[] importsValue = value.split(",");
-
-				for (String importValue : importsValue) {
-					imports.add(importValue);
-				}
-
-				continue;
-			}
-
-			if (key.equals("Export-Package")) {
-				exports.addAll(Arrays.asList(value.split(",")));
-				continue;
-			}
-
-			builder.addManifestHeader(key, value);
-		}
-
-		return new ManifestConfig(
-			activators, builder, classPaths, exports, imports);
 	}
 
 	private Archive<?> handleArchive(
