@@ -62,7 +62,7 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 		Archive<?> bundleArchive = testDeployment.getApplicationArchive();
 
 		return handleArchive(
-			bundleArchive, testDeployment.getAuxiliaryArchives());
+			(JavaArchive)bundleArchive, testDeployment.getAuxiliaryArchives());
 	}
 
 	private void addArquillianDependencies(JavaArchive javaArchive)
@@ -80,11 +80,10 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 
 		Attributes mainAttributes = manifest.getMainAttributes();
 
-		String attributeValueStringList = mainAttributes.getValue(
-			attributeName);
+		String attributeValues = mainAttributes.getValue(attributeName);
 
-		if ((attributeValueStringList == null) ||
-			attributeValueStringList.isEmpty()) {
+		if ((attributeValues == null) ||
+			attributeValues.isEmpty()) {
 
 			if ((startValue == null) || startValue.isEmpty()) {
 				startValue = "";
@@ -93,13 +92,13 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 				startValue = startValue + ",";
 			}
 
-			attributeValueStringList = startValue + attributeValue;
+			attributeValues = startValue + attributeValue;
 		}
 		else {
-			attributeValueStringList += "," + attributeValue;
+			attributeValues += "," + attributeValue;
 		}
 
-		mainAttributes.putValue(attributeName, attributeValueStringList);
+		mainAttributes.putValue(attributeName, attributeValues);
 
 		replaceManifest(javaArchive, manifest);
 	}
@@ -120,13 +119,16 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 				asset.openStream());
 		}
 
-		bundleActivatorsManager.getBundleActivators().add(bundleActivatorValue);
+		List<String> bundleActivators =
+			bundleActivatorsManager.getBundleActivators();
+
+		bundleActivators.add(bundleActivatorValue);
 
 		ByteArrayOutputStream bundleActivatorAsOutputStream =
 			bundleActivatorsManager.getBundleActivatorAsOutputStream();
 
-		ByteArrayAsset byteArrayAsset = new ByteArrayAsset
-			(bundleActivatorAsOutputStream.toByteArray());
+		ByteArrayAsset byteArrayAsset = new ByteArrayAsset(
+			bundleActivatorAsOutputStream.toByteArray());
 
 		javaArchive.delete(_ACTIVATORS_FILE);
 
@@ -152,8 +154,11 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 			List<String> packages = new ArrayList<>();
 
 			for (Archive auxiliaryArchive : auxiliaryArchives) {
-				InputStream auxiliaryArchiveInputStream = auxiliaryArchive.as(
-					ZipExporter.class).exportAsInputStream();
+				ZipExporter zipExporter = auxiliaryArchive.as(
+					ZipExporter.class);
+
+				InputStream auxiliaryArchiveInputStream =
+					zipExporter.exportAsInputStream();
 
 				Jar jar = new Jar(
 					auxiliaryArchive.getName(), auxiliaryArchiveInputStream);
@@ -165,15 +170,15 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 
 			Attributes mainAttributes = manifest.getMainAttributes();
 
-			String imports = mainAttributes.getValue("Import-Package");
+			String importString = mainAttributes.getValue("Import-Package");
 
 			mainAttributes.remove(new Attributes.Name("Import-Package"));
 
 			replaceManifest(javaArchive, manifest);
 
-			String[] importsArray = imports.split(",");
+			String[] imports = importString.split(",");
 
-			for (String importValue : importsArray) {
+			for (String importValue : imports) {
 				if (!packages.contains(importValue)) {
 					addAttributeValueToListAttributeInManifest(
 						javaArchive, "Import-Package", importValue, "");
@@ -194,12 +199,10 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 	}
 
 	private Archive<?> handleArchive(
-		Archive<?> archive, Collection<Archive<?>> auxiliaryArchives) {
+		JavaArchive javaArchive, Collection<Archive<?>> auxiliaryArchives) {
 
 		try {
-			validateBundleArchive(archive);
-
-			JavaArchive javaArchive = (JavaArchive)archive;
+			validateBundleArchive(javaArchive);
 
 			addOsgiImports(javaArchive);
 
@@ -228,7 +231,7 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 		}
 		catch (Exception ex) {
 			throw new IllegalArgumentException(
-				"Not a valid OSGi bundle: " + archive, ex);
+				"Not a valid OSGi bundle: " + javaArchive, ex);
 		}
 	}
 
@@ -290,9 +293,9 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 				String value = mainAttributes.getValue("Import-package");
 
 				if (value != null) {
-					String[] importsValue = value.split(",");
+					String[] importValues = value.split(",");
 
-					for (String importValue : importsValue) {
+					for (String importValue : importValues) {
 						addAttributeValueToListAttributeInManifest(
 							javaArchive, "Import-Package", importValue, "");
 					}
@@ -310,6 +313,9 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 			catch (BundleException e) {
 				//If this jar is not a bundle, we should not process
 				//the manifest
+
+				System.err.println(
+					"Skipping " + javaArchive +":" + e.getMessage());
 			}
 		}
 	}
