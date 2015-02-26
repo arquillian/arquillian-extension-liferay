@@ -26,13 +26,13 @@ import java.util.List;
 /**
  * @author Cristina González
  */
-public class BundleActivators {
+public class BundleActivatorsManager {
 
-	public BundleActivators() throws IOException {
+	public BundleActivatorsManager() throws IOException {
 		_bundleActivators = new ArrayList<>();
 	}
 
-	public BundleActivators(InputStream is) throws IOException {
+	public BundleActivatorsManager(InputStream is) throws IOException {
 		_bundleActivators = _getBundleActivatorFromInputStream(is);
 	}
 

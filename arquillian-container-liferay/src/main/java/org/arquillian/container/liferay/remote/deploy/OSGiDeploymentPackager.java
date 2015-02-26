@@ -30,7 +30,7 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.arquillian.container.liferay.remote.activator.ArquillianBundleActivator;
-import org.arquillian.container.liferay.remote.deploy.processor.BundleActivators;
+import org.arquillian.container.liferay.remote.deploy.processor.BundleActivatorsManager;
 
 import org.jboss.arquillian.container.test.spi.RemoteLoadableExtension;
 import org.jboss.arquillian.container.test.spi.TestDeployment;
@@ -110,18 +110,20 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 
 		Node node = javaArchive.get(_ACTIVATORS_FILE);
 
-		BundleActivators bundleActivators = new BundleActivators();
+		BundleActivatorsManager bundleActivatorsManager =
+			new BundleActivatorsManager();
 
 		if (node != null) {
 			Asset asset = node.getAsset();
 
-			bundleActivators = new BundleActivators(asset.openStream());
+			bundleActivatorsManager = new BundleActivatorsManager(
+				asset.openStream());
 		}
 
-		bundleActivators.getBundleActivators().add(bundleActivatorValue);
+		bundleActivatorsManager.getBundleActivators().add(bundleActivatorValue);
 
 		ByteArrayOutputStream bundleActivatorAsOutputStream =
-			bundleActivators.getBundleActivatorAsOutputStream();
+			bundleActivatorsManager.getBundleActivatorAsOutputStream();
 
 		ByteArrayAsset byteArrayAsset = new ByteArrayAsset
 			(bundleActivatorAsOutputStream.toByteArray());
