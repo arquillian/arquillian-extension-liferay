@@ -85,10 +85,7 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 		if ((attributeValues == null) ||
 			attributeValues.isEmpty()) {
 
-			if ((startValue == null) || startValue.isEmpty()) {
-				startValue = "";
-			}
-			else {
+			if ((startValue != null) && !startValue.isEmpty()) {
 				startValue = startValue + ",";
 			}
 
