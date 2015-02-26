@@ -32,6 +32,7 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.arquillian.container.liferay.remote.activator.ArquillianBundleActivator;
+import org.arquillian.container.liferay.remote.deploy.processor.BundleActivators;
 
 import org.jboss.arquillian.container.test.spi.RemoteLoadableExtension;
 import org.jboss.arquillian.container.test.spi.TestDeployment;
@@ -153,6 +154,33 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 		replaceManifest(javaArchive, manifest);
 	}
 
+	private void addBundleActivator(
+			JavaArchive javaArchive, String bundleActivatorValue)
+		throws IOException {
+
+		Node node = javaArchive.get(_ACTIVATORS_FILE);
+
+		BundleActivators bundleActivators = new BundleActivators();
+
+		if (node != null) {
+			Asset asset = node.getAsset();
+
+			bundleActivators = new BundleActivators(asset.openStream());
+		}
+
+		bundleActivators.getBundleActivators().add(bundleActivatorValue);
+
+		ByteArrayOutputStream bundleActivatorAsOutputStream =
+			bundleActivators.getBundleActivatorAsOutputStream();
+
+		ByteArrayAsset byteArrayAsset = new ByteArrayAsset
+			(bundleActivatorAsOutputStream.toByteArray());
+
+		javaArchive.delete(_ACTIVATORS_FILE);
+
+		javaArchive.add(byteArrayAsset, _ACTIVATORS_FILE);
+	}
+
 	private void addBundleClasspath(ManifestConfig manifestConfig) {
 		String bundleClassPath = ".";
 
@@ -211,9 +239,6 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 			(String[])exports.toArray(new String[exports.size()]));
 
 		addBundleClasspath(manifestConfig);
-
-		builder.addBundleActivator(ArquillianBundleActivator.class);
-		javaArchive.addClass(ArquillianBundleActivator.class);
 
 		Manifest manifest = builder.getManifest();
 
@@ -370,14 +395,21 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 
 			addArquillianDependencies(javaArchive);
 
-			ManifestConfig manifestConfig = getManifestConfig(javaArchive);
-
-			handleAuxiliaryArchives(
-				javaArchive, manifestConfig, auxiliaryArchives);
-
-			addManifestToArchive(javaArchive, manifestConfig);
+			handleAuxiliaryArchives(javaArchive, auxiliaryArchives);
 
 			deleteImportsIncludedInClassPath(javaArchive, auxiliaryArchives);
+
+			Manifest manifest = getManifest(javaArchive);
+
+			Attributes mainAttributes = manifest.getMainAttributes();
+
+			mainAttributes.put(
+				new Attributes.Name("Bundle-Activator"),
+				ArquillianBundleActivator.class.getCanonicalName());
+
+			replaceManifest(javaArchive, manifest);
+
+			javaArchive.addClass(ArquillianBundleActivator.class);
 
 			return javaArchive;
 		}
@@ -391,8 +423,7 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 	}
 
 	private void handleAuxiliaryArchives(
-			JavaArchive javaArchive, ManifestConfig manifestConfig,
-			Collection<Archive<?>> auxiliaryArchives)
+			JavaArchive javaArchive, Collection<Archive<?>> auxiliaryArchives)
 		throws Exception {
 
 		for (Archive auxiliaryArchive : auxiliaryArchives) {
@@ -434,7 +465,8 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 
 			javaArchive.addAsResource(byteArrayAsset, path);
 
-			manifestConfig.getClassPaths().add(path);
+			addAttributeValueToListAttributeInManifest(
+				javaArchive, "Bundle-ClassPath", path, ".");
 
 			try {
 				validateBundleArchive(auxiliaryArchive);
@@ -451,15 +483,18 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 					String[] importsValue = value.split(",");
 
 					for (String importValue : importsValue) {
-						manifestConfig.getImports().add(importValue);
+						addAttributeValueToListAttributeInManifest(
+							javaArchive, "Import-Package", importValue, "");
 					}
 				}
 
-				String bundleActivator = mainAttributes.getValue(
+				String bundleActivatorValue = mainAttributes.getValue(
 					"Bundle-Activator");
 
-				if (bundleActivator != null) {
-					manifestConfig.getActivators().add(bundleActivator);
+				if ((bundleActivatorValue != null) &&
+					!bundleActivatorValue.isEmpty()) {
+
+					addBundleActivator(javaArchive, bundleActivatorValue);
 				}
 			}
 			catch (BundleException e) {
