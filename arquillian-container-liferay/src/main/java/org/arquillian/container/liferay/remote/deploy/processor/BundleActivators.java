@@ -60,7 +60,6 @@ public class BundleActivators {
 		throws IOException {
 
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-		StringBuilder out = new StringBuilder();
 		String line;
 		while ((line = reader.readLine()) != null) {
 			_bundleActivators.add(line);
