@@ -49,6 +49,8 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Cristina González Castellano
@@ -308,11 +310,11 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 				}
 			}
 			catch (BundleException e) {
-				//If this jar is not a bundle, we should not process
-				//the manifest
-
-				System.err.println(
-					"Skipping " + javaArchive +":" + e.getMessage());
+				if (_logger.isInfoEnabled()) {
+					_logger.info(
+						"Not processing manifest from " + auxiliaryArchive +
+							": " + e.getMessage());
+				}
 			}
 		}
 	}
@@ -350,6 +352,9 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 
 	private static final String _ACTIVATORS_FILE =
 		"/META-INF/services/" + BundleActivator.class.getCanonicalName();
+
+	private static final Logger _logger = LoggerFactory.getLogger(
+		OSGiDeploymentPackager.class);
 
 	private static final String _REMOTE_LOADABLE_EXTENSION_FILE =
 		"/META-INF/services/" +
