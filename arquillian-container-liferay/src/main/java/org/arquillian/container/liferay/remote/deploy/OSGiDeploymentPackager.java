@@ -49,6 +49,7 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,9 +85,7 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 
 		String attributeValues = mainAttributes.getValue(attributeName);
 
-		if ((attributeValues == null) ||
-			attributeValues.isEmpty()) {
-
+		if ((attributeValues == null) || attributeValues.isEmpty()) {
 			if ((startValue != null) && !startValue.isEmpty()) {
 				startValue = startValue + ",";
 			}
@@ -353,11 +352,11 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 	private static final String _ACTIVATORS_FILE =
 		"/META-INF/services/" + BundleActivator.class.getCanonicalName();
 
-	private static final Logger _logger = LoggerFactory.getLogger(
-		OSGiDeploymentPackager.class);
-
 	private static final String _REMOTE_LOADABLE_EXTENSION_FILE =
 		"/META-INF/services/" +
 		RemoteLoadableExtension.class.getCanonicalName();
+
+	private static final Logger _logger = LoggerFactory.getLogger(
+		OSGiDeploymentPackager.class);
 
 }
