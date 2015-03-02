@@ -14,6 +14,7 @@
 
 package org.arquillian.container.liferay.remote;
 
+import org.arquillian.container.liferay.remote.bundleclasspath.BundleClassPathAuxiliaryAppender;
 import org.arquillian.container.liferay.remote.deploy.JMXOSGiProtocol;
 import org.arquillian.container.liferay.remote.enricher.LiferayEnricherAuxiliaryAppender;
 import org.arquillian.container.liferay.remote.wait.LiferayWaitForServiceAuxiliaryAppender;
@@ -47,6 +48,10 @@ public class LiferayRemoteContainerExtension implements LoadableExtension {
 		builder.service(
 			AuxiliaryArchiveAppender.class,
 			LiferayWaitForServiceAuxiliaryAppender.class);
+
+		builder.service(
+			AuxiliaryArchiveAppender.class,
+			BundleClassPathAuxiliaryAppender.class);
 	}
 
 }
