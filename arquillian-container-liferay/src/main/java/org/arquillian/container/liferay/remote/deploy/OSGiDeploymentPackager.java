@@ -21,10 +21,13 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -93,7 +96,23 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 			attributeValues = startValue + attributeValue;
 		}
 		else {
-			attributeValues += "," + attributeValue;
+			Set<String> attributeValueSet = new HashSet<>(
+				Arrays.asList(attributeValues.split(",")));
+
+			attributeValueSet.addAll(Arrays.asList(attributeValue.split(",")));
+
+			StringBuilder sb = new StringBuilder();
+
+			for (String value : attributeValueSet) {
+				sb.append(value);
+				sb.append(",");
+			}
+
+			if (!attributeValueSet.isEmpty()) {
+				sb.setLength(sb.length() - 1);
+			}
+
+			attributeValues = sb.toString();
 		}
 
 		mainAttributes.putValue(attributeName, attributeValues);
