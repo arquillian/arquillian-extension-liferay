@@ -12,7 +12,7 @@
  * details.
  */
 
-package org.arquillian.container.liferay.remote.deploy;
+package org.arquillian.container.liferay.remote.deploy.processor;
 
 import aQute.bnd.osgi.Jar;
 
@@ -33,13 +33,15 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.arquillian.container.liferay.remote.activator.ArquillianBundleActivator;
-import org.arquillian.container.liferay.remote.deploy.processor.BundleActivatorsManager;
 
 import org.jboss.arquillian.container.test.spi.RemoteLoadableExtension;
-import org.jboss.arquillian.container.test.spi.TestDeployment;
-import org.jboss.arquillian.container.test.spi.client.deployment.DeploymentPackager;
-import org.jboss.arquillian.container.test.spi.client.deployment.ProtocolArchiveProcessor;
+import org.jboss.arquillian.container.test.spi.client.deployment.ApplicationArchiveProcessor;
+import org.jboss.arquillian.container.test.spi.client.deployment.AuxiliaryArchiveAppender;
+import org.jboss.arquillian.core.api.Instance;
+import org.jboss.arquillian.core.api.annotation.Inject;
+import org.jboss.arquillian.core.spi.ServiceLoader;
 import org.jboss.arquillian.protocol.jmx.JMXTestRunner;
+import org.jboss.arquillian.test.spi.TestClass;
 import org.jboss.osgi.metadata.OSGiManifestBuilder;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ArchivePath;
@@ -57,18 +59,47 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author Cristina González Castellano
+ * @author Cristina González
  */
-public class OSGiDeploymentPackager implements DeploymentPackager {
+public class AddAllExtensionsToApplicationArchiveProcessor
+	implements ApplicationArchiveProcessor {
 
-	public Archive<?> generateDeployment(
-		TestDeployment testDeployment,
-		Collection<ProtocolArchiveProcessor> processors) {
+	@Override
+	public void process(Archive<?> archive, TestClass testClass) {
+		try {
+			JavaArchive javaArchive = (JavaArchive)archive;
 
-		Archive<?> bundleArchive = testDeployment.getApplicationArchive();
+			validateBundleArchive(javaArchive);
 
-		return handleArchive(
-			(JavaArchive)bundleArchive, testDeployment.getAuxiliaryArchives());
+			addOsgiImports(javaArchive);
+
+			addArquillianDependencies(javaArchive);
+
+			List<Archive<?>> auxiliaryArchives = loadAuxiliaryArchives();
+
+			handleAuxiliaryArchives(javaArchive, auxiliaryArchives);
+
+			deleteImportsIncludedInClassPath(javaArchive, auxiliaryArchives);
+
+			Manifest manifest = getManifest(javaArchive);
+
+			Attributes mainAttributes = manifest.getMainAttributes();
+
+			mainAttributes.put(
+				new Attributes.Name("Bundle-Activator"),
+				ArquillianBundleActivator.class.getCanonicalName());
+
+			replaceManifest(javaArchive, manifest);
+
+			javaArchive.addClass(ArquillianBundleActivator.class);
+		}
+		catch (RuntimeException rte) {
+			throw rte;
+		}
+		catch (Exception ex) {
+			throw new IllegalArgumentException(
+				"Not a valid OSGi bundle: " + archive, ex);
+		}
 	}
 
 	private void addArquillianDependencies(JavaArchive javaArchive)
@@ -215,43 +246,6 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 		return new Manifest(manifestAsset.openStream());
 	}
 
-	private Archive<?> handleArchive(
-		JavaArchive javaArchive, Collection<Archive<?>> auxiliaryArchives) {
-
-		try {
-			validateBundleArchive(javaArchive);
-
-			addOsgiImports(javaArchive);
-
-			addArquillianDependencies(javaArchive);
-
-			handleAuxiliaryArchives(javaArchive, auxiliaryArchives);
-
-			deleteImportsIncludedInClassPath(javaArchive, auxiliaryArchives);
-
-			Manifest manifest = getManifest(javaArchive);
-
-			Attributes mainAttributes = manifest.getMainAttributes();
-
-			mainAttributes.put(
-				new Attributes.Name("Bundle-Activator"),
-				ArquillianBundleActivator.class.getCanonicalName());
-
-			replaceManifest(javaArchive, manifest);
-
-			javaArchive.addClass(ArquillianBundleActivator.class);
-
-			return javaArchive;
-		}
-		catch (RuntimeException rte) {
-			throw rte;
-		}
-		catch (Exception ex) {
-			throw new IllegalArgumentException(
-				"Not a valid OSGi bundle: " + javaArchive, ex);
-		}
-	}
-
 	private void handleAuxiliaryArchives(
 			JavaArchive javaArchive, Collection<Archive<?>> auxiliaryArchives)
 		throws Exception {
@@ -337,6 +331,28 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 		}
 	}
 
+	private List<Archive<?>> loadAuxiliaryArchives() {
+		List<Archive<?>> archives = new ArrayList<>();
+
+		// load based on the Containers ClassLoader
+
+		ServiceLoader serviceLoader = _serviceLoaderInstance.get();
+
+		Collection<AuxiliaryArchiveAppender> archiveAppenders =
+			serviceLoader.all(AuxiliaryArchiveAppender.class);
+
+		for (AuxiliaryArchiveAppender archiveAppender : archiveAppenders) {
+			Archive<?> auxiliaryArchive =
+				archiveAppender.createAuxiliaryArchive();
+
+			if (auxiliaryArchive != null) {
+				archives.add(auxiliaryArchive);
+			}
+		}
+
+		return archives;
+	}
+
 	private void replaceManifest(Archive archive, Manifest manifest )
 		throws IOException {
 
@@ -373,9 +389,12 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 
 	private static final String _REMOTE_LOADABLE_EXTENSION_FILE =
 		"/META-INF/services/" +
-		RemoteLoadableExtension.class.getCanonicalName();
+			RemoteLoadableExtension.class.getCanonicalName();
 
 	private static final Logger _logger = LoggerFactory.getLogger(
-		OSGiDeploymentPackager.class);
+		ApplicationArchiveProcessor.class);
+
+	@Inject
+	private Instance<ServiceLoader> _serviceLoaderInstance;
 
 }

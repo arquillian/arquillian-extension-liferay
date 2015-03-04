@@ -15,14 +15,14 @@
 package org.arquillian.container.liferay.remote;
 
 import org.arquillian.container.liferay.remote.bundleclasspath.BundleClassPathAuxiliaryAppender;
-import org.arquillian.container.liferay.remote.deploy.JMXOSGiProtocol;
+import org.arquillian.container.liferay.remote.deploy.processor.AddAllExtensionsToApplicationArchiveProcessor;
 import org.arquillian.container.liferay.remote.enricher.LiferayEnricherAuxiliaryAppender;
 import org.arquillian.container.liferay.remote.wait.LiferayWaitForServiceAuxiliaryAppender;
 
 import org.jboss.arquillian.container.osgi.karaf.remote.KarafRemoteDeployableContainer;
 import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
+import org.jboss.arquillian.container.test.spi.client.deployment.ApplicationArchiveProcessor;
 import org.jboss.arquillian.container.test.spi.client.deployment.AuxiliaryArchiveAppender;
-import org.jboss.arquillian.container.test.spi.client.protocol.Protocol;
 import org.jboss.arquillian.core.spi.LoadableExtension;
 
 /**
@@ -36,10 +36,9 @@ public class LiferayRemoteContainerExtension implements LoadableExtension {
 			DeployableContainer.class, KarafRemoteDeployableContainer.class,
 			LiferayRemoteDeployableContainer.class);
 
-		builder.override(
-			Protocol.class,
-			org.jboss.arquillian.protocol.osgi.JMXOSGiProtocol.class,
-			JMXOSGiProtocol.class);
+		builder.service(
+			ApplicationArchiveProcessor.class,
+			AddAllExtensionsToApplicationArchiveProcessor.class);
 
 		builder.service(
 			AuxiliaryArchiveAppender.class,

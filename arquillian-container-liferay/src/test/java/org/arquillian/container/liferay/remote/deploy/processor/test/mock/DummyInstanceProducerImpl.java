@@ -12,27 +12,25 @@
  * details.
  */
 
-package org.arquillian.container.liferay.remote.deploy;
+package org.arquillian.container.liferay.remote.deploy.processor.test.mock;
 
-import org.jboss.arquillian.container.test.spi.client.deployment.DeploymentPackager;
-import org.jboss.arquillian.protocol.jmx.AbstractJMXProtocol;
+import org.jboss.arquillian.core.api.InstanceProducer;
 
 /**
- * JMXOSGiProtocol
- *
- * @author thomas.diesler@jboss.com
- * @since 21-Apr-2011
+ * @author Cristina González
  */
-public class JMXOSGiProtocol extends AbstractJMXProtocol {
+public class DummyInstanceProducerImpl implements InstanceProducer<Object> {
 
 	@Override
-	public DeploymentPackager getPackager() {
-		return new OSGiDeploymentPackager();
+	public Object get() {
+		return _object;
 	}
 
 	@Override
-	public String getProtocolName() {
-		return "jmx-osgi";
+	public void set(Object value) {
+		_object = value;
 	}
+
+	private Object _object;
 
 }
