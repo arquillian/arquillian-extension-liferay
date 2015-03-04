@@ -28,7 +28,7 @@ public class ATest {
 		A a = new A();
 		B b = new B();
 
-		if (1 == 1) throw new BundleException("test");
+		if (1 == 1)throw new BundleException("test");
 	}
 
 }

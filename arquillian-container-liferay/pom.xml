@@ -41,7 +41,6 @@
 			<artifactId>org.osgi.enterprise</artifactId>
 			<version>5.0.0</version>
 		</dependency>
-
 	</dependencies>
 
 </project>

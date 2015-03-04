@@ -98,11 +98,9 @@ public enum ToolsClasspathTask
 
 			// Util jars
 
-			File[] utilJars =
-				Maven.resolver().loadPomFromClassLoaderResource(
-					"liferay-tool-deps.xml").
-					importCompileAndRuntimeDependencies().resolve().using(
-						AcceptAllStrategy.INSTANCE).asFile();
+			File[] utilJars = Maven.resolver().loadPomFromClassLoaderResource(
+				"liferay-tool-deps.xml").importCompileAndRuntimeDependencies().
+				resolve().using(AcceptAllStrategy.INSTANCE).asFile();
 
 			for (int i = 0; i < utilJars.length; i++) {
 				liferayToolArchives.add(utilJars[i].toURI());

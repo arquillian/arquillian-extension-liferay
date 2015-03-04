@@ -11,6 +11,7 @@
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
  */
+
 package org.arquillian.container.liferay.remote.bundleclasspath;
 
 import org.jboss.arquillian.container.test.spi.RemoteLoadableExtension;
