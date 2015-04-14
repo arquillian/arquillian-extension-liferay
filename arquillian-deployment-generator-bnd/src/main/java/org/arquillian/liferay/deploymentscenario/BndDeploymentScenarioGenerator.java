@@ -114,12 +114,6 @@ public class BndDeploymentScenarioGenerator
 
 			if (testable) {
 				addTestClass(testClass, javaArchive);
-
-				//FIXME: Is this still needed with latest version of
-
-				// arquillian-osgi-bundle?
-
-				fixExportPackage(testClass, analyzer);
 			}
 
 			ZipExporter zipExporter = javaArchive.as(ZipExporter.class);
@@ -204,33 +198,7 @@ public class BndDeploymentScenarioGenerator
 	protected Instance<Injector> injector;
 
 	private void addTestClass(TestClass testClass, JavaArchive javaArchive) {
-		Class<?> javaClass = testClass.getJavaClass();
-
-		Class superClass = javaClass;
-
-		//FIXME: This can give us trouble if a test superclass is being/needs
-
-		// to be imported from another bundle?
-
-		while (superClass != Object.class) {
-			javaArchive.addClass(superClass);
-			superClass = superClass.getSuperclass();
-		}
-	}
-
-	private void fixExportPackage(TestClass testClass, Analyzer analyzer) {
-		String exportPackage = analyzer.getProperty("Export-Package");
-
-		Class<?> javaClass = testClass.getJavaClass();
-
-		if ((exportPackage == null) || exportPackage.isEmpty()) {
-			exportPackage = javaClass.getPackage().getName();
-		}
-		else {
-			exportPackage += "," + javaClass.getPackage().getName();
-		}
-
-		analyzer.setProperty("Export-Package", exportPackage);
+		javaArchive.addClass(testClass.getJavaClass());
 	}
 
 	private boolean isTestable(TestClass testClass) {

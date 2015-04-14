@@ -14,11 +14,6 @@
 
 package org.arquillian.liferay.deploymentscenario.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -36,6 +31,8 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.Node;
 
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Carlos Sierra Andrés
@@ -73,17 +70,12 @@ public class BndDeploymentScenarioGeneratorTest {
 
         Attributes mainAttributes = manifest.getMainAttributes();
 
-        String exportPackageValue = mainAttributes.getValue("Export-Package");
-
-        assertTrue("Package from test class must be exported",
-                        exportPackageValue.contains("org.arquillian.liferay.test"));
-
         String importPackageValue = mainAttributes.getValue("Import-Package");
 
         assertFalse("Package from the classes must not be imported",
-                importPackageValue.contains("org.arquillian.liferay.test.extras.a"));
+            importPackageValue.contains("org.arquillian.liferay.test.extras.a"));
         assertFalse("Package from the classes must not be imported",
-                importPackageValue.contains("org.arquillian.liferay.test.extras.b"));
+            importPackageValue.contains("org.arquillian.liferay.test.extras.b"));
 
         assertTrue("Should contain org.osgi.framework", importPackageValue.contains("org.osgi.framework"));
 
@@ -125,17 +117,12 @@ public class BndDeploymentScenarioGeneratorTest {
 
         Attributes mainAttributes = manifest.getMainAttributes();
 
-        String exportPackageValue = mainAttributes.getValue("Export-Package");
-
-        assertTrue("Package from test class must be exported",
-                        exportPackageValue.contains("org.arquillian.liferay.test"));
-
         String importPackageValue = mainAttributes.getValue("Import-Package");
 
         assertFalse("Package from the classes must not be imported",
-                importPackageValue.contains("org.arquillian.liferay.test.extras.a"));
+            importPackageValue.contains("org.arquillian.liferay.test.extras.a"));
         assertFalse("Package from the classes must not be imported",
-                importPackageValue.contains("org.arquillian.liferay.test.extras.b"));
+            importPackageValue.contains("org.arquillian.liferay.test.extras.b"));
 
         String fooProperty = mainAttributes.getValue("Foo-Property");
 
@@ -181,17 +168,12 @@ public class BndDeploymentScenarioGeneratorTest {
 
         Attributes mainAttributes = manifest.getMainAttributes();
 
-        String exportPackageValue = mainAttributes.getValue("Export-Package");
-
-        assertTrue("Package from test class must be exported",
-                exportPackageValue.contains("org.arquillian.liferay.test"));
-
         String importPackageValue = mainAttributes.getValue("Import-Package");
 
         assertFalse("Package from the classes must not be imported",
-                importPackageValue.contains("org.arquillian.liferay.test.extras.a"));
+            importPackageValue.contains("org.arquillian.liferay.test.extras.a"));
         assertFalse("Package from the classes must not be imported",
-                importPackageValue.contains("org.arquillian.liferay.test.extras.b"));
+            importPackageValue.contains("org.arquillian.liferay.test.extras.b"));
 
         String fooProperty = mainAttributes.getValue("Foo-Property");
 
