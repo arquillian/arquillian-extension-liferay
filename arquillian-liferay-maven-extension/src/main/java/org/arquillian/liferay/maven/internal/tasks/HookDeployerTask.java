@@ -31,46 +31,45 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:kamesh.sampath@liferay.com">Kamesh Sampath</a>
  */
 public enum HookDeployerTask
-    implements MavenWorkingSessionTask<MavenWorkingSession> {
+	implements MavenWorkingSessionTask<MavenWorkingSession> {
 
-    INSTANCE;
+	INSTANCE;
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.jboss.shrinkwrap.resolver.impl.maven.task.MavenWorkingSessionTask
-     * #execute(org.jboss.shrinkwrap.resolver.api.maven.MavenWorkingSession)
-     */
-    @Override
-    public MavenWorkingSession execute(MavenWorkingSession session) {
+	/**
+	 * (non-Javadoc)
+	 * @see
+	 * org.jboss.shrinkwrap.resolver.impl.maven.task.MavenWorkingSessionTask
+	 * #execute(org.jboss.shrinkwrap.resolver.api.maven.MavenWorkingSession)
+	 */
+	@Override
+	public MavenWorkingSession execute(MavenWorkingSession session) {
+		final Logger log = LoggerFactory.getLogger(HookDeployerTask.class);
 
-        final Logger log =
-            LoggerFactory.getLogger(HookDeployerTask.class);
+		log.debug("Building Hook Archive");
 
-        log.debug("Building Hook Archive");
+		HashMap<String, Object> args = new HashMap<>();
+		args.put(
+			"deployerClassName",
+			"com.liferay.portal.tools.deploy.HookDeployer");
 
-        HashMap<String, Object> args = new HashMap<>();
-        args.put(
-            "deployerClassName", "com.liferay.portal.tools.deploy.HookDeployer");
+		final ParsedPomFile pomFile = session.getParsedPomFile();
 
-        final ParsedPomFile pomFile = session.getParsedPomFile();
+		LiferayPluginConfiguration configuration =
+			new LiferayPluginConfiguration(pomFile);
 
-        LiferayPluginConfiguration configuration =
-            new LiferayPluginConfiguration(pomFile);
+		File appServerLibPortalDir = new File(
+			configuration.getAppServerLibPortalDir());
 
-        File appServerLibPortalDir =
-            new File(configuration.getAppServerLibPortalDir());
+		String libPath = appServerLibPortalDir.getAbsolutePath();
 
-        String libPath = appServerLibPortalDir.getAbsolutePath();
+		String[] jars = {
+			libPath + "/util-java.jar"
+		};
+		args.put("jars", jars);
 
-        String[] jars = {
-            libPath + "/util-java.jar"
-        };
-        args.put("jars", jars);
+		ExecuteDeployerTask.INSTANCE.execute(session, configuration, args);
 
-        ExecuteDeployerTask.INSTANCE.execute(session, configuration, args);
-
-        return session;
-    }
+		return session;
+	}
 
 }

@@ -12,35 +12,35 @@
  * details.
  */
 
-package org.arquillian.container.liferay.remote;
+package org.arquillian.container.osgi.remote;
 
-import org.arquillian.container.liferay.remote.enricher.LiferayEnricherAuxiliaryAppender;
-import org.arquillian.container.liferay.remote.wait.LiferayWaitForServiceAuxiliaryAppender;
-import org.arquillian.container.osgi.remote.KarafWithoutBundleRemoteDeployableContainer;
+import org.arquillian.container.osgi.remote.bundleclasspath.BundleClassPathAuxiliaryAppender;
+import org.arquillian.container.osgi.remote.processor.AddAllExtensionsToApplicationArchiveProcessor;
 
+import org.jboss.arquillian.container.osgi.karaf.remote.KarafRemoteDeployableContainer;
 import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
+import org.jboss.arquillian.container.test.spi.client.deployment.ApplicationArchiveProcessor;
 import org.jboss.arquillian.container.test.spi.client.deployment.AuxiliaryArchiveAppender;
 import org.jboss.arquillian.core.spi.LoadableExtension;
 
 /**
- * @author Carlos Sierra Andrés
+ * @author Cristina González
  */
-public class LiferayRemoteContainerExtension implements LoadableExtension {
+public class OSGiAllInBundleExtension implements LoadableExtension {
 
 	@Override
 	public void register(ExtensionBuilder builder) {
 		builder.override(
-			DeployableContainer.class,
-			KarafWithoutBundleRemoteDeployableContainer.class,
-			LiferayRemoteDeployableContainer.class);
+			DeployableContainer.class, KarafRemoteDeployableContainer.class,
+			KarafWithoutBundleRemoteDeployableContainer.class);
+
+		builder.service(
+			ApplicationArchiveProcessor.class,
+			AddAllExtensionsToApplicationArchiveProcessor.class);
 
 		builder.service(
 			AuxiliaryArchiveAppender.class,
-			LiferayEnricherAuxiliaryAppender.class);
-
-		builder.service(
-			AuxiliaryArchiveAppender.class,
-			LiferayWaitForServiceAuxiliaryAppender.class);
+			BundleClassPathAuxiliaryAppender.class);
 	}
 
 }

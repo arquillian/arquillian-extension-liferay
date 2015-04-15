@@ -62,249 +62,265 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:kamesh.sampath@liferay.com">Kamesh Sampath</a>
  */
 public class LiferayWarPackagingProcessor
-    extends AbstractCompilingProcessor<WebArchive>
-    implements PackagingProcessor<WebArchive> {
+	extends AbstractCompilingProcessor<WebArchive>
+	implements PackagingProcessor<WebArchive> {
 
-    private static final Logger log =
-        LoggerFactory.getLogger(LiferayWarPackagingProcessor.class);
+	/**
+	 * (non-Javadoc)
+	 * @see
+	 * org.jboss.shrinkwrap.resolver.spi.maven.archive.packaging.PackagingProcessor
+	 * #configure(org.jboss.shrinkwrap.api.Archive,
+	 * org.jboss.shrinkwrap.resolver.api.maven.MavenWorkingSession)
+	 */
+	@Override
+	public LiferayWarPackagingProcessor configure(
+		Archive<?> originalArchive, MavenWorkingSession session) {
 
-    private WebArchive archive;
+		super.configure(session);
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.jboss.shrinkwrap.resolver.spi.maven.archive.packaging.PackagingProcessor
-     * #handles(org.jboss.shrinkwrap.resolver.api.maven.PackagingType)
-     */
-    @Override
-    public boolean handles(PackagingType packagingType) {
-        return PackagingType.WAR.equals(packagingType);
-    }
+		archive = ShrinkWrap.create(WebArchive.class);
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.jboss.shrinkwrap.resolver.spi.maven.archive.packaging.PackagingProcessor
-     * #getResultingArchive()
-     */
-    @Override
-    public WebArchive getResultingArchive() {
-        log.trace("Resulting Archive:" + archive.toString(Formatters.VERBOSE));
+		return this;
+	}
 
-        return archive;
-    }
+	/**
+	 * (non-Javadoc)
+	 * @see
+	 * org.jboss.shrinkwrap.resolver.spi.maven.archive.packaging.PackagingProcessor
+	 * #getResultingArchive()
+	 */
+	@Override
+	public WebArchive getResultingArchive() {
+		log.trace("Resulting Archive:" + archive.toString(Formatters.VERBOSE));
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.jboss.shrinkwrap.resolver.spi.maven.archive.packaging.PackagingProcessor
-     * #configure(org.jboss.shrinkwrap.api.Archive,
-     * org.jboss.shrinkwrap.resolver.api.maven.MavenWorkingSession)
-     */
-    @Override
-    public LiferayWarPackagingProcessor configure(
-            Archive<?> originalArchive, MavenWorkingSession session) {
+		return archive;
+	}
 
-        super.configure(session);
+	/**
+	 * (non-Javadoc)
+	 * @see
+	 * org.jboss.shrinkwrap.resolver.spi.maven.archive.packaging.PackagingProcessor
+	 * #handles(org.jboss.shrinkwrap.resolver.api.maven.PackagingType)
+	 */
+	@Override
+	public boolean handles(PackagingType packagingType) {
+		return PackagingType.WAR.equals(packagingType);
+	}
 
-        archive = ShrinkWrap.create(WebArchive.class);
+	/**
+	 * (non-Javadoc)
+	 * @see
+	 * org.jboss.shrinkwrap.resolver.spi.maven.archive.packaging.PackagingProcessor
+	 * #importBuildOutput(org.jboss.shrinkwrap.resolver.api.maven.strategy.
+	 * MavenResolutionStrategy)
+	 */
+	@Override
+	public LiferayWarPackagingProcessor importBuildOutput(
+			MavenResolutionStrategy strategy)
+		throws IllegalArgumentException, ResolutionException {
 
-        return this;
-    }
+		log.debug("Building Liferay Plugin Archive");
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * org.jboss.shrinkwrap.resolver.spi.maven.archive.packaging.PackagingProcessor
-     * #importBuildOutput(org.jboss.shrinkwrap.resolver.api.maven.strategy.
-     * MavenResolutionStrategy)
-     */
-    @Override
-    public LiferayWarPackagingProcessor importBuildOutput(
-            MavenResolutionStrategy strategy)
-        throws IllegalArgumentException, ResolutionException {
+		ParsedPomFile pomFile = session.getParsedPomFile();
 
-        log.debug("Building Liferay Plugin Archive");
+		// Compile and add Java classes
 
-        ParsedPomFile pomFile = session.getParsedPomFile();
+		if (Validate.isReadable(pomFile.getSourceDirectory())) {
+			compile(
+				pomFile.getSourceDirectory(), pomFile.getBuildOutputDirectory(),
+				ScopeType.COMPILE, ScopeType.RUNTIME, ScopeType.SYSTEM,
+				ScopeType.IMPORT, ScopeType.PROVIDED);
+			JavaArchive classes =
+				ShrinkWrap.create(ExplodedImporter.class, "webinf_clases.jar").
+					importDirectory(
+						pomFile.getBuildOutputDirectory()).as(
+							JavaArchive.class);
 
-        // Compile and add Java classes
-        if (Validate.isReadable(pomFile.getSourceDirectory())) {
-            compile(
-                pomFile.getSourceDirectory(),
-                pomFile.getBuildOutputDirectory(),
-                ScopeType.COMPILE, ScopeType.RUNTIME, ScopeType.SYSTEM,
-                ScopeType.IMPORT, ScopeType.PROVIDED);
-            JavaArchive classes =
-                ShrinkWrap.create(ExplodedImporter.class, "webinf_clases.jar").
-                    importDirectory(
-                        pomFile.getBuildOutputDirectory()).as(
-                            JavaArchive.class);
+			archive = archive.merge(
+				classes, ArchivePaths.create("WEB-INF/classes"));
 
-            archive = archive.merge(classes, ArchivePaths.create("WEB-INF/classes"));
-            // Raise bug with shrink wrap ?Since configure creates the base war
-            // in target classes, we need to delete from the archive
+			// Raise bug with shrink wrap ?Since configure creates the base war
+			// in target classes, we need to delete from the archive
 
-            log.trace("Removing temp file: " + pomFile.getFinalName() +
-                " form archive");
-            archive.delete(ArchivePaths.create(
-                "WEB-INF/classes", pomFile.getFinalName()));
-        }
+			log.trace(
+				"Removing temp file: " + pomFile.getFinalName() +
+					" form archive");
+			archive.delete(
+				ArchivePaths.create("WEB-INF/classes", pomFile.getFinalName()));
+		}
 
-        // Add Resources
-        for (Resource resource : pomFile.getResources()) {
-            archive.addAsResource(
-                resource.getSource(), resource.getTargetPath());
-        }
+		// Add Resources
 
-        // Webapp build
-        WarPluginConfiguration warPluginConfiguration =
-            new WarPluginConfiguration(pomFile);
+		for (Resource resource : pomFile.getResources()) {
+			archive.addAsResource(
+				resource.getSource(), resource.getTargetPath());
+		}
 
-        if (Validate.isReadable(warPluginConfiguration.getWarSourceDirectory())) {
-            WebArchive webapp =
-                ShrinkWrap.create(ExplodedImporter.class, "webapp.war").importDirectory(
-                    warPluginConfiguration.getWarSourceDirectory(),
-                    applyFilter(warPluginConfiguration)).as(
-                    WebArchive.class);
+		// Webapp build
 
-            archive.merge(webapp);
-        }
+		WarPluginConfiguration warPluginConfiguration =
+			new WarPluginConfiguration(pomFile);
 
-        // Add manifest
-        try {
-            Manifest manifest =
-                warPluginConfiguration.getArchiveConfiguration().asManifest();
+		if (Validate.isReadable(
+				warPluginConfiguration.getWarSourceDirectory())) {
 
-            ByteArrayOutputStream bout =
-                new ByteArrayOutputStream();
-            manifest.write(bout);
+			WebArchive webapp =
+				ShrinkWrap.create(ExplodedImporter.class, "webapp.war").
+					importDirectory(
+						warPluginConfiguration.getWarSourceDirectory(),
+						applyFilter(warPluginConfiguration)).as(
+					WebArchive.class);
 
-            archive.setManifest(new StringAsset(bout.toString()));
-        }
-        catch (MavenImporterException e) {
-            log.error("Error adding manifest", e);
-        }
-        catch (IOException e) {
-            log.error("Error adding manifest", e);
-        }
+			archive.merge(webapp);
+		}
 
-        // Archive Filtering
-        archive =
-            ArchiveFilteringUtils.filterArchiveContent(
-                archive, WebArchive.class,
-                warPluginConfiguration.getIncludes(),
-                warPluginConfiguration.getExcludes());
+		// Add manifest
 
-        // Liferay Plugin Deployer
-        LiferayPluginConfiguration liferayPluginConfiguration =
-            new LiferayPluginConfiguration(pomFile);
+		try {
+			Manifest manifest =
+				warPluginConfiguration.getArchiveConfiguration().asManifest();
 
-        // Temp Archive for processing by Liferay deployers
-        String baseDirPath = liferayPluginConfiguration.getBaseDir();
+			ByteArrayOutputStream bout = new ByteArrayOutputStream();
+			manifest.write(bout);
 
-        File tempDestFile =
-            new File(
-                    baseDirPath, pomFile.getFinalName());
+			archive.setManifest(new StringAsset(bout.toString()));
+		}
+		catch (MavenImporterException e) {
+			log.error("Error adding manifest", e);
+		}
+		catch (IOException e) {
+			log.error("Error adding manifest", e);
+		}
 
-        File baseDir = new File(baseDirPath);
+		// Archive Filtering
 
-        if (!baseDir.exists()) {
-            baseDir.mkdirs();
+		archive = ArchiveFilteringUtils.filterArchiveContent(
+			archive, WebArchive.class, warPluginConfiguration.getIncludes(),
+			warPluginConfiguration.getExcludes());
 
-            log.info("Created dir " + baseDir);
-        }
+		// Liferay Plugin Deployer
 
-        log.trace("Temp Archive:" + tempDestFile.getName());
+		LiferayPluginConfiguration liferayPluginConfiguration =
+			new LiferayPluginConfiguration(pomFile);
 
-        archive.as(ZipExporter.class).exportTo(
-            tempDestFile, true);
+		// Temp Archive for processing by Liferay deployers
 
-        FileUtils.deleteQuietly(new File(pomFile.getFinalName()));
+		String baseDirPath = liferayPluginConfiguration.getBaseDir();
 
-        if ("hook".equals(liferayPluginConfiguration.getPluginType())) {
-            // perform hook deployer task
+		File tempDestFile = new File(baseDirPath, pomFile.getFinalName());
 
-            HookDeployerTask.INSTANCE.execute(session);
-        }
-        else {
-            // default is always portletdeployer
-            PortletDeployerTask.INSTANCE.execute(session);
-        }
+		File baseDir = new File(baseDirPath);
 
-        // Call Liferay Deployer
-        LiferayPluginConfiguration configuration =
-            new LiferayPluginConfiguration(pomFile);
+		if (!baseDir.exists()) {
+			baseDir.mkdirs();
 
-        File ddPluginArchiveFile =
-            new File(configuration.getDestDir(), pomFile.getArtifactId() + ".war");
-        archive =
-            ShrinkWrap.create(ZipImporter.class, pomFile.getFinalName()).importFrom(
-                ddPluginArchiveFile).as(WebArchive.class);
+			log.info("Created dir " + baseDir);
+		}
 
-        try {
-            FileUtils.forceDelete(ddPluginArchiveFile);
+		log.trace("Temp Archive:" + tempDestFile.getName());
 
-            FileUtils.forceDelete(new File(
-                configuration.getBaseDir(), pomFile.getFinalName()));
-        }
-        catch (IOException e) {
-            // nothing to do
-        }
+		archive.as(ZipExporter.class).exportTo(tempDestFile, true);
 
-        return this;
-    }
+		FileUtils.deleteQuietly(new File(pomFile.getFinalName()));
 
-    private Filter<ArchivePath> applyFilter(
-        WarPluginConfiguration warPluginConfiguration) {
+		if ("hook".equals(liferayPluginConfiguration.getPluginType())) {
 
-        final List<String> filesToIncludes =
-            Arrays.asList(includesFiles(
-                warPluginConfiguration.getWarSourceDirectory(),
-                warPluginConfiguration.getIncludes(),
-                warPluginConfiguration.getExcludes()));
+			// perform hook deployer task
 
-        return new Filter<ArchivePath>() {
+			HookDeployerTask.INSTANCE.execute(session);
+		}
+		else {
 
-            @Override
-            public boolean include(ArchivePath archivePath) {
-                final String strFilePath = archivePath.get();
-                if (filesToIncludes.contains(strFilePath)) {
-                    return true;
-                }
-                for (String fileToInclude : filesToIncludes) {
-                    if (fileToInclude.startsWith(strFilePath)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
+			// default is always portletdeployer
 
-        };
-    }
+			PortletDeployerTask.INSTANCE.execute(session);
+		}
 
-    private String[] includesFiles(
-        File baseDir, String[] includes, String[] excludes) {
+		// Call Liferay Deployer
 
-        DirectoryScanner dirScanner = new DirectoryScanner();
-        dirScanner.setBasedir(baseDir);
+		LiferayPluginConfiguration configuration =
+			new LiferayPluginConfiguration(pomFile);
 
-        if (excludes != null) {
-            dirScanner.setExcludes(excludes);
-        }
+		File ddPluginArchiveFile = new File(
+			configuration.getDestDir(), pomFile.getArtifactId() + ".war");
+		archive =
+			ShrinkWrap.create(ZipImporter.class, pomFile.getFinalName()).
+				importFrom(ddPluginArchiveFile).as(WebArchive.class);
 
-        dirScanner.addDefaultExcludes();
-        dirScanner.scan();
+		try {
+			FileUtils.forceDelete(ddPluginArchiveFile);
 
-        final String[] includedFiles = dirScanner.getIncludedFiles();
+			FileUtils.forceDelete(
+				new File(configuration.getBaseDir(), pomFile.getFinalName()));
+		}
+		catch (IOException e) {
 
-        // ? dont know why we need this
-        for (int i = 0; i < includedFiles.length; i++) {
-            includedFiles[i] =
-                "/" + includedFiles[i].replace(File.separator, "/");
-        }
+			// nothing to do
 
-        return includedFiles;
-    }
+		}
+
+		return this;
+	}
+
+	private Filter<ArchivePath> applyFilter(
+		WarPluginConfiguration warPluginConfiguration) {
+
+		final List<String> filesToIncludes = Arrays.asList(
+			includesFiles(
+				warPluginConfiguration.getWarSourceDirectory(),
+				warPluginConfiguration.getIncludes(),
+				warPluginConfiguration.getExcludes()));
+
+		return new Filter<ArchivePath>() {
+
+			@Override
+			public boolean include(ArchivePath archivePath) {
+				final String strFilePath = archivePath.get();
+
+				if (filesToIncludes.contains(strFilePath)) {
+					return true;
+				}
+
+				for (String fileToInclude : filesToIncludes) {
+					if (fileToInclude.startsWith(strFilePath)) {
+						return true;
+					}
+				}
+
+				return false;
+			}
+
+		};
+	}
+
+	private String[] includesFiles(
+		File baseDir, String[] includes, String[] excludes) {
+
+		DirectoryScanner dirScanner = new DirectoryScanner();
+		dirScanner.setBasedir(baseDir);
+
+		if (excludes != null) {
+			dirScanner.setExcludes(excludes);
+		}
+
+		dirScanner.addDefaultExcludes();
+		dirScanner.scan();
+
+		final String[] includedFiles = dirScanner.getIncludedFiles();
+
+		// ? dont know why we need this
+
+		for (int i = 0; i < includedFiles.length; i++) {
+			includedFiles[i] =
+				"/" + includedFiles[i].replace(File.separator, "/");
+		}
+
+		return includedFiles;
+	}
+
+	private static final Logger log = LoggerFactory.getLogger(
+		LiferayWarPackagingProcessor.class);
+
+	private WebArchive archive;
 
 }

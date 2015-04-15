@@ -29,58 +29,69 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 public class LiferayPortletMavenImporterTestCase extends LiferayPluginTestCase {
 
-    @BeforeClass
-    public static void setupPortal() throws IOException {
-        if (!setup) {
-            setupPortalMinimal();
-        }
-    }
+	@BeforeClass
+	public static void setupPortal() throws IOException {
+		if (!setup) {
+			setupPortalMinimal();
+		}
+	}
 
-    @Before
-    public void cleanTarget() throws IOException {
-        new File("src/it/demo-portlet/target").delete();
-    }
+	@Before
+	public void cleanTarget() throws IOException {
+		new File("src/it/demo-portlet/target").delete();
+	}
 
-    @Test
-    public void importWar() {
-        // When
-        final WebArchive archive =
-            doImport("src/it/demo-portlet/pom.xml");
+	@Test
+	public void importWar() {
 
-        // Then
-        assertNotNull(archive.get(ArchivePaths.create(
-            "/WEB-INF/lib", "util-java.jar")));
-        assertNotNull(archive.get(ArchivePaths.create(
-            "/WEB-INF/lib", "util-taglib.jar")));
-        assertNotNull(archive.get(ArchivePaths.create(
-            "/WEB-INF/lib", "commons-logging.jar")));
-        assertNotNull(archive.get(ArchivePaths.create(
-            "/WEB-INF/lib", "log4j-extras.jar")));
-        assertNotNull(archive.get(ArchivePaths.create(
-            "/WEB-INF", "liferay-portlet.xml")));
-        assertNotNull(archive.get(ArchivePaths.create(
-            "/WEB-INF/classes", "log4j.properties")));
-        assertNotNull(archive.get(ArchivePaths.create("/WEB-INF/tld", "aui.tld")));
-        assertNotNull(archive.get(ArchivePaths.create(
-            "/WEB-INF/tld", "liferay-portlet.tld")));
-        assertNotNull(archive.get(ArchivePaths.create(
-            "/WEB-INF/jsp", "_servlet_context_include.jsp")));
+		// When
 
-    }
+		final WebArchive archive = doImport("src/it/demo-portlet/pom.xml");
 
-    private WebArchive doImport(String pomFile) {
+		// Then
 
-        try {
+		assertNotNull(
+			archive.get(ArchivePaths.create("/WEB-INF/lib", "util-java.jar")));
+		assertNotNull(
+			archive.get(
+				ArchivePaths.create("/WEB-INF/lib", "util-taglib.jar")));
+		assertNotNull(
+			archive.get(
+				ArchivePaths.create("/WEB-INF/lib", "commons-logging.jar")));
+		assertNotNull(
+			archive.get(
+				ArchivePaths.create("/WEB-INF/lib", "log4j-extras.jar")));
+		assertNotNull(
+			archive.get(
+				ArchivePaths.create("/WEB-INF", "liferay-portlet.xml")));
+		assertNotNull(
+			archive.get(
+				ArchivePaths.create("/WEB-INF/classes", "log4j.properties")));
+		assertNotNull(
+			archive.get(ArchivePaths.create("/WEB-INF/tld", "aui.tld")));
+		assertNotNull(
+			archive.get(
+				ArchivePaths.create("/WEB-INF/tld", "liferay-portlet.tld")));
+		assertNotNull(
+			archive.get(
+				ArchivePaths.create(
+					"/WEB-INF/jsp", "_servlet_context_include.jsp")));
+	}
 
-            // When
-            WebArchive archive =
-                ShrinkWrap.create(MavenImporter.class).loadPomFromFile(pomFile).importBuildOutput()
-                    .as(WebArchive.class);
+	private WebArchive doImport(String pomFile) {
+		try {
 
-            return archive;
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+			// When
+
+			WebArchive archive =
+				ShrinkWrap.create(MavenImporter.class).loadPomFromFile(pomFile).
+					importBuildOutput().as(WebArchive.class);
+
+			return archive;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 }
