@@ -1,1 +1,1 @@
-org.arquillian.container.osgi.remote.OSGiWithExtensionsExtension
+org.arquillian.container.osgi.remote.OSGiAllInBundleExtension
