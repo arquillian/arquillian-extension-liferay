@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -226,7 +227,29 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 
 			String[] imports = importString.split(",");
 
+			Map<String, Boolean> importsMap = new HashMap<>();
+
 			for (String importValue : imports) {
+				String[] importValueSplited = importValue.split(";");
+
+				boolean importValueIsOptional =
+					importValueSplited.length > 1 &&
+						importValueSplited[1].equals(";resolution=optional");
+
+				importsMap.put(importValueSplited[0], false);
+
+				boolean importContainedInJar = packages.contains(importValue);
+
+				if (!importContainedInJar && importValueIsOptional) {
+					importsMap.put(importValueSplited[0], true);
+				}
+			}
+
+			for (String importValue : importsMap.keySet()) {
+				if (importsMap.get(importValue)) {
+					importValue += ";resolution=optional";
+				}
+
 				if (!packages.contains(importValue)) {
 					addAttributeValueToListAttributeInManifest(
 						javaArchive, "Import-Package", importValue, "");

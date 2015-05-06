@@ -144,6 +144,101 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 	}
 
 	@Test
+	public void testGenerateDeploymentWithExtensionsWithOptionalImportRepeated()
+		throws Exception {
+
+		//given:
+		JavaArchive javaArchive = getJavaArchive();
+
+		javaArchive.addClass(this.getClass());
+
+		ManifestUtil.createManifest(javaArchive);
+
+		TestClass testClass = new TestClass(this.getClass());
+
+		List<String> imports = new ArrayList<>();
+
+		String importValueNoOptional = "import.example.1";
+		String importValueOptional = "import.example.1;resolution=optional";
+
+		imports.add(importValueOptional);
+		imports.add(importValueNoOptional);
+
+		//when:
+		AddAllExtensionsToApplicationArchiveProcessor processor =
+			getProcessorWithOSGIJarAuxiliaryArchive(imports);
+
+		processor.process(javaArchive, testClass);
+
+		//then:
+		Manifest manifest = getManifest(javaArchive);
+
+		Attributes mainAttributes = manifest.getMainAttributes();
+
+		String importPackageValue = mainAttributes.getValue("Import-Package");
+
+		Assert.assertNotNull(
+			"Import-Package has not been set", importPackageValue);
+
+		String[] importsPackageArray = importPackageValue.split(",");
+
+		int cont = 0;
+
+		for (String importValue : importsPackageArray) {
+			if (importValue.contains(importValueNoOptional)) {
+				cont++;
+			}
+		}
+
+		Assert.assertEquals("There are repeated imports", 1, cont);
+	}
+
+	@Test
+	public void testGenerateDeploymentWithExtensionsWithOptionalImports()
+		throws Exception {
+
+		//given:
+		JavaArchive javaArchive = getJavaArchive();
+
+		javaArchive.addClass(this.getClass());
+
+		ManifestUtil.createManifest(javaArchive);
+
+		TestClass testClass = new TestClass(this.getClass());
+
+		List<String> imports = new ArrayList<>();
+
+		imports.add("import.example.1;resolution=optional");
+		imports.add("import.example.2");
+
+		//when:
+		AddAllExtensionsToApplicationArchiveProcessor processor =
+			getProcessorWithOSGIJarAuxiliaryArchive(imports);
+
+		processor.process(javaArchive, testClass);
+
+		//then:
+		Manifest manifest = getManifest(javaArchive);
+
+		Attributes mainAttributes = manifest.getMainAttributes();
+
+		String importPackageValue = mainAttributes.getValue("Import-Package");
+
+		Assert.assertNotNull(
+			"Import-Package has not been set", importPackageValue);
+
+		String[] importsPackageArray = importPackageValue.split(",");
+
+		for (String importValue : importsPackageArray) {
+			if (importValue.contains(imports.get(0))) {
+				Assert.assertEquals(
+					"The import value " + importValue + " is not OK",
+					importValue, imports.get(0));
+			}
+		}
+	}
+
+	@Test
 	public void testGenerateDeploymentWithExtensionsWithoutManifest()
 		throws Exception {
 
