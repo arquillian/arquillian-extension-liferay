@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.jboss.arquillian.container.test.spi.client.deployment.AuxiliaryArchiveAppender;
-import org.jboss.arquillian.core.spi.ServiceLoader;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
@@ -27,34 +26,56 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
  * @author Cristina González
  */
 public class DummyServiceLoaderWithJarAuxiliaryArchive
-	implements ServiceLoader {
+	extends DummyServiceLoaderWithoutAuxiliaryArchive {
 
 	@Override
 	public <T> Collection<T> all(Class<T> aClass) {
-		ArrayList<DummyAuxiliaryArchiveAppender> dummyAuxiliaryArchives =
-			new ArrayList<>();
+		Collection<T> all = super.all(aClass);
 
-		dummyAuxiliaryArchives.add(new DummyAuxiliaryArchiveAppender());
+		if ((all != null) && !all.isEmpty()) {
+			return all;
+		}
 
-		return (Collection<T>)dummyAuxiliaryArchives;
+		if (aClass.isAssignableFrom(DummyAuxiliaryArchiveAppender.class)) {
+			ArrayList<DummyAuxiliaryArchiveAppender> dummyAuxiliaryArchives =
+				new ArrayList<>();
+
+			dummyAuxiliaryArchives.add(new DummyAuxiliaryArchiveAppender());
+
+			return (Collection<T>)dummyAuxiliaryArchives;
+		}
+
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public <T> T onlyOne(Class<T> aClass) {
-		if (aClass.getClass().isInstance(DummyAuxiliaryArchiveAppender.class)) {
+		T onlyOne = super.onlyOne(aClass);
+
+		if (onlyOne != null) {
+			return onlyOne;
+		}
+
+		if (aClass.isAssignableFrom(DummyAuxiliaryArchiveAppender.class)) {
 			return (T)new DummyAuxiliaryArchiveAppender();
 		}
 
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public <T> T onlyOne(Class<T> aClass, Class<? extends T> aClass1) {
-		if (aClass.getClass().isInstance(DummyAuxiliaryArchiveAppender.class)) {
+		T onlyOne = super.onlyOne(aClass, aClass1);
+
+		if (onlyOne != null) {
+			return onlyOne;
+		}
+
+		if (aClass.isAssignableFrom(DummyAuxiliaryArchiveAppender.class)) {
 			return (T)new DummyAuxiliaryArchiveAppender();
 		}
 
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	private class DummyAuxiliaryArchiveAppender

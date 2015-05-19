@@ -41,6 +41,13 @@ public class ManifestUtil {
 			JavaArchive javaArchive, List<String> imports)
 		throws IOException {
 
+		ManifestUtil.createManifest(javaArchive, imports, null);
+	}
+
+	public static void createManifest(
+			JavaArchive javaArchive, List<String> imports, String activator)
+		throws IOException {
+
 		Manifest manifest = new Manifest();
 
 		manifest.getMainAttributes().put(
@@ -49,6 +56,11 @@ public class ManifestUtil {
 			new Attributes.Name("Bundle-Name"), "Test");
 		manifest.getMainAttributes().put(
 			new Attributes.Name("Bundle-ManifestVersion"), "1");
+
+		if (activator != null && !activator.isEmpty()) {
+			manifest.getMainAttributes().put(
+				new Attributes.Name("Bundle-Activator"), activator);
+		}
 
 		if ((imports != null) && !imports.isEmpty()) {
 			StringBuilder sb = new StringBuilder();

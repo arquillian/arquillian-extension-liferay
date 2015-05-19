@@ -62,9 +62,7 @@ public enum HookDeployerTask
 
 		String libPath = appServerLibPortalDir.getAbsolutePath();
 
-		String[] jars = {
-			libPath + "/util-java.jar"
-		};
+		String[] jars = {libPath + "/util-java.jar"};
 		args.put("jars", jars);
 
 		ExecuteDeployerTask.INSTANCE.execute(session, configuration, args);

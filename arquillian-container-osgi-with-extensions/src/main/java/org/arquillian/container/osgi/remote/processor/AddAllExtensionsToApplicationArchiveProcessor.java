@@ -14,26 +14,22 @@
 
 package org.arquillian.container.osgi.remote.processor;
 
-import aQute.bnd.osgi.Jar;
-
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.arquillian.container.osgi.remote.activator.ArquillianBundleActivator;
+import org.arquillian.container.osgi.remote.processor.service.BundleActivatorsManager;
+import org.arquillian.container.osgi.remote.processor.service.ImportPackageManager;
+import org.arquillian.container.osgi.remote.processor.service.ManifestManager;
 
 import org.jboss.arquillian.container.test.spi.RemoteLoadableExtension;
 import org.jboss.arquillian.container.test.spi.client.deployment.ApplicationArchiveProcessor;
@@ -48,7 +44,6 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ArchivePath;
 import org.jboss.shrinkwrap.api.Filters;
 import org.jboss.shrinkwrap.api.Node;
-import org.jboss.shrinkwrap.api.asset.Asset;
 import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
@@ -72,7 +67,7 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 
 			validateBundleArchive(javaArchive);
 
-			addOsgiImports(javaArchive);
+			addOSGiImports(javaArchive);
 
 			addArquillianDependencies(javaArchive);
 
@@ -80,9 +75,11 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 
 			handleAuxiliaryArchives(javaArchive, auxiliaryArchives);
 
-			deleteImportsIncludedInClassPath(javaArchive, auxiliaryArchives);
+			cleanRepeatedImports(javaArchive, auxiliaryArchives);
 
-			Manifest manifest = getManifest(javaArchive);
+			ManifestManager manifestManager = _manifestManagerInstance.get();
+
+			Manifest manifest = manifestManager.getManifest(javaArchive);
 
 			Attributes mainAttributes = manifest.getMainAttributes();
 
@@ -90,7 +87,7 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 				new Attributes.Name("Bundle-Activator"),
 				ArquillianBundleActivator.class.getCanonicalName());
 
-			replaceManifest(javaArchive, manifest);
+			manifestManager.replaceManifest(javaArchive, manifest);
 
 			javaArchive.addClass(ArquillianBundleActivator.class);
 		}
@@ -108,165 +105,61 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 
 		javaArchive.addPackage(JMXTestRunner.class.getPackage());
 	}
-
-	private void addAttributeValueToListAttributeInManifest(
-			JavaArchive javaArchive, String attributeName,
-			String attributeValue, String startValue)
-		throws IOException {
-
-		Manifest manifest = getManifest(javaArchive);
-
-		Attributes mainAttributes = manifest.getMainAttributes();
-
-		String attributeValues = mainAttributes.getValue(attributeName);
-
-		if ((attributeValues == null) || attributeValues.isEmpty()) {
-			if ((startValue != null) && !startValue.isEmpty()) {
-				startValue = startValue + ",";
-			}
-
-			attributeValues = startValue + attributeValue;
-		}
-		else {
-			Set<String> attributeValueSet = new HashSet<>(
-				Arrays.asList(attributeValues.split(",")));
-
-			attributeValueSet.addAll(Arrays.asList(attributeValue.split(",")));
-
-			StringBuilder sb = new StringBuilder();
-
-			for (String value : attributeValueSet) {
-				sb.append(value);
-				sb.append(",");
-			}
-
-			if (!attributeValueSet.isEmpty()) {
-				sb.setLength(sb.length() - 1);
-			}
-
-			attributeValues = sb.toString();
-		}
-
-		mainAttributes.putValue(attributeName, attributeValues);
-
-		replaceManifest(javaArchive, manifest);
-	}
-
+	
 	private void addBundleActivator(
 			JavaArchive javaArchive, String bundleActivatorValue)
 		throws IOException {
 
-		Node node = javaArchive.get(_ACTIVATORS_FILE);
-
 		BundleActivatorsManager bundleActivatorsManager =
-			new BundleActivatorsManager();
-
-		if (node != null) {
-			Asset asset = node.getAsset();
-
-			bundleActivatorsManager = new BundleActivatorsManager(
-				asset.openStream());
-		}
+			_bundleActivatorsManagerInstance.get();
 
 		List<String> bundleActivators =
-			bundleActivatorsManager.getBundleActivators();
+			bundleActivatorsManager.getBundleActivators(
+				javaArchive, _ACTIVATORS_FILE);
 
 		bundleActivators.add(bundleActivatorValue);
 
-		ByteArrayOutputStream bundleActivatorAsOutputStream =
-			bundleActivatorsManager.getBundleActivatorAsOutputStream();
-
-		ByteArrayAsset byteArrayAsset = new ByteArrayAsset(
-			bundleActivatorAsOutputStream.toByteArray());
-
-		javaArchive.delete(_ACTIVATORS_FILE);
-
-		javaArchive.add(byteArrayAsset, _ACTIVATORS_FILE);
+		bundleActivatorsManager.replaceBundleActivatorsFile(
+			javaArchive, _ACTIVATORS_FILE, bundleActivators);
 	}
 
-	private void addOsgiImports(JavaArchive javaArchive) throws IOException {
-		String extensionsImports =
-			"org.osgi.framework" + "," + "javax.management" + "," +
-			"javax.management.*" + "," + "javax.naming.*" + "," +
-			"org.osgi.service.packageadmin" + "," +
-			"org.osgi.service.startlevel" + "," + "org.osgi.util.tracker";
+	private void addOSGiImports(JavaArchive javaArchive) throws IOException {
+		String[] extensionsImports = {
+			"org.osgi.framework" , "javax.management" , "javax.management.*" ,
+			"javax.naming.*" , "org.osgi.service.packageadmin" ,
+			"org.osgi.service.startlevel" , "org.osgi.util.tracker"};
 
-		addAttributeValueToListAttributeInManifest(
-			javaArchive, "Import-Package", extensionsImports, "");
+		ManifestManager manifestManager = _manifestManagerInstance.get();
+
+		Manifest manifest =
+			manifestManager.putAttributeValue(
+				manifestManager.getManifest(javaArchive), "Import-Package",
+				extensionsImports);
+
+		manifestManager.replaceManifest(javaArchive, manifest);
 	}
 
-	private void deleteImportsIncludedInClassPath(
+	private void cleanRepeatedImports(
 			JavaArchive javaArchive, Collection<Archive<?>> auxiliaryArchives)
 		throws IOException {
 
 		try {
-			List<String> packages = new ArrayList<>();
+			ImportPackageManager importPackageManager =
+				_importPackageManagerInstance.get();
 
-			for (Archive auxiliaryArchive : auxiliaryArchives) {
-				ZipExporter zipExporter = auxiliaryArchive.as(
-					ZipExporter.class);
+			ManifestManager manifestManager = _manifestManagerInstance.get();
 
-				InputStream auxiliaryArchiveInputStream =
-					zipExporter.exportAsInputStream();
+			Manifest manifest = manifestManager.getManifest(javaArchive);
 
-				Jar jar = new Jar(
-					auxiliaryArchive.getName(), auxiliaryArchiveInputStream);
+			manifest =
+				importPackageManager.cleanRepeatedImports(
+					manifest, auxiliaryArchives);
 
-				packages.addAll(jar.getPackages());
-			}
-
-			Manifest manifest = getManifest(javaArchive);
-
-			Attributes mainAttributes = manifest.getMainAttributes();
-
-			String importString = mainAttributes.getValue("Import-Package");
-
-			mainAttributes.remove(new Attributes.Name("Import-Package"));
-
-			replaceManifest(javaArchive, manifest);
-
-			String[] imports = importString.split(",");
-
-			Map<String, Boolean> importsMap = new HashMap<>();
-
-			for (String importValue : imports) {
-				String[] importValueSplited = importValue.split(";");
-
-				boolean importValueIsOptional =
-					importValueSplited.length > 1 &&
-						importValueSplited[1].equals(";resolution=optional");
-
-				importsMap.put(importValueSplited[0], false);
-
-				boolean importContainedInJar = packages.contains(importValue);
-
-				if (!importContainedInJar && importValueIsOptional) {
-					importsMap.put(importValueSplited[0], true);
-				}
-			}
-
-			for (String importValue : importsMap.keySet()) {
-				if (importsMap.get(importValue)) {
-					importValue += ";resolution=optional";
-				}
-
-				if (!packages.contains(importValue)) {
-					addAttributeValueToListAttributeInManifest(
-						javaArchive, "Import-Package", importValue, "");
-				}
-			}
+			manifestManager.replaceManifest(javaArchive, manifest);
 		}
 		catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	private Manifest getManifest(JavaArchive javaArchive) throws IOException {
-		Node manifestNode = javaArchive.get(JarFile.MANIFEST_NAME);
-
-		Asset manifestAsset = manifestNode.getAsset();
-
-		return new Manifest(manifestAsset.openStream());
 	}
 
 	private void handleAuxiliaryArchives(
@@ -312,14 +205,18 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 
 			javaArchive.addAsResource(byteArrayAsset, path);
 
-			addAttributeValueToListAttributeInManifest(
-				javaArchive, "Bundle-ClassPath", path, ".");
+			ManifestManager manifestManager = _manifestManagerInstance.get();
+
+			Manifest manifest = manifestManager.putAttributeValue(
+				manifestManager.getManifest(javaArchive), "Bundle-ClassPath", ".", path);
+
+			manifestManager.replaceManifest(javaArchive, manifest);
 
 			try {
 				validateBundleArchive(auxiliaryArchive);
 
-				Manifest auxiliaryArchiveManifest = getManifest(
-					(JavaArchive)auxiliaryArchive);
+				Manifest auxiliaryArchiveManifest =manifestManager.getManifest(
+					(JavaArchive) auxiliaryArchive);
 
 				Attributes mainAttributes =
 					auxiliaryArchiveManifest.getMainAttributes();
@@ -329,10 +226,11 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 				if (value != null) {
 					String[] importValues = value.split(",");
 
-					for (String importValue : importValues) {
-						addAttributeValueToListAttributeInManifest(
-							javaArchive, "Import-Package", importValue, "");
-					}
+					manifest =
+						manifestManager.putAttributeValue(
+							manifest, "Import-Package", importValues);
+
+					manifestManager.replaceManifest(javaArchive, manifest);
 				}
 
 				String bundleActivatorValue = mainAttributes.getValue(
@@ -376,20 +274,6 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 		return archives;
 	}
 
-	private void replaceManifest(Archive archive, Manifest manifest )
-		throws IOException {
-
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-		manifest.write(baos);
-
-		ByteArrayAsset byteArrayAsset = new ByteArrayAsset(baos.toByteArray());
-
-		archive.delete(JarFile.MANIFEST_NAME);
-
-		archive.add(byteArrayAsset, JarFile.MANIFEST_NAME);
-	}
-
 	private void validateBundleArchive(Archive<?> archive) throws Exception {
 		Manifest manifest = null;
 
@@ -416,6 +300,15 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 
 	private static final Logger _logger = LoggerFactory.getLogger(
 		ApplicationArchiveProcessor.class);
+
+	@Inject
+	private Instance<BundleActivatorsManager> _bundleActivatorsManagerInstance;
+
+	@Inject
+	private Instance<ImportPackageManager> _importPackageManagerInstance;
+
+	@Inject
+	private Instance<ManifestManager> _manifestManagerInstance;
 
 	@Inject
 	private Instance<ServiceLoader> _serviceLoaderInstance;

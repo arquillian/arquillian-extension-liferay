@@ -17,6 +17,9 @@ package org.arquillian.container.osgi.remote.deploy.processor.test.mock;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.arquillian.container.osgi.remote.processor.service.ImportPackageManager;
+import org.arquillian.container.osgi.remote.processor.service.ImportPackageManagerImpl;
+
 import org.jboss.arquillian.core.spi.ServiceLoader;
 
 /**
@@ -27,16 +30,30 @@ public class DummyServiceLoaderWithoutAuxiliaryArchive
 
 	@Override
 	public <T> Collection<T> all(Class<T> aClass) {
-		return new ArrayList<>();
+		ArrayList<T> all = new ArrayList<>();
+
+		if (aClass.isAssignableFrom(ImportPackageManager.class)) {
+			all.add((T)new ImportPackageManagerImpl());
+		}
+
+		return all;
 	}
 
 	@Override
 	public <T> T onlyOne(Class<T> aClass) {
+		if (aClass.isAssignableFrom(ImportPackageManager.class)) {
+			return (T)new ImportPackageManagerImpl();
+		}
+
 		return null;
 	}
 
 	@Override
 	public <T> T onlyOne(Class<T> aClass, Class<? extends T> aClass1) {
+		if (aClass.isAssignableFrom(ImportPackageManager.class)) {
+			return (T)new ImportPackageManagerImpl();
+		}
+
 		return null;
 	}
 

@@ -14,11 +14,13 @@
 
 package org.arquillian.container.osgi.remote.deploy.processor.test;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import java.lang.reflect.Field;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
@@ -28,9 +30,13 @@ import org.arquillian.container.osgi.remote.activator.ArquillianBundleActivator;
 import org.arquillian.container.osgi.remote.deploy.processor.test.mock.DummyInstanceProducerImpl;
 import org.arquillian.container.osgi.remote.deploy.processor.test.mock.DummyServiceLoaderWithJarAuxiliaryArchive;
 import org.arquillian.container.osgi.remote.deploy.processor.test.mock.DummyServiceLoaderWithOSGIBundleAuxiliaryArchive;
+import org.arquillian.container.osgi.remote.deploy.processor.test.mock.DummyServiceLoaderWithOSGIBundleAuxiliaryArchiveWithActivator;
 import org.arquillian.container.osgi.remote.deploy.processor.test.mock.DummyServiceLoaderWithoutAuxiliaryArchive;
 import org.arquillian.container.osgi.remote.deploy.processor.test.util.ManifestUtil;
 import org.arquillian.container.osgi.remote.processor.AddAllExtensionsToApplicationArchiveProcessor;
+import org.arquillian.container.osgi.remote.processor.service.BundleActivatorsManagerImpl;
+import org.arquillian.container.osgi.remote.processor.service.ImportPackageManagerImpl;
+import org.arquillian.container.osgi.remote.processor.service.ManifestManagerImpl;
 
 import org.jboss.arquillian.core.spi.ServiceLoader;
 import org.jboss.arquillian.test.spi.TestClass;
@@ -41,6 +47,8 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import org.osgi.framework.BundleActivator;
 
 /**
  * @author Cristina González
@@ -64,7 +72,7 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		processor.process(javaArchive, testClass);
 
 		//then:
-		Manifest manifest = getManifest((JavaArchive)javaArchive);
+		Manifest manifest = getManifest(javaArchive);
 
 		Attributes mainAttributes = manifest.getMainAttributes();
 
@@ -101,6 +109,92 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 			Assert.assertEquals(
 				iae.getMessage(), "Not a valid OSGi bundle: " + javaArchive);
 		}
+	}
+
+	@Test
+	public void testGenerateDeploymentFromNonOSGiBundleDefaultImports()
+		throws Exception {
+
+		//given:
+		JavaArchive javaArchive = getJavaArchive();
+		javaArchive.addClass(this.getClass());
+
+		ManifestUtil.createManifest(javaArchive);
+
+		TestClass testClass = new TestClass(this.getClass());
+
+		//when:
+		AddAllExtensionsToApplicationArchiveProcessor processor =
+			getProcessorWithoutAuxiliaryArchive();
+
+		processor.process(javaArchive, testClass);
+
+		//then:
+		Manifest manifest = getManifest(javaArchive);
+
+		Attributes mainAttributes = manifest.getMainAttributes();
+
+		String importPackageValue = mainAttributes.getValue("Import-Package");
+
+		Assert.assertNotNull(
+			"Import-Package has not been set", importPackageValue);
+
+		List<String> importsPackageArray = Arrays.asList(
+			importPackageValue.split(","));
+
+		importsPackageArray.contains("org.osgi.util.tracker");
+		importsPackageArray.contains("javax.management");
+		importsPackageArray.contains("org.osgi.service.startlevel");
+	}
+
+	@Test
+	public void testGenerateDeploymentWithExtensionsWithActivator()
+		throws Exception {
+
+		//given:
+		JavaArchive javaArchive = getJavaArchive();
+
+		javaArchive.addClass(this.getClass());
+
+		ManifestUtil.createManifest(javaArchive);
+
+		TestClass testClass = new TestClass(this.getClass());
+
+		String activator = "activator";
+
+		//when:
+		AddAllExtensionsToApplicationArchiveProcessor processor =
+			getProcessorWithOSGIJarAuxiliaryArchiveWithActivator(activator);
+
+		processor.process(javaArchive, testClass);
+
+		//then:
+		Node node = javaArchive.get(_ACTIVATORS_FILE);
+
+		Assert.assertNotNull(
+			"The deployment java archive doesn't contain an activator file",
+			node);
+
+		Asset asset = node.getAsset();
+
+		Assert.assertNotNull(
+			"The deployment java archive doesn't contain an activator file",
+			asset);
+
+		ByteArrayInputStream byteArrayInputStream =
+			(ByteArrayInputStream)asset.openStream();
+
+		int n = byteArrayInputStream.available();
+
+		byte[] bytes = new byte[n];
+
+		byteArrayInputStream.read(bytes, 0, n);
+
+		String activatorsFileContent = new String(bytes);
+
+		Assert.assertEquals(
+			"The activators file content of the activators is not OK",
+			activator, activatorsFileContent);
 	}
 
 	@Test
@@ -268,6 +362,15 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		Assert.assertNotNull(
 			"The Bundle-ClassPath has not been set", bundleClassPathValue);
 
+		List<String> bundleClassPaths = Arrays.asList(
+			bundleClassPathValue.split(","));
+
+		Assert.assertEquals(2, bundleClassPaths.size());
+
+		Assert.assertTrue(
+			"Bundle-ClassPath should contain . ",
+			bundleClassPathValue.contains("."));
+
 		Assert.assertTrue(
 			"The Bundle-ClassPath should contain the auxiliaryArchive",
 			bundleClassPathValue.contains("dummy-jar.jar"));
@@ -317,8 +420,6 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 			}
 		}
 
-		System.out.println("cont " + cont);
-
 		Assert.assertEquals(
 			"The import " + imports.get(0) +
 				" should not be repeated", 1, cont);
@@ -342,7 +443,7 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		processor.process(javaArchive, testClass);
 
 		//then:
-		Manifest manifest = getManifest((JavaArchive)javaArchive);
+		Manifest manifest = getManifest(javaArchive);
 
 		Attributes mainAttributes = manifest.getMainAttributes();
 
@@ -365,12 +466,13 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		Node node = javaArchive.get(JarFile.MANIFEST_NAME);
 
 		Assert.assertNotNull(
-			"The deployment java archive doen't contain a manifest file", node);
+			"The deployment java archive doesn't contain a manifest file",
+			node);
 
 		Asset asset = node.getAsset();
 
 		Assert.assertNotNull(
-			"The deployment java archive doen't contain a manifest file",
+			"The deployment java archive doesn't contain a manifest file",
 			asset);
 
 		return new Manifest(asset.openStream());
@@ -403,6 +505,78 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 			e.printStackTrace();
 		}
 
+		Field importPackageManagerInstance =
+			AddAllExtensionsToApplicationArchiveProcessor.class.
+				getDeclaredField("_importPackageManagerInstance");
+		importPackageManagerInstance.setAccessible(true);
+
+		DummyInstanceProducerImpl importPackageManagerDummyInstance =
+			new DummyInstanceProducerImpl();
+
+		importPackageManagerDummyInstance.set(new ImportPackageManagerImpl());
+
+		try {
+			importPackageManagerInstance.set(
+				addAllExtensionsToApplicationArchiveProcessor,
+				importPackageManagerDummyInstance);
+		}
+		catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+
+		Field manifestManagerInstance =
+			AddAllExtensionsToApplicationArchiveProcessor.class.
+				getDeclaredField("_manifestManagerInstance");
+		manifestManagerInstance.setAccessible(true);
+
+		DummyInstanceProducerImpl manifestManagerDummyInstance =
+			new DummyInstanceProducerImpl();
+
+		manifestManagerDummyInstance.set(new ManifestManagerImpl());
+
+		try {
+			manifestManagerInstance.set(
+				addAllExtensionsToApplicationArchiveProcessor,
+				manifestManagerDummyInstance);
+		}
+		catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+
+		Field manifestManagerInstanceinImportPackageManager =
+			ImportPackageManagerImpl.class.getDeclaredField(
+				"_manifestManagerInstance");
+		manifestManagerInstanceinImportPackageManager.setAccessible(true);
+
+		try {
+			manifestManagerInstanceinImportPackageManager.set(
+				importPackageManagerDummyInstance.get(),
+				manifestManagerDummyInstance);
+		}
+		catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+
+		Field bundleActivatorsManagerInstance =
+			AddAllExtensionsToApplicationArchiveProcessor.class.
+				getDeclaredField("_bundleActivatorsManagerInstance");
+		bundleActivatorsManagerInstance.setAccessible(true);
+
+		DummyInstanceProducerImpl bundleActivatorManagerDummyInstance =
+			new DummyInstanceProducerImpl();
+
+		bundleActivatorManagerDummyInstance.set(
+			new BundleActivatorsManagerImpl());
+
+		try {
+			bundleActivatorsManagerInstance.set(
+				addAllExtensionsToApplicationArchiveProcessor,
+				bundleActivatorManagerDummyInstance);
+		}
+		catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+
 		return addAllExtensionsToApplicationArchiveProcessor;
 	}
 
@@ -423,10 +597,23 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 	}
 
 	private AddAllExtensionsToApplicationArchiveProcessor
+		getProcessorWithOSGIJarAuxiliaryArchiveWithActivator(
+			String activator)
+		throws IllegalAccessException, NoSuchFieldException {
+
+		return getProcessor(
+			new DummyServiceLoaderWithOSGIBundleAuxiliaryArchiveWithActivator(
+				activator));
+	}
+
+	private AddAllExtensionsToApplicationArchiveProcessor
 			getProcessorWithoutAuxiliaryArchive()
 		throws IllegalAccessException, NoSuchFieldException {
 
 		return getProcessor(new DummyServiceLoaderWithoutAuxiliaryArchive());
 	}
+
+	private static final String _ACTIVATORS_FILE =
+		"/META-INF/services/" + BundleActivator.class.getCanonicalName();
 
 }
