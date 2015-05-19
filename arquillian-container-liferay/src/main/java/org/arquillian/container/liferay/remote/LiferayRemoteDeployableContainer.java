@@ -14,7 +14,7 @@
 
 package org.arquillian.container.liferay.remote;
 
-import org.arquillian.container.osgi.remote.KarafWithoutBundleRemoteDeployableContainer;
+import org.arquillian.container.osgi.allin.remote.KarafWithoutBundleRemoteDeployableContainer;
 
 import org.jboss.arquillian.container.spi.client.container.DeploymentException;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.HTTPContext;

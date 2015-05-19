@@ -12,7 +12,7 @@
  * details.
  */
 
-package org.arquillian.container.osgi.remote;
+package org.arquillian.container.osgi.allin.remote;
 
 import java.io.IOException;
 

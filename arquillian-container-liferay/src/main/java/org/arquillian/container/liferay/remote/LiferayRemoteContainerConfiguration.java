@@ -57,15 +57,25 @@ public class LiferayRemoteContainerConfiguration
 
 	@Override
 	public void validate() throws ConfigurationException {
-		if (httpHost == null)setHttpHost(DEFAULT_HTTP_HOST);
+		if (httpHost == null) {
+			setHttpHost(DEFAULT_HTTP_HOST);
+		}
 
-		if (httpPort == null)setHttpPort(DEFAULT_HTTP_PORT);
+		if (httpPort == null) {
+			setHttpPort(DEFAULT_HTTP_PORT);
+		}
 
-		if (jmxServiceURL == null)setJmxServiceURL(DEFAULT_JMX_SERVICE_URL);
+		if (jmxServiceURL == null) {
+			setJmxServiceURL(DEFAULT_JMX_SERVICE_URL);
+		}
 
-		if (jmxUsername == null)setJmxUsername(DEFAULT_JMX_USERNAME);
+		if (jmxUsername == null) {
+			setJmxUsername(DEFAULT_JMX_USERNAME);
+		}
 
-		if (jmxPassword == null)setJmxPassword(DEFAULT_JMX_PASSWORD);
+		if (jmxPassword == null) {
+			setJmxPassword(DEFAULT_JMX_PASSWORD);
+		}
 	}
 
 	private String httpHost;

@@ -12,25 +12,22 @@
  * details.
  */
 
-package org.arquillian.liferay.test;
+package org.arquillian.container.osgi.allin.remote;
 
-import org.arquillian.liferay.test.extras.a.A;
-import org.arquillian.liferay.test.extras.b.B;
-
-import org.osgi.framework.BundleException;
+import org.jboss.arquillian.container.osgi.karaf.remote.KarafRemoteDeployableContainer;
+import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
+import org.jboss.arquillian.core.spi.LoadableExtension;
 
 /**
- * @author Carlos Sierra Andrés
+ * @author Cristina González
  */
-public class ATest {
+public class OSGiAllInContainerExtension implements LoadableExtension {
 
-	public void testSomething() throws BundleException {
-		A a = new A();
-		B b = new B();
-
-		if (1 == 1) {
-			throw new BundleException("test");
-		}
+	@Override
+	public void register(ExtensionBuilder builder) {
+		builder.override(
+			DeployableContainer.class, KarafRemoteDeployableContainer.class,
+			KarafWithoutBundleRemoteDeployableContainer.class);
 	}
 
 }
