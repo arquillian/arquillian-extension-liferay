@@ -57,7 +57,7 @@ public class ManifestUtil {
 		manifest.getMainAttributes().put(
 			new Attributes.Name("Bundle-ManifestVersion"), "1");
 
-		if (activator != null && !activator.isEmpty()) {
+		if ((activator != null) && !activator.isEmpty()) {
 			manifest.getMainAttributes().put(
 				new Attributes.Name("Bundle-Activator"), activator);
 		}

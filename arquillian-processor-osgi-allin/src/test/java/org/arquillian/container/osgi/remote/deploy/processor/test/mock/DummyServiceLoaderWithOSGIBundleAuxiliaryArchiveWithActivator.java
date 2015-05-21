@@ -42,7 +42,7 @@ public class DummyServiceLoaderWithOSGIBundleAuxiliaryArchiveWithActivator
 	public <T> Collection<T> all(Class<T> aClass) {
 		Collection<T> all = super.all(aClass);
 
-		if (all != null && !all.isEmpty()) {
+		if ((all != null) && !all.isEmpty()) {
 			return all;
 		}
 
