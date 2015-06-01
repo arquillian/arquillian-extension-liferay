@@ -137,6 +137,32 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 	}
 
 	@Test
+	public void testGenerateDeploymentWithoutActivator()
+		throws Exception {
+
+		//given:
+		JavaArchive javaArchive = getJavaArchive();
+		javaArchive.addClass(this.getClass());
+
+
+		ManifestUtil.createManifest(javaArchive, new ArrayList<String>());
+
+		TestClass testClass = new TestClass(this.getClass());
+
+		//when:
+		AddAllExtensionsToApplicationArchiveProcessor processor =
+			getProcessorWithoutAuxiliaryArchive();
+
+		processor.process(javaArchive, testClass);
+
+		//then:
+		Node node = javaArchive.get(_ACTIVATORS_FILE);
+
+		Assert.assertNull(
+			"The deployment java archive contains an activator file", node);
+	}
+
+	@Test
 	public void testGenerateDeploymentFromNonOSGiBundle() throws Exception {
 		//given:
 		JavaArchive javaArchive = getJavaArchive();
