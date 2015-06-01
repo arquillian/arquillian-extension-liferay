@@ -87,6 +87,56 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 	}
 
 	@Test
+	public void testGenerateDeploymentNotOverridingActivator()
+		throws Exception {
+
+		//given:
+		JavaArchive javaArchive = getJavaArchive();
+		javaArchive.addClass(this.getClass());
+
+		String activator = "com.liferay.arquillian.activator.DummyActivator";
+
+		ManifestUtil.createManifest(
+			javaArchive, new ArrayList<String>(), activator);
+
+		TestClass testClass = new TestClass(this.getClass());
+
+		//when:
+		AddAllExtensionsToApplicationArchiveProcessor processor =
+			getProcessorWithoutAuxiliaryArchive();
+
+		processor.process(javaArchive, testClass);
+
+		//then:
+		Node node = javaArchive.get(_ACTIVATORS_FILE);
+
+		Assert.assertNotNull(
+			"The deployment java archive doesn't contain an activator file",
+			node);
+
+		Asset asset = node.getAsset();
+
+		Assert.assertNotNull(
+			"The deployment java archive doesn't contain an activator file",
+			asset);
+
+		ByteArrayInputStream byteArrayInputStream =
+			(ByteArrayInputStream)asset.openStream();
+
+		int n = byteArrayInputStream.available();
+
+		byte[] bytes = new byte[n];
+
+		byteArrayInputStream.read(bytes, 0, n);
+
+		String activatorsFileContent = new String(bytes);
+
+		Assert.assertEquals(
+			"The activators file content of the activators is not OK",
+			activator, activatorsFileContent);
+	}
+
+	@Test
 	public void testGenerateDeploymentFromNonOSGiBundle() throws Exception {
 		//given:
 		JavaArchive javaArchive = getJavaArchive();
