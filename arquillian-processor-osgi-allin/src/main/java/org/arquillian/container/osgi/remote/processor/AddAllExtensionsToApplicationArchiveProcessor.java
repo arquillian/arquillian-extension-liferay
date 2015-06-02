@@ -83,13 +83,23 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 
 			Attributes mainAttributes = manifest.getMainAttributes();
 
+			Attributes.Name bundleActivatorName = new Attributes.Name(
+				"Bundle-Activator");
+
+			String bundleActivator = mainAttributes.getValue(
+				bundleActivatorName);
+
 			mainAttributes.put(
-				new Attributes.Name("Bundle-Activator"),
+				bundleActivatorName,
 				ArquillianBundleActivator.class.getCanonicalName());
 
 			manifestManager.replaceManifest(javaArchive, manifest);
 
 			javaArchive.addClass(ArquillianBundleActivator.class);
+
+			if (bundleActivator != null) {
+				addBundleActivator(javaArchive, bundleActivator);
+			}
 		}
 		catch (RuntimeException rte) {
 			throw rte;

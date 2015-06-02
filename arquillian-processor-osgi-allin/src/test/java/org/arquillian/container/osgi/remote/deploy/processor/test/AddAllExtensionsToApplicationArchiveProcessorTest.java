@@ -90,6 +90,7 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 	public void testGenerateDeploymentFromNonOSGiBundle() throws Exception {
 		//given:
 		JavaArchive javaArchive = getJavaArchive();
+
 		javaArchive.addClass(this.getClass());
 
 		TestClass testClass = new TestClass(this.getClass());
@@ -117,6 +118,7 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 
 		//given:
 		JavaArchive javaArchive = getJavaArchive();
+
 		javaArchive.addClass(this.getClass());
 
 		ManifestUtil.createManifest(javaArchive);
@@ -142,9 +144,60 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		List<String> importsPackageArray = Arrays.asList(
 			importPackageValue.split(","));
 
-		importsPackageArray.contains("org.osgi.util.tracker");
 		importsPackageArray.contains("javax.management");
 		importsPackageArray.contains("org.osgi.service.startlevel");
+		importsPackageArray.contains("org.osgi.util.tracker");
+	}
+
+	@Test
+	public void testGenerateDeploymentNotOverridingActivator()
+		throws Exception {
+
+		//given:
+		JavaArchive javaArchive = getJavaArchive();
+
+		javaArchive.addClass(this.getClass());
+
+		String activator = "com.liferay.arquillian.activator.DummyActivator";
+
+		ManifestUtil.createManifest(
+			javaArchive, new ArrayList<String>(), activator);
+
+		TestClass testClass = new TestClass(this.getClass());
+
+		//when:
+		AddAllExtensionsToApplicationArchiveProcessor processor =
+			getProcessorWithoutAuxiliaryArchive();
+
+		processor.process(javaArchive, testClass);
+
+		//then:
+		Node activatorsFileNode = javaArchive.get(_ACTIVATORS_FILE);
+
+		Assert.assertNotNull(
+			"The deployment java archive doesn't contain an activator file",
+			activatorsFileNode);
+
+		Asset activatorsFileAsset = activatorsFileNode.getAsset();
+
+		Assert.assertNotNull(
+			"The deployment java archive doesn't contain an activator file",
+			activatorsFileAsset);
+
+		ByteArrayInputStream byteArrayInputStream =
+			(ByteArrayInputStream)activatorsFileAsset.openStream();
+
+		int n = byteArrayInputStream.available();
+
+		byte[] bytes = new byte[n];
+
+		byteArrayInputStream.read(bytes, 0, n);
+
+		String activatorsFileContent = new String(bytes);
+
+		Assert.assertEquals(
+			"The activators file content of the activators is not OK",
+			activator, activatorsFileContent);
 	}
 
 	@Test
@@ -169,20 +222,20 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		processor.process(javaArchive, testClass);
 
 		//then:
-		Node node = javaArchive.get(_ACTIVATORS_FILE);
+		Node activatorsFileNode = javaArchive.get(_ACTIVATORS_FILE);
 
 		Assert.assertNotNull(
 			"The deployment java archive doesn't contain an activator file",
-			node);
+			activatorsFileNode);
 
-		Asset asset = node.getAsset();
+		Asset activatorsFileAsset = activatorsFileNode.getAsset();
 
 		Assert.assertNotNull(
 			"The deployment java archive doesn't contain an activator file",
-			asset);
+			activatorsFileAsset);
 
 		ByteArrayInputStream byteArrayInputStream =
-			(ByteArrayInputStream)asset.openStream();
+			(ByteArrayInputStream)activatorsFileAsset.openStream();
 
 		int n = byteArrayInputStream.available();
 
@@ -203,6 +256,7 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 
 		//given:
 		JavaArchive javaArchive = getJavaArchive();
+
 		javaArchive.addClass(this.getClass());
 
 		ManifestUtil.createManifest(javaArchive);
@@ -426,6 +480,30 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 	}
 
 	@Test
+	public void testGenerateDeploymentWithoutActivator() throws Exception {
+		//given:
+		JavaArchive javaArchive = getJavaArchive();
+		javaArchive.addClass(this.getClass());
+
+		ManifestUtil.createManifest(javaArchive, new ArrayList<String>());
+
+		TestClass testClass = new TestClass(this.getClass());
+
+		//when:
+		AddAllExtensionsToApplicationArchiveProcessor processor =
+			getProcessorWithoutAuxiliaryArchive();
+
+		processor.process(javaArchive, testClass);
+
+		//then:
+		Node activatorsFileNode = javaArchive.get(_ACTIVATORS_FILE);
+
+		Assert.assertNull(
+			"The deployment java archive contains an activator file",
+			activatorsFileNode);
+	}
+
+	@Test
 	public void testGenerateDeploymentWithoutExtensions() throws Exception {
 		//given:
 		JavaArchive javaArchive = getJavaArchive();
@@ -463,19 +541,19 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 	}
 
 	private Manifest getManifest(JavaArchive javaArchive) throws IOException {
-		Node node = javaArchive.get(JarFile.MANIFEST_NAME);
+		Node manifestNode = javaArchive.get(JarFile.MANIFEST_NAME);
 
 		Assert.assertNotNull(
 			"The deployment java archive doesn't contain a manifest file",
-			node);
+			manifestNode);
 
-		Asset asset = node.getAsset();
+		Asset manifestAsset = manifestNode.getAsset();
 
 		Assert.assertNotNull(
 			"The deployment java archive doesn't contain a manifest file",
-			asset);
+			manifestAsset);
 
-		return new Manifest(asset.openStream());
+		return new Manifest(manifestAsset.openStream());
 	}
 
 	private AddAllExtensionsToApplicationArchiveProcessor getProcessor(
@@ -489,6 +567,7 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		Field serviceLoaderInstance =
 			AddAllExtensionsToApplicationArchiveProcessor.class.
 				getDeclaredField("_serviceLoaderInstance");
+
 		serviceLoaderInstance.setAccessible(true);
 
 		DummyInstanceProducerImpl serviceLoaderDummyInstance =
@@ -508,6 +587,7 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		Field importPackageManagerInstance =
 			AddAllExtensionsToApplicationArchiveProcessor.class.
 				getDeclaredField("_importPackageManagerInstance");
+
 		importPackageManagerInstance.setAccessible(true);
 
 		DummyInstanceProducerImpl importPackageManagerDummyInstance =
@@ -527,6 +607,7 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		Field manifestManagerInstance =
 			AddAllExtensionsToApplicationArchiveProcessor.class.
 				getDeclaredField("_manifestManagerInstance");
+
 		manifestManagerInstance.setAccessible(true);
 
 		DummyInstanceProducerImpl manifestManagerDummyInstance =
@@ -546,6 +627,7 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		Field manifestManagerInstanceinImportPackageManager =
 			ImportPackageManagerImpl.class.getDeclaredField(
 				"_manifestManagerInstance");
+
 		manifestManagerInstanceinImportPackageManager.setAccessible(true);
 
 		try {
@@ -560,6 +642,7 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		Field bundleActivatorsManagerInstance =
 			AddAllExtensionsToApplicationArchiveProcessor.class.
 				getDeclaredField("_bundleActivatorsManagerInstance");
+
 		bundleActivatorsManagerInstance.setAccessible(true);
 
 		DummyInstanceProducerImpl bundleActivatorManagerDummyInstance =
@@ -588,8 +671,7 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 	}
 
 	private AddAllExtensionsToApplicationArchiveProcessor
-		getProcessorWithOSGIJarAuxiliaryArchive(
-			List<String> imports)
+			getProcessorWithOSGIJarAuxiliaryArchive(List<String> imports)
 		throws IllegalAccessException, NoSuchFieldException {
 
 		return getProcessor(
@@ -597,8 +679,8 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 	}
 
 	private AddAllExtensionsToApplicationArchiveProcessor
-		getProcessorWithOSGIJarAuxiliaryArchiveWithActivator(
-			String activator)
+			getProcessorWithOSGIJarAuxiliaryArchiveWithActivator(
+				String activator)
 		throws IllegalAccessException, NoSuchFieldException {
 
 		return getProcessor(
