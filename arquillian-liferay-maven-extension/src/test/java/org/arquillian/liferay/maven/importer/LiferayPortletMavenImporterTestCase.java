@@ -60,6 +60,9 @@ public class LiferayPortletMavenImporterTestCase extends LiferayPluginTestCase {
 				ArchivePaths.create("/WEB-INF/lib", "commons-logging.jar")));
 		assertNotNull(
 			archive.get(
+				ArchivePaths.create("/WEB-INF/lib", "guava-15.0.jar")));
+		assertNotNull(
+			archive.get(
 				ArchivePaths.create("/WEB-INF/lib", "log4j-extras.jar")));
 		assertNotNull(
 			archive.get(
