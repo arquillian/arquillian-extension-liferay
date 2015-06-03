@@ -28,6 +28,8 @@ import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.arquillian.test.spi.TestClass;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.jboss.shrinkwrap.resolver.api.maven.MavenResolverSystem;
 import org.jboss.shrinkwrap.resolver.api.maven.archive.importer.MavenImporter;
 import org.jboss.shrinkwrap.resolver.impl.maven.util.Validate;
 
@@ -109,6 +111,10 @@ public class MavenDeploymentScenarioGenerator
 			WebArchive archive =
 				ShrinkWrap.create(MavenImporter.class).loadPomFromFile(
 					pomFile).importBuildOutput().as(WebArchive.class);
+
+			MavenResolverSystem resolver = Maven.resolver();
+			archive.addAsLibraries(resolver.loadPomFromFile(pomFile)
+					.importCompileAndRuntimeDependencies().resolve().withTransitivity().asFile());
 
 			DeploymentDescription deploymentDescription =
 				new DeploymentDescription("_DEFAULT", archive);
