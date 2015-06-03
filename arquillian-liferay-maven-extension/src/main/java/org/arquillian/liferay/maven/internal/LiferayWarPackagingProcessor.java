@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.jar.Manifest;
 
@@ -42,6 +43,7 @@ import org.jboss.shrinkwrap.api.importer.ZipImporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.ResolutionException;
+import org.jboss.shrinkwrap.resolver.api.maven.MavenResolvedArtifact;
 import org.jboss.shrinkwrap.resolver.api.maven.MavenWorkingSession;
 import org.jboss.shrinkwrap.resolver.api.maven.PackagingType;
 import org.jboss.shrinkwrap.resolver.api.maven.ScopeType;
@@ -52,6 +54,7 @@ import org.jboss.shrinkwrap.resolver.api.maven.strategy.MavenResolutionStrategy;
 import org.jboss.shrinkwrap.resolver.impl.maven.archive.packaging.AbstractCompilingProcessor;
 import org.jboss.shrinkwrap.resolver.impl.maven.archive.packaging.ArchiveFilteringUtils;
 import org.jboss.shrinkwrap.resolver.impl.maven.archive.plugins.WarPluginConfiguration;
+import org.jboss.shrinkwrap.resolver.impl.maven.task.AddAllDeclaredDependenciesTask;
 import org.jboss.shrinkwrap.resolver.impl.maven.util.Validate;
 import org.jboss.shrinkwrap.resolver.spi.maven.archive.packaging.PackagingProcessor;
 
@@ -190,6 +193,16 @@ public class LiferayWarPackagingProcessor
 		}
 		catch (IOException e) {
 			log.error("Error adding manifest", e);
+		}
+
+		// add dependencies
+		this.session = AddAllDeclaredDependenciesTask.INSTANCE.execute(session);
+
+		final Collection<MavenResolvedArtifact> artifacts =
+			session.resolveDependencies(strategy);
+
+		for (MavenResolvedArtifact artifact : artifacts) {
+			archive.addAsLibrary(artifact.asFile());
 		}
 
 		// Archive Filtering
