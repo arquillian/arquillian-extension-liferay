@@ -38,7 +38,6 @@
 	<dependency>
 	  <groupId>org.jboss.shrinkwrap</groupId>
 	  <artifactId>shrinkwrap-api</artifactId>
-	  <version>${version.shrinkwrap_api}</version>
 	</dependency>
 
 	<!-- Workaround for https://issues.jboss.org/browse/SHRINKWRAP-401 -->
@@ -46,25 +45,15 @@
 	<dependency>
 	  <groupId>org.jboss.shrinkwrap</groupId>
 	  <artifactId>shrinkwrap-spi</artifactId>
-	  <version>${version.shrinkwrap_api}</version>
 	</dependency>
 	<dependency>
 	  <groupId>org.jboss.shrinkwrap</groupId>
 	  <artifactId>shrinkwrap-impl-base</artifactId>
-	  <version>${version.shrinkwrap_api}</version>
 	</dependency>
 
 	<!-- End of workaround -->
 
 	<!-- Shrikwrap Resolvers -->
-
-	<dependency>
-	  <groupId>org.jboss.shrinkwrap</groupId>
-	  <artifactId>shrinkwrap-bom</artifactId>
-	  <type>pom</type>
-	  <scope>import</scope>
-	  <version>${version.shrinkwrap_api}</version>
-	</dependency>
 
 	<dependency>
 	  <groupId>org.jboss.shrinkwrap.resolver</groupId>
