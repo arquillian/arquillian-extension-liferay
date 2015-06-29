@@ -142,6 +142,19 @@
 		  <localCheckout>true</localCheckout>
 		</configuration>
 	  </plugin>
+	  <plugin>
+		<groupId>com.liferay</groupId>
+		<artifactId>com.liferay.source.formatter</artifactId>
+		<version>1.0.19</version>
+		<executions>
+			<execution>
+				<phase>compile</phase>
+				<goals>
+					<goal>format-source</goal>
+				</goals>
+			</execution>
+		</executions>
+	  </plugin>
 	</plugins>
 </build>
 
