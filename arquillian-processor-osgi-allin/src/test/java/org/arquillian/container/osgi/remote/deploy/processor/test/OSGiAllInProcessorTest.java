@@ -33,7 +33,7 @@ import org.arquillian.container.osgi.remote.deploy.processor.test.mock.DummyServ
 import org.arquillian.container.osgi.remote.deploy.processor.test.mock.DummyServiceLoaderWithOSGIBundleAuxiliaryArchiveWithActivator;
 import org.arquillian.container.osgi.remote.deploy.processor.test.mock.DummyServiceLoaderWithoutAuxiliaryArchive;
 import org.arquillian.container.osgi.remote.deploy.processor.test.util.ManifestUtil;
-import org.arquillian.container.osgi.remote.processor.AddAllExtensionsToApplicationArchiveProcessor;
+import org.arquillian.container.osgi.remote.processor.OSGiAllInProcessor;
 import org.arquillian.container.osgi.remote.processor.service.BundleActivatorsManagerImpl;
 import org.arquillian.container.osgi.remote.processor.service.ImportPackageManagerImpl;
 import org.arquillian.container.osgi.remote.processor.service.ManifestManagerImpl;
@@ -53,7 +53,7 @@ import org.osgi.framework.BundleActivator;
 /**
  * @author Cristina González
  */
-public class AddAllExtensionsToApplicationArchiveProcessorTest {
+public class OSGiAllInProcessorTest {
 
 	@Test
 	public void testGenerateDeployment() throws Exception {
@@ -66,8 +66,7 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		TestClass testClass = new TestClass(this.getClass());
 
 		//when:
-		AddAllExtensionsToApplicationArchiveProcessor processor =
-			getProcessorWithoutAuxiliaryArchive();
+		OSGiAllInProcessor processor = getProcessorWithoutAuxiliaryArchive();
 
 		processor.process(javaArchive, testClass);
 
@@ -97,7 +96,7 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 
 		try {
 			//when:
-			AddAllExtensionsToApplicationArchiveProcessor processor =
+			OSGiAllInProcessor processor =
 				getProcessorWithoutAuxiliaryArchive();
 
 			processor.process(javaArchive, testClass);
@@ -126,8 +125,7 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		TestClass testClass = new TestClass(this.getClass());
 
 		//when:
-		AddAllExtensionsToApplicationArchiveProcessor processor =
-			getProcessorWithoutAuxiliaryArchive();
+		OSGiAllInProcessor processor = getProcessorWithoutAuxiliaryArchive();
 
 		processor.process(javaArchive, testClass);
 
@@ -166,8 +164,7 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		TestClass testClass = new TestClass(this.getClass());
 
 		//when:
-		AddAllExtensionsToApplicationArchiveProcessor processor =
-			getProcessorWithoutAuxiliaryArchive();
+		OSGiAllInProcessor processor = getProcessorWithoutAuxiliaryArchive();
 
 		processor.process(javaArchive, testClass);
 
@@ -216,7 +213,7 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		String activator = "activator";
 
 		//when:
-		AddAllExtensionsToApplicationArchiveProcessor processor =
+		OSGiAllInProcessor processor =
 			getProcessorWithOSGIJarAuxiliaryArchiveWithActivator(activator);
 
 		processor.process(javaArchive, testClass);
@@ -269,8 +266,8 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		imports.add("import.example.2");
 
 		//when:
-		AddAllExtensionsToApplicationArchiveProcessor processor =
-			getProcessorWithOSGIJarAuxiliaryArchive(imports);
+		OSGiAllInProcessor processor = getProcessorWithOSGIJarAuxiliaryArchive(
+			imports);
 
 		processor.process(javaArchive, testClass);
 
@@ -313,8 +310,8 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		imports.add(importValueNoOptional);
 
 		//when:
-		AddAllExtensionsToApplicationArchiveProcessor processor =
-			getProcessorWithOSGIJarAuxiliaryArchive(imports);
+		OSGiAllInProcessor processor = getProcessorWithOSGIJarAuxiliaryArchive(
+			imports);
 
 		processor.process(javaArchive, testClass);
 
@@ -360,8 +357,8 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		imports.add("import.example.2");
 
 		//when:
-		AddAllExtensionsToApplicationArchiveProcessor processor =
-			getProcessorWithOSGIJarAuxiliaryArchive(imports);
+		OSGiAllInProcessor processor = getProcessorWithOSGIJarAuxiliaryArchive(
+			imports);
 
 		processor.process(javaArchive, testClass);
 
@@ -400,8 +397,7 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		TestClass testClass = new TestClass(this.getClass());
 
 		//when:
-		AddAllExtensionsToApplicationArchiveProcessor processor =
-			getProcessorWithJarAuxiliaryArchive();
+		OSGiAllInProcessor processor = getProcessorWithJarAuxiliaryArchive();
 
 		processor.process(javaArchive, testClass);
 
@@ -449,8 +445,8 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		imports.add("import.example.2");
 
 		//when:
-		AddAllExtensionsToApplicationArchiveProcessor processor =
-			getProcessorWithOSGIJarAuxiliaryArchive(imports);
+		OSGiAllInProcessor processor = getProcessorWithOSGIJarAuxiliaryArchive(
+			imports);
 
 		processor.process(javaArchive, testClass);
 
@@ -490,8 +486,7 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		TestClass testClass = new TestClass(this.getClass());
 
 		//when:
-		AddAllExtensionsToApplicationArchiveProcessor processor =
-			getProcessorWithoutAuxiliaryArchive();
+		OSGiAllInProcessor processor = getProcessorWithoutAuxiliaryArchive();
 
 		processor.process(javaArchive, testClass);
 
@@ -515,8 +510,7 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		TestClass testClass = new TestClass(this.getClass());
 
 		//when:
-		AddAllExtensionsToApplicationArchiveProcessor processor =
-			getProcessorWithoutAuxiliaryArchive();
+		OSGiAllInProcessor processor = getProcessorWithoutAuxiliaryArchive();
 
 		processor.process(javaArchive, testClass);
 
@@ -556,17 +550,14 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		return new Manifest(manifestAsset.openStream());
 	}
 
-	private AddAllExtensionsToApplicationArchiveProcessor getProcessor(
-			ServiceLoader serviceLoader)
+	private OSGiAllInProcessor getProcessor(ServiceLoader serviceLoader)
 		throws NoSuchFieldException {
 
-		AddAllExtensionsToApplicationArchiveProcessor
-			addAllExtensionsToApplicationArchiveProcessor =
-				new AddAllExtensionsToApplicationArchiveProcessor();
+		OSGiAllInProcessor addAllExtensionsToApplicationArchiveProcessor =
+			new OSGiAllInProcessor();
 
-		Field serviceLoaderInstance =
-			AddAllExtensionsToApplicationArchiveProcessor.class.
-				getDeclaredField("_serviceLoaderInstance");
+		Field serviceLoaderInstance = OSGiAllInProcessor.class.getDeclaredField(
+			"_serviceLoaderInstance");
 
 		serviceLoaderInstance.setAccessible(true);
 
@@ -585,8 +576,8 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		}
 
 		Field importPackageManagerInstance =
-			AddAllExtensionsToApplicationArchiveProcessor.class.
-				getDeclaredField("_importPackageManagerInstance");
+			OSGiAllInProcessor.class.getDeclaredField(
+				"_importPackageManagerInstance");
 
 		importPackageManagerInstance.setAccessible(true);
 
@@ -605,8 +596,8 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		}
 
 		Field manifestManagerInstance =
-			AddAllExtensionsToApplicationArchiveProcessor.class.
-				getDeclaredField("_manifestManagerInstance");
+			OSGiAllInProcessor.class.getDeclaredField(
+				"_manifestManagerInstance");
 
 		manifestManagerInstance.setAccessible(true);
 
@@ -640,8 +631,8 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		}
 
 		Field bundleActivatorsManagerInstance =
-			AddAllExtensionsToApplicationArchiveProcessor.class.
-				getDeclaredField("_bundleActivatorsManagerInstance");
+			OSGiAllInProcessor.class.getDeclaredField(
+				"_bundleActivatorsManagerInstance");
 
 		bundleActivatorsManagerInstance.setAccessible(true);
 
@@ -663,14 +654,13 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		return addAllExtensionsToApplicationArchiveProcessor;
 	}
 
-	private AddAllExtensionsToApplicationArchiveProcessor
-			getProcessorWithJarAuxiliaryArchive()
+	private OSGiAllInProcessor getProcessorWithJarAuxiliaryArchive()
 		throws IllegalAccessException, NoSuchFieldException {
 
 		return getProcessor(new DummyServiceLoaderWithJarAuxiliaryArchive());
 	}
 
-	private AddAllExtensionsToApplicationArchiveProcessor
+	private OSGiAllInProcessor
 			getProcessorWithOSGIJarAuxiliaryArchive(List<String> imports)
 		throws IllegalAccessException, NoSuchFieldException {
 
@@ -678,9 +668,9 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 			new DummyServiceLoaderWithOSGIBundleAuxiliaryArchive(imports));
 	}
 
-	private AddAllExtensionsToApplicationArchiveProcessor
-			getProcessorWithOSGIJarAuxiliaryArchiveWithActivator(
-				String activator)
+	private OSGiAllInProcessor
+		getProcessorWithOSGIJarAuxiliaryArchiveWithActivator(
+			String activator)
 		throws IllegalAccessException, NoSuchFieldException {
 
 		return getProcessor(
@@ -688,8 +678,7 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 				activator));
 	}
 
-	private AddAllExtensionsToApplicationArchiveProcessor
-			getProcessorWithoutAuxiliaryArchive()
+	private OSGiAllInProcessor getProcessorWithoutAuxiliaryArchive()
 		throws IllegalAccessException, NoSuchFieldException {
 
 		return getProcessor(new DummyServiceLoaderWithoutAuxiliaryArchive());

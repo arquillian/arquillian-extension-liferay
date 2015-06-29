@@ -57,8 +57,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Cristina González
  */
-public class AddAllExtensionsToApplicationArchiveProcessor
-	implements ApplicationArchiveProcessor {
+public class OSGiAllInProcessor implements ApplicationArchiveProcessor {
 
 	@Override
 	public void process(Archive<?> archive, TestClass testClass) {
