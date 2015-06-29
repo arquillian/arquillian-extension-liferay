@@ -97,7 +97,7 @@ public class LiferayPluginConfiguration
 
 		appServerDeployDir = (String)configValues.get("appServerDeployDir");
 
-		customPortletXml = new Boolean(
+		customPortletXml = Boolean.valueOf(
 			(String)configValues.get("customPortletXml")).booleanValue();
 
 		baseDir = pomFile.getBuildOutputDirectory().getAbsolutePath();
