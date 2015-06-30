@@ -196,6 +196,7 @@ public class LiferayWarPackagingProcessor
 		}
 
 		// add dependencies
+
 		this.session = AddAllDeclaredDependenciesTask.INSTANCE.execute(session);
 
 		final Collection<MavenResolvedArtifact> artifacts =

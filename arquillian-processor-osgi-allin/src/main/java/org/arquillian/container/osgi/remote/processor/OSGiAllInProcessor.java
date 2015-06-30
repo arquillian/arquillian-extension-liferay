@@ -57,8 +57,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Cristina González
  */
-public class AddAllExtensionsToApplicationArchiveProcessor
-	implements ApplicationArchiveProcessor {
+public class OSGiAllInProcessor implements ApplicationArchiveProcessor {
 
 	@Override
 	public void process(Archive<?> archive, TestClass testClass) {
@@ -115,7 +114,7 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 
 		javaArchive.addPackage(JMXTestRunner.class.getPackage());
 	}
-	
+
 	private void addBundleActivator(
 			JavaArchive javaArchive, String bundleActivatorValue)
 		throws IOException {
@@ -134,17 +133,18 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 	}
 
 	private void addOSGiImports(JavaArchive javaArchive) throws IOException {
-		String[] extensionsImports = {
-			"org.osgi.framework" , "javax.management" , "javax.management.*" ,
-			"javax.naming.*" , "org.osgi.service.packageadmin" ,
-			"org.osgi.service.startlevel" , "org.osgi.util.tracker"};
+		String[] extensionsImports =
+			new String[] {"org.osgi.framework", "javax.management",
+				"javax.management.*", "javax.naming.*",
+				"org.osgi.service.packageadmin", "org.osgi.service.startlevel",
+				"org.osgi.util.tracker"
+			};
 
 		ManifestManager manifestManager = _manifestManagerInstance.get();
 
-		Manifest manifest =
-			manifestManager.putAttributeValue(
-				manifestManager.getManifest(javaArchive), "Import-Package",
-				extensionsImports);
+		Manifest manifest = manifestManager.putAttributeValue(
+			manifestManager.getManifest(javaArchive), "Import-Package",
+			extensionsImports);
 
 		manifestManager.replaceManifest(javaArchive, manifest);
 	}
@@ -161,9 +161,8 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 
 			Manifest manifest = manifestManager.getManifest(javaArchive);
 
-			manifest =
-				importPackageManager.cleanRepeatedImports(
-					manifest, auxiliaryArchives);
+			manifest = importPackageManager.cleanRepeatedImports(
+				manifest, auxiliaryArchives);
 
 			manifestManager.replaceManifest(javaArchive, manifest);
 		}
@@ -218,15 +217,16 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 			ManifestManager manifestManager = _manifestManagerInstance.get();
 
 			Manifest manifest = manifestManager.putAttributeValue(
-				manifestManager.getManifest(javaArchive), "Bundle-ClassPath", ".", path);
+				manifestManager.getManifest(javaArchive), "Bundle-ClassPath",
+				".", path);
 
 			manifestManager.replaceManifest(javaArchive, manifest);
 
 			try {
 				validateBundleArchive(auxiliaryArchive);
 
-				Manifest auxiliaryArchiveManifest =manifestManager.getManifest(
-					(JavaArchive) auxiliaryArchive);
+				Manifest auxiliaryArchiveManifest = manifestManager.getManifest(
+					(JavaArchive)auxiliaryArchive);
 
 				Attributes mainAttributes =
 					auxiliaryArchiveManifest.getMainAttributes();
@@ -236,9 +236,8 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 				if (value != null) {
 					String[] importValues = value.split(",");
 
-					manifest =
-						manifestManager.putAttributeValue(
-							manifest, "Import-Package", importValues);
+					manifest = manifestManager.putAttributeValue(
+						manifest, "Import-Package", importValues);
 
 					manifestManager.replaceManifest(javaArchive, manifest);
 				}
