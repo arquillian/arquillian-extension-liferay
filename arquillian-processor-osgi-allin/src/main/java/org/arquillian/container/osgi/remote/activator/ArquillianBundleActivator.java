@@ -53,6 +53,14 @@ public class ArquillianBundleActivator implements BundleActivator {
 			}
 		};
 
+		// Execute all activators
+
+		Set<BundleActivator> bundleActivators = loadActivators();
+
+		for (BundleActivator bundleActivator : bundleActivators) {
+			bundleActivator.start(context);
+		}
+
 		// Register the JMXTestRunner
 
 		MBeanServer mbeanServer = findOrCreateMBeanServer();
@@ -64,14 +72,6 @@ public class ArquillianBundleActivator implements BundleActivator {
 			}
 		};
 		testRunner.registerMBean(mbeanServer);
-
-		// Execute all activators
-
-		Set<BundleActivator> bundleActivators = loadActivators();
-
-		for (BundleActivator bundleActivator : bundleActivators) {
-			bundleActivator.start(context);
-		}
 	}
 
 	public void stop(BundleContext context) throws Exception {
