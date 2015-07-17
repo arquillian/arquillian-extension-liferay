@@ -51,3 +51,33 @@ The Tomcat Manager is installed by default on context path /manager.
 In the above example, you can see how we have created a user with the username **tomcat** and the password **tomcat** that has the roles **tomcat,manager-gui,manager-script,manager-jmx,manager-status**, these roles are mandatory to execute Arquillian test using the Arquillian Liferay Extension.
 
 By default this extension needs that the user and password are both **tomcat**. This behaviour can be configured in a custom arquilliam.xml file. We will see how to configure the custom extension properties in other chapter.
+
+## Create a test in Liferay with the Arquillian Liferay Extension
+
+#### Add dependencies to pom.xml
+
+```xml
+...
+	<dependencies>
+	....
+		<dependency>
+			<groupId>org.arquillian.liferay</groupId>
+			<artifactId>arquillian-container-liferay</artifactId>
+			<version>1.0.0.Final-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.arquillian.junit</groupId>
+			<artifactId>arquillian-junit-container</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+		....
+	</dependencies>
+...	
+```
