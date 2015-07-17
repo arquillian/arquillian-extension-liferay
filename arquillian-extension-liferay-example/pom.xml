@@ -95,7 +95,7 @@
 							</execution>
 							<execution>
 								<id>create-file</id>
-								<phase>process-test-resources</phase>
+								<phase>process-test-sources</phase>
 								<configuration>
 									<target>
 										<touch file="${project.basedir}/test-resources/unziped-successfully" />
@@ -135,6 +135,38 @@
 							<resources>
 								<resource>
 									<directory>${project.basedir}/test-resources/liferay/config/bin</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy--tomcat-manager</id>
+						<phase>generate-test-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${liferay.home}/tomcat-7.0.62/webapps/manager</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.basedir}/test-resources/tomcat/apache-tomcat-7.0.62/webapps/manager</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy--tomcat-manager-config</id>
+						<phase>generate-test-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${liferay.home}/tomcat-7.0.62/conf</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.basedir}/test-resources/liferay/config/conf</directory>
 									<filtering>true</filtering>
 								</resource>
 							</resources>
