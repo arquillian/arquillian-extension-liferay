@@ -81,3 +81,45 @@ By default this extension needs that the user and password are both **tomcat**. 
 	</dependencies>
 ...	
 ```
+#### Create simple tests using the Arquillian Extension
+
+```java
+package org.arquillian.liferay.test;
+
+import java.io.InputStream;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+
+import org.jboss.osgi.metadata.OSGiManifestBuilder;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.Asset;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+@RunWith(Arquillian.class)
+public class SimpleTest {
+
+	@Deployment
+	public static JavaArchive create() {
+		final JavaArchive archive = ShrinkWrap.create(JavaArchive.class, "bundle.jar");
+
+		archive.setManifest(new Asset() {
+			@Override
+			public InputStream openStream() {
+				OSGiManifestBuilder builder = OSGiManifestBuilder.newInstance();
+				builder.addBundleSymbolicName(archive.getName());
+				builder.addBundleManifestVersion(2);
+				return builder.openStream();
+			}
+		});
+		return archive;
+	}
+
+	@Test
+	public void test() {
+		System.out.println("Example of test executed in Liferay");
+	}
+
+}
+```
