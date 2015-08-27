@@ -471,8 +471,8 @@ public class OSGiAllInProcessorTest {
 		}
 
 		Assert.assertEquals(
-			"The import " + imports.get(0) +
-				" should not be repeated", 1, cont);
+			"The import " + imports.get(0) + " should not be repeated", 1,
+			cont);
 	}
 
 	@Test

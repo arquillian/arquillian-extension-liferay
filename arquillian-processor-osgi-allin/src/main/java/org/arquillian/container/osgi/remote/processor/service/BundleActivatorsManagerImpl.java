@@ -92,7 +92,7 @@ public class BundleActivatorsManagerImpl implements BundleActivatorsManager {
 		List<String> bundleActivators = new ArrayList<>();
 
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-		String line;
+		String line = null;
 		while ((line = reader.readLine()) != null) {
 			bundleActivators.add(line);
 		}
