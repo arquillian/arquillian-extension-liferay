@@ -144,7 +144,7 @@
 			<plugin>
 				<groupId>com.liferay</groupId>
 				<artifactId>com.liferay.source.formatter</artifactId>
-				<version>1.0.19</version>
+				<version>1.0.48</version>
 				<executions>
 					<execution>
 						<phase>compile</phase>
