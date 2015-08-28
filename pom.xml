@@ -178,6 +178,7 @@
 		<module>arquillian-container-liferay</module>
 		<module>arquillian-container-osgi-allin</module>
 		<module>arquillian-deployment-generator-bnd</module>
+		<module>arquillian-extension-liferay-example</module>
 		<module>arquillian-liferay-maven-extension</module>
 		<module>arquillian-processor-osgi-allin</module>
 	</modules>
