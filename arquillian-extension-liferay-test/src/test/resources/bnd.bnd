@@ -1,5 +1,0 @@
-Bundle-Name: Liferay Test Arquillian Extension Test
-Bundle-SymbolicName: org.arquillian.liferay.test
-Bundle-Version: 1.0.0
-Include-Resource:\
-	classess
