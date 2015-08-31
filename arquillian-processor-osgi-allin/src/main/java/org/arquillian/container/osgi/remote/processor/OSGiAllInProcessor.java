@@ -140,7 +140,7 @@ public class OSGiAllInProcessor implements ApplicationArchiveProcessor {
 	private void addOSGiImports(JavaArchive javaArchive) throws IOException {
 		String[] extensionsImports =
 			new String[] {"org.osgi.framework", "javax.management",
-				"javax.management.*", "javax.naming.*",
+				"javax.management.*", "javax.naming", "javax.naming.*",
 				"org.osgi.service.packageadmin", "org.osgi.service.startlevel",
 				"org.osgi.util.tracker"
 			};
