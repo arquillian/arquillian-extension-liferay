@@ -14,8 +14,10 @@
 
 package org.arquillian.container.osgi.allin.remote;
 
+import org.jboss.arquillian.container.osgi.OSGiApplicationArchiveProcessor;
 import org.jboss.arquillian.container.osgi.karaf.remote.KarafRemoteDeployableContainer;
 import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
+import org.jboss.arquillian.container.test.spi.client.deployment.ApplicationArchiveProcessor;
 import org.jboss.arquillian.core.spi.LoadableExtension;
 
 /**
@@ -28,6 +30,11 @@ public class OSGiAllInContainerExtension implements LoadableExtension {
 		builder.override(
 			DeployableContainer.class, KarafRemoteDeployableContainer.class,
 			KarafWithoutBundleRemoteDeployableContainer.class);
+
+		builder.override(
+			ApplicationArchiveProcessor.class,
+			OSGiApplicationArchiveProcessor.class,
+			NoOpArchiveApplicationProcessor.class);
 	}
 
 }

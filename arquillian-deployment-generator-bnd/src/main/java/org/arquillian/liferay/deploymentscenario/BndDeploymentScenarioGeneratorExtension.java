@@ -14,9 +14,6 @@
 
 package org.arquillian.liferay.deploymentscenario;
 
-import org.arquillian.liferay.processor.NoOpArchiveApplicationProcessor;
-
-import org.jboss.arquillian.container.test.spi.client.deployment.ApplicationArchiveProcessor;
 import org.jboss.arquillian.container.test.spi.client.deployment.DeploymentScenarioGenerator;
 import org.jboss.arquillian.core.spi.LoadableExtension;
 
@@ -31,29 +28,6 @@ public class BndDeploymentScenarioGeneratorExtension
 		builder.service(
 			DeploymentScenarioGenerator.class,
 			BndDeploymentScenarioGenerator.class);
-
-		if (Validate.classExists(
-				"org.jboss.arquillian.container.osgi." +
-					"OSGiApplicationArchiveProcessor")) {
-
-			Class<ApplicationArchiveProcessor>
-				osgiApplicationArchiveProcessorClass = null;
-
-			try {
-				osgiApplicationArchiveProcessorClass =
-					(Class<ApplicationArchiveProcessor>)Class.forName(
-						"org.jboss.arquillian.container.osgi." +
-							"OSGiApplicationArchiveProcessor");
-
-				builder.override(
-					ApplicationArchiveProcessor.class,
-					osgiApplicationArchiveProcessorClass,
-					NoOpArchiveApplicationProcessor.class);
-			}
-			catch (ClassNotFoundException e) {
-				//Ignored
-			}
-		}
 	}
 
 }

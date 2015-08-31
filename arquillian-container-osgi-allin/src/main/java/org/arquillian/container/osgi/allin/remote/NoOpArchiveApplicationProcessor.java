@@ -12,7 +12,7 @@
  * details.
  */
 
-package org.arquillian.liferay.processor;
+package org.arquillian.container.osgi.allin.remote;
 
 import org.jboss.arquillian.container.test.spi.client.deployment.ApplicationArchiveProcessor;
 import org.jboss.arquillian.test.spi.TestClass;
