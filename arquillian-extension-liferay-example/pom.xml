@@ -167,12 +167,17 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>com.liferay.portal</groupId>
+			<artifactId>portal-service</artifactId>
+			<version>7.0.0-m7</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.arquillian.liferay</groupId>
 			<artifactId>arquillian-container-liferay</artifactId>
 			<version>1.0.0.Final-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.jboss.arquillian.junit</groupId>
 			<artifactId>arquillian-junit-container</artifactId>
