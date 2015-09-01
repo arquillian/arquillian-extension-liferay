@@ -185,6 +185,10 @@
 
 	<repositories>
 		<repository>
+			<id>jboss</id>
+			<url>https://repository.jboss.org/nexus/content/repositories/releases/</url>
+		</repository>
+		<repository>
 			<id>liferay</id>
 			<url>http://cdn.repository.liferay.com/nexus/content/groups/public/</url>
 		</repository>
