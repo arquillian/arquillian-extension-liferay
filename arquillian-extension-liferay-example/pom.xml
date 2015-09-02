@@ -16,8 +16,6 @@
 
 	<properties>
 		<liferay.home>${project.basedir}/test-resources/liferay/liferay-portal-${version.liferay}</liferay.home>
-		<liferay.executable.start>${liferay.home}/tomcat-7.0.62/bin/startup.sh</liferay.executable.start>
-		<liferay.executable.stop>${liferay.home}/tomcat-7.0.62/bin/shutdown.sh</liferay.executable.stop>
 		<version.liferay>7.0-ce-m7</version.liferay>
 		<url.liferay><![CDATA[project/lportal/Liferay%20Portal/7.0.0%20M7/liferay-portal-tomcat-7.0-ce-m7-20150819114119178.zip?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Flportal%2Ffiles%2FLiferay%2520Portal%2F7.0.0%2520M7%2F&ts=1440746066&use_mirror=vorboss]]></url.liferay>
 	</properties>
@@ -141,7 +139,30 @@
 				</plugins>
 			</build>
 		</profile>
-
+		<profile>
+			<id>windows-profile</id>
+			<activation>
+				<os>
+					<family>windows</family>
+				</os>
+			</activation>
+			<properties>
+				<liferay.executable.start>${liferay.home}/tomcat-7.0.62/bin/startup.bat</liferay.executable.start>
+				<liferay.executable.stop>${liferay.home}/tomcat-7.0.62/bin/shutdown.bat</liferay.executable.stop>
+			</properties>
+		</profile>
+		<profile>
+			<id>unix-profile</id>
+			<activation>
+				<os>
+					<family>unix</family>
+				</os>
+			</activation>
+			<properties>
+				<liferay.executable.start>${liferay.home}/tomcat-7.0.62/bin/startup.sh</liferay.executable.start>
+				<liferay.executable.stop>${liferay.home}/tomcat-7.0.62/bin/shutdown.sh</liferay.executable.stop>
+			</properties>
+		</profile>
 	</profiles>
 
 	<build>
