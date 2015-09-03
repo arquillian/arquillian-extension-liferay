@@ -178,8 +178,20 @@
 		<module>arquillian-container-liferay</module>
 		<module>arquillian-container-osgi-allin</module>
 		<module>arquillian-deployment-generator-bnd</module>
+		<module>arquillian-extension-liferay-example</module>
 		<module>arquillian-liferay-maven-extension</module>
 		<module>arquillian-processor-osgi-allin</module>
 	</modules>
+
+	<repositories>
+		<repository>
+			<id>jboss</id>
+			<url>https://repository.jboss.org/nexus/content/repositories/releases/</url>
+		</repository>
+		<repository>
+			<id>liferay</id>
+			<url>http://cdn.repository.liferay.com/nexus/content/groups/public/</url>
+		</repository>
+	</repositories>
 
 </project>

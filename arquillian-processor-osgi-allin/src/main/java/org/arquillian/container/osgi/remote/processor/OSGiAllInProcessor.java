@@ -19,9 +19,11 @@ import java.io.InputStream;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -45,6 +47,7 @@ import org.jboss.shrinkwrap.api.ArchivePath;
 import org.jboss.shrinkwrap.api.Filters;
 import org.jboss.shrinkwrap.api.Node;
 import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;
+import org.jboss.shrinkwrap.api.container.ClassContainer;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 
@@ -65,6 +68,8 @@ public class OSGiAllInProcessor implements ApplicationArchiveProcessor {
 			JavaArchive javaArchive = (JavaArchive)archive;
 
 			validateBundleArchive(javaArchive);
+
+			addTestClass(javaArchive, testClass);
 
 			addOSGiImports(javaArchive);
 
@@ -135,7 +140,7 @@ public class OSGiAllInProcessor implements ApplicationArchiveProcessor {
 	private void addOSGiImports(JavaArchive javaArchive) throws IOException {
 		String[] extensionsImports =
 			new String[] {"org.osgi.framework", "javax.management",
-				"javax.management.*", "javax.naming.*",
+				"javax.management.*", "javax.naming", "javax.naming.*",
 				"org.osgi.service.packageadmin", "org.osgi.service.startlevel",
 				"org.osgi.util.tracker"
 			};
@@ -145,6 +150,71 @@ public class OSGiAllInProcessor implements ApplicationArchiveProcessor {
 		Manifest manifest = manifestManager.putAttributeValue(
 			manifestManager.getManifest(javaArchive), "Import-Package",
 			extensionsImports);
+
+		manifestManager.replaceManifest(javaArchive, manifest);
+	}
+
+	private void addTestClass(JavaArchive javaArchive, TestClass testClass)
+		throws IOException {
+
+		Class<ClassContainer> classContainerClass = ClassContainer.class;
+
+		if (!classContainerClass.isAssignableFrom(javaArchive.getClass())) {
+			throw new IllegalArgumentException(
+				"ClassContainer expected: " + javaArchive);
+		}
+
+		// Get the test class and its super classes
+
+		Class<?> javaClass = testClass.getJavaClass();
+
+		Set<Class<?>> classes = new HashSet<>();
+
+		classes.add(javaClass);
+
+		Class<?> superclass = javaClass.getSuperclass();
+
+		while (superclass != Object.class) {
+			classes.add(superclass);
+
+			superclass = superclass.getSuperclass();
+		}
+
+		// Check if the application javaArchive already contains
+		// the test classes
+
+		String javaArchiveName = javaArchive.getName();
+
+		if (!javaArchiveName.endsWith(".war")) {
+			for (Class<?> clazz : classes) {
+				boolean testClassFound = false;
+
+				String className = clazz.getName();
+
+				String path = className.replace('.', '/') + ".class";
+
+				Map<ArchivePath, Node> javaArchiveContentMap =
+					javaArchive.getContent();
+
+				for (ArchivePath auxpath : javaArchiveContentMap.keySet()) {
+					if (auxpath.toString().endsWith(path)) {
+						testClassFound = true;
+
+						break;
+					}
+				}
+
+				if (testClassFound == false) {
+					((ClassContainer<?>)javaArchive).addClass(clazz);
+				}
+			}
+		}
+
+		ManifestManager manifestManager = _manifestManagerInstance.get();
+
+		Manifest manifest = manifestManager.putAttributeValue(
+			manifestManager.getManifest(javaArchive), "Export-Package",
+			javaClass.getPackage().getName());
 
 		manifestManager.replaceManifest(javaArchive, manifest);
 	}
