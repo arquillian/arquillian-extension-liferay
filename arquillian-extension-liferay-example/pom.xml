@@ -94,6 +94,18 @@
 								</goals>
 							</execution>
 							<execution>
+								<id>disable-open-browser</id>
+								<phase>process-test-sources</phase>
+								<configuration>
+									<target>
+										<echo file="${project.basedir}/test-resources/liferay/liferay-portal-7.0-ce-m7/portal-ext.properties" >browser.launcher.url=</echo>
+									</target>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+							<execution>
 								<id>create-file</id>
 								<phase>process-test-sources</phase>
 								<configuration>
