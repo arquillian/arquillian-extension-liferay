@@ -127,3 +127,23 @@ public class SimpleTest {
 ## Create a functional test in Liferay with the Arquillian Liferay Extension
 
 To create a functional test in Liferay with the Arquillian Liferay Extension we are going to follow this [guide](http://arquillian.org/guides/functional_testing_using_graphene/)
+
+#### Add dependencies to pom.xml
+
+First of all, we need to configure the pom.xml file to add the graphene-webdriver dependencies
+
+```xml
+...
+	<dependencies>
+	....
+		<dependency>
+			<groupId>org.jboss.arquillian.graphene</groupId>
+			<artifactId>graphene-webdriver</artifactId>
+			<version>2.1.0.Alpha2</version>
+			<type>pom</type>
+			<scope>test</scope>
+		</dependency>
+	....
+	</dependencies>
+...	
+```
