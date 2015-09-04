@@ -147,3 +147,47 @@ First of all, we need to configure the pom.xml file to add the graphene-webdrive
 	</dependencies>
 ...	
 ```
+
+#### Add a easy way to execute tests between different browsers
+
+First, create a profile for each desired browser
+
+```xml
+...
+properties>
+    <browser>phantomjs</browser> 
+</properties>
+...
+
+<profiles>
+...
+    <profile>
+       <id>firefox</id>
+       <properties>
+          <browser>firefox</browser>
+       </properties>
+    </profile>
+    <profile>
+       <id>chrome</id>
+       <properties>
+           <browser>chrome</browser>
+       </properties>
+    </profile>
+...
+</profiles>
+```
+
+Next you need to setup arquillian.xml in order to change the Arquillian settings for browser selection. Add the following to the arquillian.xml:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<arquillian xmlns="http://jboss.org/schema/arquillian"
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+
+	<extension qualifier="webdriver">
+		<property name="browser">${browser}</property>
+	</extension>
+
+</arquillian>
+```
