@@ -123,3 +123,7 @@ public class SimpleTest {
 
 }
 ```
+
+## Create a functional test in Liferay with the Arquillian Liferay Extension
+
+To create a functional test in Liferay with the Arquillian Liferay Extension we are going to follow this [guide](http://arquillian.org/guides/functional_testing_using_graphene/)
