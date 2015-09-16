@@ -7,4 +7,8 @@
 		<property name="browser">${browser}</property>
 	</extension>
 
+	<extension qualifier="graphene">
+		<property name="url">http://localhost:8080</property>
+	</extension>
+
 </arquillian>

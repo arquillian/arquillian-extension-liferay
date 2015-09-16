@@ -195,21 +195,13 @@ Next you need to setup arquillian.xml in order to change the Arquillian settings
 #### Create a SignIn test
 
 ```java
-import java.io.InputStream;
-
+import java.net.MalformedURLException;
 import java.net.URL;
 
-import java.util.UUID;
-
-import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.jboss.osgi.metadata.OSGiManifestBuilder;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.Asset;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -220,32 +212,14 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-/**
- * @author Cristina González
- */
+@RunAsClient
 @RunWith(Arquillian.class)
 public class BasicFunctionalTest {
 
-	@Deployment
-	public static JavaArchive create() {
-		final JavaArchive archive = ShrinkWrap.create(
-			JavaArchive.class, "bundle" + UUID.randomUUID() + ".jar");
-
-		archive.setManifest(new Asset() {
-			@Override
-			public InputStream openStream() {
-				OSGiManifestBuilder builder = OSGiManifestBuilder.newInstance();
-				builder.addBundleSymbolicName("bundle");
-				builder.addBundleManifestVersion(2);
-				return builder.openStream();
-			}
-		});
-		return archive;
-	}
-
-	@RunAsClient
 	@Test
-	public void testSignIn(@ArquillianResource URL url) {
+	public void testSignIn(@ArquillianResource URL url)
+		throws MalformedURLException {
+
 		Assert.assertNotNull(url);
 
 		Assert.assertNotNull(browser);
@@ -283,4 +257,24 @@ public class BasicFunctionalTest {
 	private WebElement signIn;
 
 }
+```
+
+#### Configure the ArquillianResource
+
+If we want to Inject the URL of the container using the annotation @ArquillianResource, we can use one of these solutions (if we are using the Arquillian Liferay Extension)
+
+1) Create a deployment method in our test class.
+2) Configure Arquillian using the graphene url property (via arquillian.xml, arquillian.properties or System Properties)
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<arquillian xmlns="http://jboss.org/schema/arquillian"
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+...
+	<extension qualifier="graphene">
+		<property name="url">http://localhost:8080</property>
+	</extension>
+...
+</arquillian>
 ```
