@@ -123,3 +123,158 @@ public class SimpleTest {
 
 }
 ```
+
+## Create a functional test in Liferay with the Arquillian Liferay Extension
+
+To create a functional test in Liferay with the Arquillian Liferay Extension we are going to follow this [guide](http://arquillian.org/guides/functional_testing_using_graphene/)
+
+#### Add dependencies to pom.xml
+
+First of all, we need to configure the pom.xml file to add the graphene-webdriver dependencies
+
+```xml
+...
+	<dependencies>
+	....
+		<dependency>
+			<groupId>org.jboss.arquillian.graphene</groupId>
+			<artifactId>graphene-webdriver</artifactId>
+			<version>2.1.0.Alpha2</version>
+			<type>pom</type>
+			<scope>test</scope>
+		</dependency>
+	....
+	</dependencies>
+...	
+```
+
+#### Add a easy way to execute tests between different browsers
+
+First, create a profile for each desired browser
+
+```xml
+...
+properties>
+    <browser>phantomjs</browser> 
+</properties>
+...
+
+<profiles>
+...
+    <profile>
+       <id>firefox</id>
+       <properties>
+          <browser>firefox</browser>
+       </properties>
+    </profile>
+    <profile>
+       <id>chrome</id>
+       <properties>
+           <browser>chrome</browser>
+       </properties>
+    </profile>
+...
+</profiles>
+```
+
+Next you need to setup arquillian.xml in order to change the Arquillian settings for browser selection. Add the following to the arquillian.xml:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<arquillian xmlns="http://jboss.org/schema/arquillian"
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+
+	<extension qualifier="webdriver">
+		<property name="browser">${browser}</property>
+	</extension>
+
+</arquillian>
+```
+
+#### Create a SignIn test
+
+```java
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import org.jboss.arquillian.container.test.api.RunAsClient;
+import org.jboss.arquillian.drone.api.annotation.Drone;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.test.api.ArquillianResource;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+
+@RunAsClient
+@RunWith(Arquillian.class)
+public class BasicFunctionalTest {
+
+	@Test
+	public void testSignIn(@ArquillianResource URL url)
+		throws MalformedURLException {
+
+		Assert.assertNotNull(url);
+
+		Assert.assertNotNull(browser);
+
+		browser.get(url.toExternalForm());
+
+		Assert.assertNotNull(signIn);
+		Assert.assertNotNull(login);
+		Assert.assertNotNull(password);
+
+		login.clear();
+
+		login.sendKeys("test@liferay.com");
+
+		password.sendKeys("test");
+
+		signIn.click();
+
+		String bodyText = browser.findElement(By.tagName("body")).getText();
+
+		Assert.assertTrue(
+			"SignIn has failed", bodyText.contains("Terms of Use"));
+	}
+
+	@Drone
+	private WebDriver browser;
+
+	@FindBy(css = "input[id$='_login']")
+	private WebElement login;
+
+	@FindBy(css = "input[id$='_password']")
+	private WebElement password;
+
+	@FindBy(css = "button[type=submit]")
+	private WebElement signIn;
+
+}
+```
+
+#### Configure the ArquillianResource
+
+If we want to Inject the URL of the container using the annotation @ArquillianResource, we can use one of these solutions (if we are using the Arquillian Liferay Extension)
+
+1) Create a deployment method in our test class.
+2) Configure Arquillian using the graphene url property (via arquillian.xml, arquillian.properties or System Properties)
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<arquillian xmlns="http://jboss.org/schema/arquillian"
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+...
+	<extension qualifier="graphene">
+		<property name="url">http://localhost:8080</property>
+	</extension>
+...
+</arquillian>
+```
