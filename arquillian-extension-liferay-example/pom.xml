@@ -224,6 +224,14 @@
 	</dependencies>
 
 	<build>
+		<resources>
+			<resource>
+				<targetPath>${liferay.home}</targetPath>
+				<filtering>true</filtering>
+				<directory>${project.basedir}/test-resources/liferay/config/liferay</directory>
+				<includes><include>portal-setup-wizard.properties</include></includes>
+			</resource>
+		</resources>
 		<testResources>
 			<testResource>
 				<directory>src/test/resources</directory>
