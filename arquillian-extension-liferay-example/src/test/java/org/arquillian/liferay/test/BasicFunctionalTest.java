@@ -14,7 +14,6 @@
 
 package org.arquillian.liferay.test;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -40,7 +39,6 @@ public class BasicFunctionalTest {
 
 	@Test
 	public void testSignIn(@ArquillianResource URL url) {
-
 		Assert.assertNotNull(url);
 
 		Assert.assertNotNull(browser);
