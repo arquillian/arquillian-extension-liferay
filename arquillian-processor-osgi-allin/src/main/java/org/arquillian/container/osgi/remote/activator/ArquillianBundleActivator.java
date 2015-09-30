@@ -57,7 +57,7 @@ public class ArquillianBundleActivator implements BundleActivator {
 
 		// Execute all activators
 
-		Set<BundleActivator> bundleActivators = loadActivators();
+		bundleActivators = loadActivators();
 
 		for (BundleActivator bundleActivator : bundleActivators) {
 			bundleActivator.start(context);
@@ -82,8 +82,6 @@ public class ArquillianBundleActivator implements BundleActivator {
 	public void stop(BundleContext context) throws Exception {
 
 		// Execute all activators
-
-		Set<BundleActivator> bundleActivators = loadActivators();
 
 		for (BundleActivator bundleActivator : bundleActivators) {
 			bundleActivator.stop(context);
@@ -201,5 +199,7 @@ public class ArquillianBundleActivator implements BundleActivator {
 		ArquillianBundleActivator.class.getName());
 
 	private JMXTestRunner testRunner;
+
+	private Set<BundleActivator> bundleActivators;
 
 }
