@@ -177,6 +177,7 @@
 	<modules>
 		<module>arquillian-container-liferay</module>
 		<module>arquillian-container-osgi-allin</module>
+		<module>arquillian-install-portlet-in-liferay</module>
 		<module>arquillian-deployment-generator-bnd</module>
 		<module>arquillian-extension-liferay-example</module>
 		<module>arquillian-liferay-maven-extension</module>

@@ -1,0 +1,62 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<artifactId>arquillian-extension-liferay</artifactId>
+		<groupId>org.arquillian.liferay</groupId>
+		<version>1.0.0.Final-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<groupId>org.arquillian.liferay</groupId>
+	<artifactId>arquillian-install-portlet-in-liferay</artifactId>
+	<version>1.0.0.Final-SNAPSHOT</version>
+	<name>Arquillian Install Portlet in Liferay</name>
+	<description>Arquillian Install Portlet in Liferay</description>
+	<packaging>bundle</packaging>
+
+	<repositories>
+		<repository>
+			<id>liferay-ce</id>
+			<name>Liferay CE</name>
+			<url>https://repository.liferay.com/nexus/content/groups/liferay-ce</url>
+			<releases><enabled>true</enabled></releases>
+			<snapshots><enabled>true</enabled></snapshots>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>liferay-ce</id>
+			<url>https://repository.liferay.com/nexus/content/groups/liferay-ce/</url>
+			<releases><enabled>true</enabled></releases>
+			<snapshots><enabled>true</enabled></snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.jboss.arquillian.container</groupId>
+			<artifactId>arquillian-container-test-spi</artifactId>
+			<version>1.1.8.Final</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+						<Export-Package>org.arquillian.liferay.installportlet</Export-Package>
+						<_dsannotations>*</_dsannotations>
+					</instructions>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
