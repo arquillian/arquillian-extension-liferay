@@ -198,8 +198,7 @@ public class ArquillianBundleActivator implements BundleActivator {
 	private static final Logger log = Logger.getLogger(
 		ArquillianBundleActivator.class.getName());
 
-	private JMXTestRunner testRunner;
-
 	private Set<BundleActivator> bundleActivators;
+	private JMXTestRunner testRunner;
 
 }

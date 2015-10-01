@@ -12,23 +12,25 @@
  * details.
  */
 
-package org.arquillian.liferay.installportlet;
-
-import org.arquillian.liferay.installportlet.remote.LiferayInstallPortletAuxiliaryAppender;
+package org.arquillian.liferay.installportlet.remote;
 
 import org.jboss.arquillian.container.test.spi.client.deployment.AuxiliaryArchiveAppender;
-import org.jboss.arquillian.core.spi.LoadableExtension;
+import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
 
 /**
- * @author Carlos Sierra Andrés
+ * @author Cristina González
  */
-public class InstallPortletExtension implements LoadableExtension {
+public class LiferayInstallPortletAuxiliaryAppender
+	implements AuxiliaryArchiveAppender {
 
 	@Override
-	public void register(ExtensionBuilder builder) {
-		builder.service(
-			AuxiliaryArchiveAppender.class,
-			LiferayInstallPortletAuxiliaryAppender.class);
+	public Archive<?> createAuxiliaryArchive() {
+		JavaArchive archive = ShrinkWrap.create(
+			JavaArchive.class, "arquillian-install-portlet-in-liferay.jar");
+
+		return archive;
 	}
 
 }
