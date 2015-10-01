@@ -14,10 +14,16 @@
 
 package org.arquillian.liferay.installportlet.remote;
 
+import java.io.InputStream;
+
+import org.arquillian.liferay.installportlet.activator.InstallPortletBundleActivator;
 import org.arquillian.liferay.installportlet.servlet.InstallPortletServlet;
+
 import org.jboss.arquillian.container.test.spi.client.deployment.AuxiliaryArchiveAppender;
+import org.jboss.osgi.metadata.OSGiManifestBuilder;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.Asset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 
 /**
@@ -31,7 +37,28 @@ public class LiferayInstallPortletAuxiliaryAppender
 		JavaArchive archive = ShrinkWrap.create(
 			JavaArchive.class, "arquillian-install-portlet-in-liferay.jar");
 
+		archive.addClass(InstallPortletBundleActivator.class);
 		archive.addClass(InstallPortletServlet.class);
+		archive.addClass(LiferayInstallPortletAuxiliaryAppender.class);
+
+		archive.setManifest(new Asset() {
+			@Override
+			public InputStream openStream() {
+				OSGiManifestBuilder builder = OSGiManifestBuilder.newInstance();
+				builder.addBundleManifestVersion(2);
+				builder.addBundleSymbolicName(
+					"arquillian-install-portlet-in-liferay");
+				builder.addImportPackages(
+					"com.liferay.portal.kernel.exception",
+					"com.liferay.portal.kernel.util",
+					"com.liferay.portal.model", "com.liferay.portal.service",
+					"javax.servlet.http", "javax.portlet", "javax.servlet",
+					"org.osgi.framework");
+				builder.addBundleActivator(InstallPortletBundleActivator.class);
+
+				return builder.openStream();
+			}
+		});
 
 		return archive;
 	}
