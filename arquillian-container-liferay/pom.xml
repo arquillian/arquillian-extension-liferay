@@ -38,6 +38,11 @@
 			<version>1.0.0.Final-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>org.arquillian.liferay</groupId>
+			<artifactId>arquillian-install-portlet-in-liferay</artifactId>
+			<version>1.0.0.Final-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.core</artifactId>
 			<version>5.0.0</version>
