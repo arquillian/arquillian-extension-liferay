@@ -14,6 +14,7 @@
 
 package org.arquillian.liferay.installportlet.remote;
 
+import org.arquillian.liferay.installportlet.servlet.InstallPortletServlet;
 import org.jboss.arquillian.container.test.spi.client.deployment.AuxiliaryArchiveAppender;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -29,6 +30,8 @@ public class LiferayInstallPortletAuxiliaryAppender
 	public Archive<?> createAuxiliaryArchive() {
 		JavaArchive archive = ShrinkWrap.create(
 			JavaArchive.class, "arquillian-install-portlet-in-liferay.jar");
+
+		archive.addClass(InstallPortletServlet.class);
 
 		return archive;
 	}
