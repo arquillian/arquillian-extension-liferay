@@ -14,10 +14,12 @@
 
 package org.arquillian.liferay.installportlet;
 
+import org.arquillian.liferay.installportlet.annotation.InstallPortletTestEnricher;
 import org.arquillian.liferay.installportlet.remote.LiferayInstallPortletAuxiliaryAppender;
 
 import org.jboss.arquillian.container.test.spi.client.deployment.AuxiliaryArchiveAppender;
 import org.jboss.arquillian.core.spi.LoadableExtension;
+import org.jboss.arquillian.test.spi.TestEnricher;
 
 /**
  * @author Carlos Sierra Andrés
@@ -29,6 +31,8 @@ public class InstallPortletExtension implements LoadableExtension {
 		builder.service(
 			AuxiliaryArchiveAppender.class,
 			LiferayInstallPortletAuxiliaryAppender.class);
+
+		builder.service(TestEnricher.class, InstallPortletTestEnricher.class);
 	}
 
 }
