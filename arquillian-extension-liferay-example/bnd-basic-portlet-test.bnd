@@ -1,0 +1,8 @@
+Bundle-Name: Basic Portlet Test
+Bundle-SymbolicName: org.arquillian.liferay.sample
+Bundle-Version: 1.0.0
+Export-Package: org.arquillian.liferay.sample
+Include-Resource:\
+	target/classes,\
+
+-dsannotations: *
