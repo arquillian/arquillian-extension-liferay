@@ -43,49 +43,46 @@ public class InstallPortletBundleActivator implements BundleActivator {
 		InstallPortletServlet installPortletServlet =
 			new InstallPortletServlet();
 
-		ServiceReference<CompanyLocalService>
-			companyLocalServiceServiceReference = context.getServiceReference(
-				CompanyLocalService.class);
+		_companyLocalServiceServiceReference = context.getServiceReference(
+			CompanyLocalService.class);
 
-		if (companyLocalServiceServiceReference != null) {
+		if (_companyLocalServiceServiceReference != null) {
 			installPortletServlet.setCompanyLocalService(
-				context.getService(companyLocalServiceServiceReference));
+				context.getService(_companyLocalServiceServiceReference));
 		}
 
-		ServiceReference<GroupLocalService> groupLocalServiceServiceReference =
-			context.getServiceReference(GroupLocalService.class);
+		_groupLocalServiceServiceReference = context.getServiceReference(
+			GroupLocalService.class);
 
-		if (groupLocalServiceServiceReference != null) {
+		if (_groupLocalServiceServiceReference != null) {
 			installPortletServlet.setGroupLocalService(
-				context.getService(groupLocalServiceServiceReference));
+				context.getService(_groupLocalServiceServiceReference));
 		}
 
-		ServiceReference<LayoutLocalService>
-			layoutLocalServiceServiceReference = context.getServiceReference(
-				LayoutLocalService.class);
+		_layoutLocalServiceServiceReference = context.getServiceReference(
+			LayoutLocalService.class);
 
-		if (layoutLocalServiceServiceReference != null) {
+		if (_layoutLocalServiceServiceReference != null) {
 			installPortletServlet.setLayoutLocalService(
-				context.getService(layoutLocalServiceServiceReference));
+				context.getService(_layoutLocalServiceServiceReference));
 		}
 
-		ServiceReference<PortletPreferencesLocalService>
-			portletPreferencesLocalServiceServiceReference =
-				context.getServiceReference(
-					PortletPreferencesLocalService.class);
+		_portletPreferencesLocalServiceServiceReference =
+			context.getServiceReference(
+				PortletPreferencesLocalService.class);
 
-		if (portletPreferencesLocalServiceServiceReference != null) {
+		if (_portletPreferencesLocalServiceServiceReference != null) {
 			installPortletServlet.setPortletPreferencesLocalService(
 				context.getService(
-					portletPreferencesLocalServiceServiceReference));
+					_portletPreferencesLocalServiceServiceReference));
 		}
 
-		ServiceReference<UserLocalService> userLocalServiceServiceReference =
-			context.getServiceReference(UserLocalService.class);
+		_userLocalServiceServiceReference = context.getServiceReference(
+			UserLocalService.class);
 
-		if (userLocalServiceServiceReference != null) {
+		if (_userLocalServiceServiceReference != null) {
 			installPortletServlet.setUserLocalService(
-				context.getService(userLocalServiceServiceReference));
+				context.getService(_userLocalServiceServiceReference));
 		}
 
 		Dictionary<String, Object> properties = new HashMapDictionary<>();
@@ -104,8 +101,25 @@ public class InstallPortletBundleActivator implements BundleActivator {
 
 	@Override
 	public void stop(BundleContext context) throws Exception {
-		context.ungetService(_servletServiceRegistration.getReference());
+		context.ungetService(_companyLocalServiceServiceReference);
+		context.ungetService(_groupLocalServiceServiceReference);
+		context.ungetService(_layoutLocalServiceServiceReference);
+		context.ungetService(_portletPreferencesLocalServiceServiceReference);
+		context.ungetService(_userLocalServiceServiceReference);
+
+		_servletServiceRegistration.unregister();
 	}
+
+	private ServiceReference<CompanyLocalService>
+		_companyLocalServiceServiceReference;
+	private ServiceReference<GroupLocalService>
+		_groupLocalServiceServiceReference;
+	private ServiceReference<LayoutLocalService>
+		_layoutLocalServiceServiceReference;
+	private ServiceReference<PortletPreferencesLocalService>
+		_portletPreferencesLocalServiceServiceReference;
+	private ServiceReference<UserLocalService>
+		_userLocalServiceServiceReference;
 
 	private ServiceRegistration<Servlet> _servletServiceRegistration;
 
