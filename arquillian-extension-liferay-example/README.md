@@ -12,9 +12,9 @@ This example will be executed in the following environment:
 * Liferay 7.0.0
 * JUnit 4.12
 
-##Creating a Liferay Portlet
+##Creating a Liferay Portlet for testing
 
-##Add Liferay, Portlet and OSGi dependencies to pom.xml
+###Add Liferay, Portlet and OSGi dependencies to pom.xml
 
 ```xml
 ...
@@ -183,7 +183,7 @@ public class SamplePortlet extends MVCPortlet {
 ```
 
 Create a view.jsp file:
-```java
+```jsp
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
