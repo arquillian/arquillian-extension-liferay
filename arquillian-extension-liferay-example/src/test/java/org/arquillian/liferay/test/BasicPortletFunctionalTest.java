@@ -39,6 +39,8 @@ import org.junit.runner.RunWith;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 
 /**
  * @author Cristina González
@@ -60,6 +62,23 @@ public class BasicPortletFunctionalTest {
 	}
 
 	@Test
+	public void testAdd() throws IOException, PortalException {
+		browser.get(_portlerURL.toExternalForm());
+
+		firstParamter.clear();
+
+		firstParamter.sendKeys("2");
+
+		secondParameter.clear();
+
+		secondParameter.sendKeys("3");
+
+		add.click();
+
+		Assert.assertEquals("5", result.getText());
+	}
+
+	@Test
 	public void testInstallPortlet() throws IOException, PortalException {
 		browser.get(_portlerURL.toExternalForm());
 
@@ -76,7 +95,19 @@ public class BasicPortletFunctionalTest {
 	@Inject
 	private SampleService _sampleService;
 
+	@FindBy(css = "button[type=submit]")
+	private WebElement add;
+
 	@Drone
 	private WebDriver browser;
+
+	@FindBy(css = "input[id$='firstParameter']")
+	private WebElement firstParamter;
+
+	@FindBy(css = "span[class='result']")
+	private WebElement result;
+
+	@FindBy(css = "input[id$='secondParameter']")
+	private WebElement secondParameter;
 
 }
