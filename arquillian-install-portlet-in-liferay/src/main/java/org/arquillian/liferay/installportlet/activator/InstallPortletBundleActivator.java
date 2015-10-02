@@ -68,8 +68,7 @@ public class InstallPortletBundleActivator implements BundleActivator {
 		}
 
 		_portletPreferencesLocalServiceServiceReference =
-			context.getServiceReference(
-				PortletPreferencesLocalService.class);
+			context.getServiceReference(PortletPreferencesLocalService.class);
 
 		if (_portletPreferencesLocalServiceServiceReference != null) {
 			installPortletServlet.setPortletPreferencesLocalService(
@@ -118,9 +117,8 @@ public class InstallPortletBundleActivator implements BundleActivator {
 		_layoutLocalServiceServiceReference;
 	private ServiceReference<PortletPreferencesLocalService>
 		_portletPreferencesLocalServiceServiceReference;
+	private ServiceRegistration<Servlet> _servletServiceRegistration;
 	private ServiceReference<UserLocalService>
 		_userLocalServiceServiceReference;
-
-	private ServiceRegistration<Servlet> _servletServiceRegistration;
 
 }
