@@ -12,7 +12,7 @@
  * details.
  */
 
-package org.arquillian.liferay.installportlet.servlet;
+package org.arquillian.liferay.portal.servlet;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.model.Company;
@@ -44,7 +44,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * @author Cristina González
  */
-public class InstallPortletServlet extends HttpServlet {
+public class PortalURLServlet extends HttpServlet {
 
 	public void destroy() {
 		if (_layouts != null) {

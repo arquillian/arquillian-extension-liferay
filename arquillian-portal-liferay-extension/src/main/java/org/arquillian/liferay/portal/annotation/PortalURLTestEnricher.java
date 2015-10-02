@@ -12,7 +12,7 @@
  * details.
  */
 
-package org.arquillian.liferay.installportlet.annotation;
+package org.arquillian.liferay.portal.annotation;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -29,7 +29,7 @@ import org.jboss.arquillian.test.spi.TestEnricher;
 /**
  * @author Cristina González
  */
-public class InstallPortletTestEnricher implements TestEnricher {
+public class PortalURLTestEnricher implements TestEnricher {
 
 	public boolean contains(
 		Annotation[] annotations, Class<?> annotationClass) {
@@ -50,11 +50,11 @@ public class InstallPortletTestEnricher implements TestEnricher {
 		Field[] declaredFields = testClass.getDeclaredFields();
 
 		for (Field declaredField : declaredFields) {
-			if (declaredField.isAnnotationPresent(InstallPortlet.class)) {
-				InstallPortlet annotation = declaredField.getAnnotation(
-					InstallPortlet.class);
+			if (declaredField.isAnnotationPresent(PortalURL.class)) {
+				PortalURL annotation = declaredField.getAnnotation(
+					PortalURL.class);
 
-				injectField(declaredField, testCase, annotation.name());
+				injectField(declaredField, testCase, annotation.value());
 			}
 		}
 	}
@@ -81,11 +81,11 @@ public class InstallPortletTestEnricher implements TestEnricher {
 		for (int i = 0; i < parameterTypes.length; i++) {
 			Annotation[] parameterAnnotations = parametersAnnotations[i];
 
-			if (contains(parameterAnnotations, InstallPortlet.class)) {
-				InstallPortlet annotation = (InstallPortlet)getAnnotation(
-					parameterAnnotations, InstallPortlet.class);
+			if (contains(parameterAnnotations, PortalURL.class)) {
+				PortalURL annotation = (PortalURL)getAnnotation(
+					parameterAnnotations, PortalURL.class);
 
-				parameters[i] = resolve(annotation.name());
+				parameters[i] = resolve(annotation.value());
 			}
 		}
 

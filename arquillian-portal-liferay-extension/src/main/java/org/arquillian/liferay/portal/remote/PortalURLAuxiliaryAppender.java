@@ -12,12 +12,12 @@
  * details.
  */
 
-package org.arquillian.liferay.installportlet.remote;
+package org.arquillian.liferay.portal.remote;
 
 import java.io.InputStream;
 
-import org.arquillian.liferay.installportlet.activator.InstallPortletBundleActivator;
-import org.arquillian.liferay.installportlet.servlet.InstallPortletServlet;
+import org.arquillian.liferay.portal.activator.PortalURLBundleActivator;
+import org.arquillian.liferay.portal.servlet.PortalURLServlet;
 
 import org.jboss.arquillian.container.test.spi.client.deployment.AuxiliaryArchiveAppender;
 import org.jboss.osgi.metadata.OSGiManifestBuilder;
@@ -29,17 +29,16 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 /**
  * @author Cristina González
  */
-public class LiferayInstallPortletAuxiliaryAppender
-	implements AuxiliaryArchiveAppender {
+public class PortalURLAuxiliaryAppender implements AuxiliaryArchiveAppender {
 
 	@Override
 	public Archive<?> createAuxiliaryArchive() {
 		JavaArchive archive = ShrinkWrap.create(
 			JavaArchive.class, "arquillian-install-portlet-in-liferay.jar");
 
-		archive.addClass(InstallPortletBundleActivator.class);
-		archive.addClass(InstallPortletServlet.class);
-		archive.addClass(LiferayInstallPortletAuxiliaryAppender.class);
+		archive.addClass(PortalURLBundleActivator.class);
+		archive.addClass(PortalURLServlet.class);
+		archive.addClass(PortalURLAuxiliaryAppender.class);
 
 		archive.setManifest(new Asset() {
 			@Override
@@ -54,7 +53,7 @@ public class LiferayInstallPortletAuxiliaryAppender
 					"com.liferay.portal.model", "com.liferay.portal.service",
 					"javax.servlet.http", "javax.portlet", "javax.servlet",
 					"org.osgi.framework");
-				builder.addBundleActivator(InstallPortletBundleActivator.class);
+				builder.addBundleActivator(PortalURLBundleActivator.class);
 
 				return builder.openStream();
 			}

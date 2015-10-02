@@ -12,7 +12,7 @@
  * details.
  */
 
-package org.arquillian.liferay.installportlet.activator;
+package org.arquillian.liferay.portal.activator;
 
 import com.liferay.portal.kernel.util.HashMapDictionary;
 import com.liferay.portal.service.CompanyLocalService;
@@ -25,7 +25,7 @@ import java.util.Dictionary;
 
 import javax.servlet.Servlet;
 
-import org.arquillian.liferay.installportlet.servlet.InstallPortletServlet;
+import org.arquillian.liferay.portal.servlet.PortalURLServlet;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -36,18 +36,17 @@ import org.osgi.service.http.whiteboard.HttpWhiteboardConstants;
 /**
  * @author Cristina González Castellano
  */
-public class InstallPortletBundleActivator implements BundleActivator {
+public class PortalURLBundleActivator implements BundleActivator {
 
 	@Override
 	public void start(BundleContext context) throws Exception {
-		InstallPortletServlet installPortletServlet =
-			new InstallPortletServlet();
+		PortalURLServlet portalURLServlet = new PortalURLServlet();
 
 		_companyLocalServiceServiceReference = context.getServiceReference(
 			CompanyLocalService.class);
 
 		if (_companyLocalServiceServiceReference != null) {
-			installPortletServlet.setCompanyLocalService(
+			portalURLServlet.setCompanyLocalService(
 				context.getService(_companyLocalServiceServiceReference));
 		}
 
@@ -55,7 +54,7 @@ public class InstallPortletBundleActivator implements BundleActivator {
 			GroupLocalService.class);
 
 		if (_groupLocalServiceServiceReference != null) {
-			installPortletServlet.setGroupLocalService(
+			portalURLServlet.setGroupLocalService(
 				context.getService(_groupLocalServiceServiceReference));
 		}
 
@@ -63,7 +62,7 @@ public class InstallPortletBundleActivator implements BundleActivator {
 			LayoutLocalService.class);
 
 		if (_layoutLocalServiceServiceReference != null) {
-			installPortletServlet.setLayoutLocalService(
+			portalURLServlet.setLayoutLocalService(
 				context.getService(_layoutLocalServiceServiceReference));
 		}
 
@@ -71,7 +70,7 @@ public class InstallPortletBundleActivator implements BundleActivator {
 			context.getServiceReference(PortletPreferencesLocalService.class);
 
 		if (_portletPreferencesLocalServiceServiceReference != null) {
-			installPortletServlet.setPortletPreferencesLocalService(
+			portalURLServlet.setPortletPreferencesLocalService(
 				context.getService(
 					_portletPreferencesLocalServiceServiceReference));
 		}
@@ -80,7 +79,7 @@ public class InstallPortletBundleActivator implements BundleActivator {
 			UserLocalService.class);
 
 		if (_userLocalServiceServiceReference != null) {
-			installPortletServlet.setUserLocalService(
+			portalURLServlet.setUserLocalService(
 				context.getService(_userLocalServiceServiceReference));
 		}
 
@@ -95,7 +94,7 @@ public class InstallPortletBundleActivator implements BundleActivator {
 			"/install-portlet-servlet/*");
 
 		_servletServiceRegistration = context.registerService(
-			Servlet.class, installPortletServlet, properties);
+			Servlet.class, portalURLServlet, properties);
 	}
 
 	@Override

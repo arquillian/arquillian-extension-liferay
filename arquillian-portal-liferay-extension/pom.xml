@@ -9,10 +9,10 @@
 	</parent>
 
 	<groupId>org.arquillian.liferay</groupId>
-	<artifactId>arquillian-install-portlet-in-liferay</artifactId>
+	<artifactId>arquillian-portal-liferay-extension</artifactId>
 	<version>1.0.0.Final-SNAPSHOT</version>
-	<name>Arquillian Install Portlet in Liferay</name>
-	<description>Arquillian Install Portlet in Liferay</description>
+	<name>Arquillian Portal Liferay Extension</name>
+	<description>Arquillian Portal Liferay Extension</description>
 	<packaging>bundle</packaging>
 
 	<repositories>

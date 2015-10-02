@@ -39,7 +39,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.arquillian.liferay</groupId>
-			<artifactId>arquillian-install-portlet-in-liferay</artifactId>
+			<artifactId>arquillian-portal-liferay-extension</artifactId>
 			<version>1.0.0.Final-SNAPSHOT</version>
 		</dependency>
 		<dependency>

@@ -12,7 +12,7 @@
  * details.
  */
 
-package org.arquillian.liferay.installportlet.annotation;
+package org.arquillian.liferay.portal.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD) //on filed level
-public @interface InstallPortlet {
-	public String name();
+public @interface PortalURL {
+	String value() default "";
 
 }

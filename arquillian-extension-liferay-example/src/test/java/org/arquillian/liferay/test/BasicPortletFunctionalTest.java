@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.arquillian.container.liferay.remote.enricher.Inject;
-import org.arquillian.liferay.installportlet.annotation.InstallPortlet;
+import org.arquillian.liferay.portal.annotation.PortalURL;
 import org.arquillian.liferay.sample.service.SampleService;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -89,7 +89,7 @@ public class BasicPortletFunctionalTest {
 			bodyText.contains("Sample Portlet is working!"));
 	}
 
-	@InstallPortlet(name ="arquillian_sample_portlet")
+	@PortalURL("arquillian_sample_portlet")
 	private URL _portlerURL;
 
 	@Inject
