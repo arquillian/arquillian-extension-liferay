@@ -34,7 +34,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.http.whiteboard.HttpWhiteboardConstants;
 
 /**
- * @author Manuel de la Peña
+ * @author Cristina González Castellano
  */
 public class InstallPortletBundleActivator implements BundleActivator {
 

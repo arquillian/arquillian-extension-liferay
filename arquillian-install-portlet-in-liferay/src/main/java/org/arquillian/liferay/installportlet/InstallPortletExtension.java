@@ -22,7 +22,7 @@ import org.jboss.arquillian.core.spi.LoadableExtension;
 import org.jboss.arquillian.test.spi.TestEnricher;
 
 /**
- * @author Carlos Sierra Andrés
+ * @author Cristina González Castellano
  */
 public class InstallPortletExtension implements LoadableExtension {
 
