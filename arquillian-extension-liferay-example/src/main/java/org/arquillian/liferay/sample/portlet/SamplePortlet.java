@@ -15,10 +15,21 @@
 package org.arquillian.liferay.sample.portlet;
 
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
+import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.theme.ThemeDisplay;
+import com.liferay.portlet.PortletURLFactoryUtil;
 
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
 import javax.portlet.Portlet;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletURL;
+
+import org.arquillian.liferay.sample.service.SampleService;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Cristina González
@@ -26,7 +37,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(
 	property = {
 		"com.liferay.portlet.display-category=category.sample",
-		"com.liferay.portlet.instanceable=true",
+		"com.liferay.portlet.instanceable=false",
 		"javax.portlet.display-name=Arquillian Sample Portlet",
 		"javax.portlet.init-param.template-path=/",
 		"javax.portlet.init-param.view-template=/view.jsp",
@@ -37,4 +48,38 @@ import org.osgi.service.component.annotations.Component;
 	service = Portlet.class
 )
 public class SamplePortlet extends MVCPortlet {
+
+	public void add(ActionRequest actionRequest, ActionResponse actionResponse)
+		throws Exception {
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		int firstParameter = ParamUtil.getInteger(
+			actionRequest, "firstParameter");
+		int secondParameter = ParamUtil.getInteger(
+			actionRequest, "secondParameter");
+
+		int result = _sampleService.add(firstParameter, secondParameter);
+
+		PortletURL portletURL = PortletURLFactoryUtil.create(
+			actionRequest, "arquillian_sample_portlet", themeDisplay.getPlid(),
+			PortletRequest.RENDER_PHASE);
+
+		portletURL.setParameter(
+			"firstParameter", String.valueOf(firstParameter));
+		portletURL.setParameter(
+			"secondParameter", String.valueOf(secondParameter));
+		portletURL.setParameter("result", String.valueOf(result));
+
+		actionRequest.setAttribute(WebKeys.REDIRECT, portletURL.toString());
+	}
+
+	@Reference(unbind = "-")
+	public void setSampleService(SampleService sampleService) {
+		_sampleService = sampleService;
+	}
+
+	private SampleService _sampleService;
+
 }
