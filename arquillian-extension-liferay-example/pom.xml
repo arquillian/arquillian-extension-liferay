@@ -48,18 +48,6 @@
 									<toFile>${project.basedir}/test-resources/liferay/zip/liferay.zip</toFile>
 								</configuration>
 							</execution>
-							<execution>
-								<id>download-tomcat</id>
-								<phase>generate-test-sources</phase>
-								<goals>
-									<goal>download-single</goal>
-								</goals>
-								<configuration>
-									<url>http://archive.apache.org</url>
-									<fromFile>dist/tomcat/tomcat-7/v7.0.62/bin/apache-tomcat-7.0.62.zip</fromFile>
-									<toFile>${project.basedir}/test-resources/tomcat/zip/tomcat.zip</toFile>
-								</configuration>
-							</execution>
 						</executions>
 					</plugin>
 					<plugin>
@@ -75,19 +63,6 @@
 										<echo message="unzip Liferay" />
 										<unzip src="${project.basedir}/test-resources/liferay/zip/liferay.zip" dest="${project.basedir}/test-resources/liferay" />
 										<chmod dir="${liferay.home}/tomcat-7.0.62/bin/" perm="ugo+rx" includes="**/*.sh" />
-									</target>
-								</configuration>
-								<goals>
-									<goal>run</goal>
-								</goals>
-							</execution>
-							<execution>
-								<id>unzip-tomcat</id>
-								<phase>process-test-sources</phase>
-								<configuration>
-									<target>
-										<echo message="unzip tomcat" />
-										<unzip src="${project.basedir}/test-resources/tomcat/zip/tomcat.zip" dest="${project.basedir}/test-resources/tomcat" />
 									</target>
 								</configuration>
 								<goals>
@@ -309,38 +284,6 @@
 							<resources>
 								<resource>
 									<directory>${project.basedir}/test-resources/liferay/config/bin</directory>
-									<filtering>true</filtering>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-					<execution>
-						<id>copy--tomcat-manager</id>
-						<phase>generate-test-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${liferay.home}/tomcat-7.0.62/webapps/manager</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${project.basedir}/test-resources/tomcat/apache-tomcat-7.0.62/webapps/manager</directory>
-									<filtering>true</filtering>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-					<execution>
-						<id>copy--tomcat-manager-config</id>
-						<phase>generate-test-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${liferay.home}/tomcat-7.0.62/conf</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${project.basedir}/test-resources/liferay/config/conf</directory>
 									<filtering>true</filtering>
 								</resource>
 							</resources>
