@@ -38,7 +38,6 @@
 		<dependency>
 			<groupId>org.jboss.arquillian.container</groupId>
 			<artifactId>arquillian-container-test-spi</artifactId>
-			<version>1.1.8.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>com.liferay.portal</groupId>

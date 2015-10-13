@@ -15,9 +15,9 @@
 	<description>Arquillian Liferay Extension Example</description>
 
 	<properties>
-		<liferay.home>${project.basedir}/test-resources/liferay/liferay-portal-7.0-ce-m7</liferay.home>
-		<liferay.version>7.0.0-m7</liferay.version>
-		<url.liferay><![CDATA[project/lportal/Liferay%20Portal/7.0.0%20M7/liferay-portal-tomcat-7.0-ce-m7-20150819114119178.zip?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Flportal%2Ffiles%2FLiferay%2520Portal%2F7.0.0%2520M7%2F&ts=1440746066&use_mirror=vorboss]]></url.liferay>
+		<liferay.home>${project.basedir}/test-resources/liferay/liferay-portal-7.0-ce-a1</liferay.home>
+		<liferay.version>7.0.0-a1</liferay.version>
+		<url.liferay><![CDATA[project/lportal/Liferay%20Portal/7.0.0%20A1/liferay-portal-tomcat-7.0-ce-a1-20150925145631643.zip?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Flportal%2Ffiles%2FLiferay%2520Portal%2F7.0.0%2520A1%2F&ts=1444249871&use_mirror=kent]]></url.liferay>
 		<browser>phantomjs</browser>
 	</properties>
 
@@ -48,18 +48,6 @@
 									<toFile>${project.basedir}/test-resources/liferay/zip/liferay.zip</toFile>
 								</configuration>
 							</execution>
-							<execution>
-								<id>download-tomcat</id>
-								<phase>generate-test-sources</phase>
-								<goals>
-									<goal>download-single</goal>
-								</goals>
-								<configuration>
-									<url>http://archive.apache.org</url>
-									<fromFile>dist/tomcat/tomcat-7/v7.0.62/bin/apache-tomcat-7.0.62.zip</fromFile>
-									<toFile>${project.basedir}/test-resources/tomcat/zip/tomcat.zip</toFile>
-								</configuration>
-							</execution>
 						</executions>
 					</plugin>
 					<plugin>
@@ -75,19 +63,6 @@
 										<echo message="unzip Liferay" />
 										<unzip src="${project.basedir}/test-resources/liferay/zip/liferay.zip" dest="${project.basedir}/test-resources/liferay" />
 										<chmod dir="${liferay.home}/tomcat-7.0.62/bin/" perm="ugo+rx" includes="**/*.sh" />
-									</target>
-								</configuration>
-								<goals>
-									<goal>run</goal>
-								</goals>
-							</execution>
-							<execution>
-								<id>unzip-tomcat</id>
-								<phase>process-test-sources</phase>
-								<configuration>
-									<target>
-										<echo message="unzip tomcat" />
-										<unzip src="${project.basedir}/test-resources/tomcat/zip/tomcat.zip" dest="${project.basedir}/test-resources/tomcat" />
 									</target>
 								</configuration>
 								<goals>
@@ -309,38 +284,6 @@
 							<resources>
 								<resource>
 									<directory>${project.basedir}/test-resources/liferay/config/bin</directory>
-									<filtering>true</filtering>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-					<execution>
-						<id>copy--tomcat-manager</id>
-						<phase>generate-test-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${liferay.home}/tomcat-7.0.62/webapps/manager</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${project.basedir}/test-resources/tomcat/apache-tomcat-7.0.62/webapps/manager</directory>
-									<filtering>true</filtering>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-					<execution>
-						<id>copy--tomcat-manager-config</id>
-						<phase>generate-test-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${liferay.home}/tomcat-7.0.62/conf</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${project.basedir}/test-resources/liferay/config/conf</directory>
 									<filtering>true</filtering>
 								</resource>
 							</resources>

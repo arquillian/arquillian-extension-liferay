@@ -281,28 +281,6 @@ JMX_OPTS="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenti
 CATALINA_OPTS="${CATALINA_OPTS} ${JMX_OPTS}"
 ```
 
-#### Install and configure Tomcat Manager
-
-You can follow this [guide] (https://tomcat.apache.org/tomcat-7.0-doc/manager-howto.html#Introduction) to configure the Tomcat Manager.
-
-The Tomcat Manager is installed by default on context path /manager.
-
-```xml
-<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<tomcat-users>
-  <role rolename="tomcat"/>
-  <role rolename="manager-gui"/>
-  <role rolename="manager-script"/>
-  <role rolename="manager-jmx"/>
-  <role rolename="manager-status"/>
-  <user password="tomcat" roles="tomcat,manager-gui,manager-script,manager-jmx,manager-status" username="tomcat"/>
-</tomcat-users>
-```
-
-In the above example, you can see how we have created a user with the username **tomcat** and the password **tomcat** that has the roles **tomcat,manager-gui,manager-script,manager-jmx,manager-status**, these roles are mandatory to execute Arquillian tests using the Arquillian Liferay Extension.
-
-By default this extension needs that the user and password are both **tomcat**. This behaviour can be configured in a custom arquillian.xml file. We will see how to configure the custom extension properties in other chapter.
-
 ## Create a test in Liferay with the Arquillian Liferay Extension
 
 #### Add dependencies to pom.xml
