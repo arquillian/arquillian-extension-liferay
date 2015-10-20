@@ -555,3 +555,63 @@ If we want to Inject the URL of the container using the annotation @ArquillianRe
 ...
 </arquillian>
 ```
+
+##Create Code Coverage Reports with Jacoco
+
+To create a code coverage report with Jacoco for the Liferay integration tests, we are going to follow this [guide](https://github.com/arquillian/arquillian-extension-jacoco)
+
+###Create a Jacoco profile in your Maven pom.xml
+
+Create a new profile *jacoco*  that configure he plugin ''jacoco-maven-plugin'' with the dependencies ''org.jacoco.core'' and ''arquillian-jacoco''.
+
+
+```xml
+...
+<profile>
+	<id>jacoco</id>
+	<dependencies>
+		<dependency>
+			<groupId>org.jacoco</groupId>
+			<artifactId>org.jacoco.core</artifactId>
+			<version>0.7.4.201502262128</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.arquillian.extension</groupId>
+			<artifactId>arquillian-jacoco</artifactId>
+			<version>1.0.0.Alpha8</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.7.4.201502262128</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</profile>
+```
+
+###Generate the HTML Jacoco report
+
+```sh
+mvn test -Pjacoco jacoco:report
+```
+
