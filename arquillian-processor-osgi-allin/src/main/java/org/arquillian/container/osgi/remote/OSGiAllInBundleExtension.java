@@ -15,6 +15,7 @@
 package org.arquillian.container.osgi.remote;
 
 import org.arquillian.container.osgi.remote.bundleclasspath.BundleClassPathAuxiliaryAppender;
+import org.arquillian.container.osgi.remote.commandservice.CommandServiceAuxiliaryAppender;
 import org.arquillian.container.osgi.remote.instanceproducer.OSGiAllInBundleInstanceProducer;
 import org.arquillian.container.osgi.remote.processor.OSGiAllInProcessor;
 import org.arquillian.container.osgi.remote.processor.service.BundleActivatorsManager;
@@ -26,7 +27,9 @@ import org.arquillian.container.osgi.remote.processor.service.ManifestManagerImp
 
 import org.jboss.arquillian.container.test.spi.client.deployment.ApplicationArchiveProcessor;
 import org.jboss.arquillian.container.test.spi.client.deployment.AuxiliaryArchiveAppender;
+import org.jboss.arquillian.container.test.spi.command.CommandService;
 import org.jboss.arquillian.core.spi.LoadableExtension;
+import org.jboss.arquillian.protocol.jmx.JMXCommandService;
 
 /**
  * @author Cristina González
@@ -43,6 +46,10 @@ public class OSGiAllInBundleExtension implements LoadableExtension {
 			BundleClassPathAuxiliaryAppender.class);
 
 		builder.service(
+			AuxiliaryArchiveAppender.class,
+			CommandServiceAuxiliaryAppender.class);
+
+		builder.service(
 			ImportPackageManager.class, ImportPackageManagerImpl.class);
 
 		builder.service(ManifestManager.class, ManifestManagerImpl.class);
@@ -51,6 +58,8 @@ public class OSGiAllInBundleExtension implements LoadableExtension {
 			BundleActivatorsManager.class, BundleActivatorsManagerImpl.class);
 
 		builder.observer(OSGiAllInBundleInstanceProducer.class);
+
+		builder.service(CommandService.class, JMXCommandService.class);
 	}
 
 }
