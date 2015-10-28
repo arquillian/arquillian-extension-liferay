@@ -27,7 +27,7 @@ If you want any pull request you receive to be automatically tested by Travis CI
 - Click on the Settings icon.
 - Enable 'Build pull requests' option element.
 
-With those simple steps pulls qill be tested agains one of the most popular Open Source CI systems nowdays.
+With those simple steps pulls will be tested against one of the most popular Open Source CI systems nowadays.
 
 ## Keeping Travis CI up-to-date
 Anytime you add a dependency on the build system, verify that it is properly configured in the Travis CI descriptor, the [.travis.yml](.travis.yml) file, so that pulls there don't get broken.
