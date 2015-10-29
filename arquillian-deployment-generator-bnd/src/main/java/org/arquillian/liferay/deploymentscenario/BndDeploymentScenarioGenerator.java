@@ -87,8 +87,6 @@ public class BndDeploymentScenarioGenerator
 
 			bndProjectBuilder.generateManifest(true);
 
-			File commonBndFile = getCommonBndFile();
-
 			if (commonBndFile != null) {
 				bndProjectBuilder.addProjectPropertiesFile(commonBndFile);
 			}
@@ -167,10 +165,6 @@ public class BndDeploymentScenarioGenerator
 		}
 
 		return bndFile;
-	}
-
-	public File getCommonBndFile() {
-		return commonBndFile;
 	}
 
 	public void setBndFile(File bndFile) {
