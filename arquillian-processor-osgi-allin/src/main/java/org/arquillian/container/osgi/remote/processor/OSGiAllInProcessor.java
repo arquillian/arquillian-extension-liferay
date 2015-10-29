@@ -241,7 +241,7 @@ public class OSGiAllInProcessor implements ApplicationArchiveProcessor {
 
 	private void handleAuxiliaryArchives(
 			JavaArchive javaArchive, Collection<Archive<?>> auxiliaryArchives)
-		throws Exception {
+		throws IOException {
 
 		for (Archive auxiliaryArchive : auxiliaryArchives) {
 			Map<ArchivePath, Node> remoteLoadableExtensionMap =
@@ -351,7 +351,9 @@ public class OSGiAllInProcessor implements ApplicationArchiveProcessor {
 		return archives;
 	}
 
-	private void validateBundleArchive(Archive<?> archive) throws Exception {
+	private void validateBundleArchive(Archive<?> archive)
+		throws BundleException, IOException {
+
 		Manifest manifest = null;
 
 		Node node = archive.get(JarFile.MANIFEST_NAME);

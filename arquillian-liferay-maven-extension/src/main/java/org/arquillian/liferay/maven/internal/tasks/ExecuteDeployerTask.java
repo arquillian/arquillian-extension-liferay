@@ -28,6 +28,7 @@ import java.util.Map;
 import org.arquillian.liferay.maven.internal.LiferayPluginConfiguration;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -112,7 +113,7 @@ public enum ExecuteDeployerTask {
 	public static final class SAXReaderUtil {
 
 		public static Document read(File file, boolean validate)
-			throws Exception {
+			throws DocumentException {
 
 			SAXReader saxReader = new SAXReader(validate);
 
