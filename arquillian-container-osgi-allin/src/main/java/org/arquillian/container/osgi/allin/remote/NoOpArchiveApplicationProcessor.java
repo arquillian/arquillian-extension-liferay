@@ -26,6 +26,7 @@ public class NoOpArchiveApplicationProcessor
 
 	@Override
 	public void process(Archive<?> archive, TestClass testClass) {
+		//This processor is not going to process the archive
 	}
 
 }

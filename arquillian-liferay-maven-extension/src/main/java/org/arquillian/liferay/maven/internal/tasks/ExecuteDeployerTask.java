@@ -147,6 +147,7 @@ public enum ExecuteDeployerTask {
 
 			@Override
 			public void checkPermission(Permission permission) {
+				//It is not needed to check permissions
 			}
 
 			@Override

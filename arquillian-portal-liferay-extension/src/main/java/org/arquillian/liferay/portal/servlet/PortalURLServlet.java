@@ -128,6 +128,7 @@ public class PortalURLServlet extends HttpServlet {
 
 	@Override
 	public void init() throws ServletException {
+		//There are not init actions for this server
 	}
 
 	public void setCompanyLocalService(
