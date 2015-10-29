@@ -159,7 +159,7 @@ public class ArquillianBundleActivator implements BundleActivator {
 									"Activator " + line +
 										" does not implement expected type " +
 										BundleActivator.class.
-											getCanonicalName());
+											getCanonicalName(), e);
 							}
 						}
 
@@ -183,12 +183,12 @@ public class ArquillianBundleActivator implements BundleActivator {
 	private String skipCommentAndTrim(String line) {
 		final int comment = line.indexOf('#');
 
-		if (comment > -1)
-		{
+		if (comment > -1) {
 			line = line.substring(0, comment);
 		}
 
 		line = line.trim();
+
 		return line;
 	}
 
