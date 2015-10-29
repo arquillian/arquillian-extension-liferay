@@ -231,8 +231,9 @@ public class LiferayPluginConfiguration
 	// TODO change
 
 	private static final String _APP_SERVER_TYPE = "tomcat";
-	private final Logger _log = LoggerFactory.getLogger(
+	private static final Logger _log = LoggerFactory.getLogger(
 		LiferayPluginConfiguration.class);
+
 	private String appServerClassesPortalDir;
 	private String appServerDeployDir;
 	private String appServerLibGlobalDir;

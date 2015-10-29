@@ -44,9 +44,9 @@ public enum PortletDeployerTask
 	 */
 	@Override
 	public MavenWorkingSession execute(MavenWorkingSession session) {
-		final Logger log = LoggerFactory.getLogger(PortletDeployerTask.class);
-
-		log.debug("Building Portlet Archive");
+		if (_log.isDebugEnabled()) {
+			_log.debug("Building Portlet Archive");
+		}
 
 		Map<String, Object> args = new HashMap<>();
 		args.put(
@@ -97,5 +97,8 @@ public enum PortletDeployerTask
 
 		return session;
 	}
+
+	private static final Logger _log = LoggerFactory.getLogger(
+		PortletDeployerTask.class);
 
 }

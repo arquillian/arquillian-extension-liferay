@@ -44,9 +44,9 @@ public enum HookDeployerTask
 	 */
 	@Override
 	public MavenWorkingSession execute(MavenWorkingSession session) {
-		final Logger log = LoggerFactory.getLogger(HookDeployerTask.class);
-
-		log.debug("Building Hook Archive");
+		if (_log.isDebugEnabled()) {
+			_log.debug("Building Hook Archive");
+		}
 
 		Map<String, Object> args = new HashMap<>();
 
@@ -71,5 +71,8 @@ public enum HookDeployerTask
 
 		return session;
 	}
+
+	private static final Logger _log = LoggerFactory.getLogger(
+		HookDeployerTask.class);
 
 }

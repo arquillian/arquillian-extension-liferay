@@ -54,8 +54,6 @@ public enum ExecuteDeployerTask {
 		MavenWorkingSession session, LiferayPluginConfiguration configuration,
 		Map<String, Object> params) {
 
-		final Logger log = LoggerFactory.getLogger(ExecuteDeployerTask.class);
-
 		final ParsedPomFile pomFile = session.getParsedPomFile();
 
 		URLClassLoader classLoader = ToolsClasspathTask.INSTANCE.execute(
@@ -88,7 +86,8 @@ public enum ExecuteDeployerTask {
 			initUtils(classLoader);
 		}
 		catch (Exception e) {
-			log.error("Error executing deployer task :" + deployerClassName, e);
+			_log.error(
+				"Error executing deployer task :" + deployerClassName, e);
 		}
 
 		// START Execute Deployer
@@ -97,7 +96,8 @@ public enum ExecuteDeployerTask {
 			executeTool(deployerClassName, classLoader, jars);
 		}
 		catch (Exception e) {
-			log.error("Error executing deployer task :" + deployerClassName, e);
+			_log.error(
+				"Error executing deployer task :" + deployerClassName, e);
 		}
 
 		// END Execute Deployer
@@ -197,5 +197,8 @@ public enum ExecuteDeployerTask {
 
 		SAXReaderUtil.setEntityResolver(entityResolver);
 	}
+
+	private static final Logger _log = LoggerFactory.getLogger(
+		ExecuteDeployerTask.class);
 
 }
