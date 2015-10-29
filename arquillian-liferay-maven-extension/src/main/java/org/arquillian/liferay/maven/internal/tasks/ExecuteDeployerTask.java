@@ -126,6 +126,9 @@ public enum ExecuteDeployerTask {
 			_entityResolver = entityResolver;
 		}
 
+		private SAXReaderUtil() {
+		}
+
 		private static EntityResolver _entityResolver;
 
 	}
