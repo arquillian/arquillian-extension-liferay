@@ -22,9 +22,9 @@ import java.lang.management.ManagementFactory;
 
 import java.net.URL;
 
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -98,8 +98,7 @@ public class ArquillianBundleActivator implements BundleActivator {
 	private MBeanServer findOrCreateMBeanServer() {
 		MBeanServer mbeanServer = null;
 
-		ArrayList<MBeanServer> serverArr = MBeanServerFactory.findMBeanServer(
-			null);
+		List<MBeanServer> serverArr = MBeanServerFactory.findMBeanServer(null);
 
 		if (serverArr.size() > 1)
 			log.warning("Multiple MBeanServer instances: " + serverArr);
@@ -121,7 +120,7 @@ public class ArquillianBundleActivator implements BundleActivator {
 		String serviceFile =
 			_SERVICES + "/" + BundleActivator.class.getCanonicalName();
 
-		LinkedHashSet<BundleActivator> activators = new LinkedHashSet<>();
+		Set<BundleActivator> activators = new LinkedHashSet<>();
 
 		try {
 			ClassLoader classLoader = getClass().getClassLoader();

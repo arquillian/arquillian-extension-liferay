@@ -61,7 +61,7 @@ public class BndDeploymentScenarioGenerator
 
 	@Override
 	public List<DeploymentDescription> generate(TestClass testClass) {
-		ArrayList<DeploymentDescription> deployments = new ArrayList<>();
+		List<DeploymentDescription> deployments = new ArrayList<>();
 
 		DeploymentScenarioGenerator defaultDeploymentScenarioGenerator =
 			getDefaultDeploymentScenarioGenerator();

@@ -17,6 +17,7 @@ package org.arquillian.liferay.maven.internal.tasks;
 import java.io.File;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.arquillian.liferay.maven.internal.LiferayPluginConfiguration;
 
@@ -47,7 +48,7 @@ public enum PortletDeployerTask
 
 		log.debug("Building Portlet Archive");
 
-		HashMap<String, Object> args = new HashMap<>();
+		Map<String, Object> args = new HashMap<>();
 		args.put(
 			"deployerClassName",
 			"com.liferay.portal.tools.deploy.PortletDeployer");
