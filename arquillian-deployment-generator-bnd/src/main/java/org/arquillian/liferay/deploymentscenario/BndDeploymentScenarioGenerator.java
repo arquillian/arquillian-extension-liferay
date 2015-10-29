@@ -150,6 +150,8 @@ public class BndDeploymentScenarioGenerator
 
 			replaceManifest(javaArchive, byteArrayAsset);
 
+			analyzer.close();
+
 			return deployments;
 		}
 		catch (Exception e) {
