@@ -20,6 +20,9 @@ import com.liferay.portal.service.ReleaseLocalService;
 import java.io.File;
 
 import org.arquillian.container.liferay.remote.enricher.Inject;
+import org.arquillian.liferay.sample.service4injection.Service;
+import org.arquillian.liferay.sample.service4injection.ServiceFirstImpl;
+import org.arquillian.liferay.sample.service4injection.ServiceSecondImpl;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -29,7 +32,6 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.osgi.api.BndProjectBuilder;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -76,6 +78,20 @@ public class TestInjections {
 		Assert.assertEquals(7000, releasePortal.getBuildNumber());
 	}
 
+	@Test
+	public void shouldInjectServiceInOrden() {
+		Assert.assertNotNull(_service);
+
+		Assert.assertTrue(_service instanceof ServiceFirstImpl);
+	}
+
+	@Test
+	public void shouldInjectServiceWithFilter() {
+		Assert.assertNotNull(_secondService);
+
+		Assert.assertTrue(_secondService instanceof ServiceSecondImpl);
+	}
+
 	@ArquillianResource
 	private Bundle _bundle;
 
@@ -84,5 +100,11 @@ public class TestInjections {
 
 	@Inject
 	private ReleaseLocalService _releaseLocalService;
+
+	@Inject("(name=ServiceSecond)")
+	private Service _secondService;
+
+	@Inject
+	private Service _service;
 
 }
