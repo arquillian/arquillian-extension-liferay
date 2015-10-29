@@ -202,7 +202,7 @@ public class OSGiAllInProcessor implements ApplicationArchiveProcessor {
 					}
 				}
 
-				if (testClassFound == false) {
+				if (!testClassFound) {
 					((ClassContainer<?>)javaArchive).addClass(clazz);
 				}
 			}
