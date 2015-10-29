@@ -103,7 +103,7 @@ public class ArquillianBundleActivator implements BundleActivator {
 		if (serverArr.size() > 1)
 			log.warning("Multiple MBeanServer instances: " + serverArr);
 
-		if (serverArr.size() > 0) {
+		if (!serverArr.isEmpty()) {
 			mbeanServer = serverArr.get(0);
 			log.fine("Found MBeanServer: " + mbeanServer.getDefaultDomain());
 		}
