@@ -42,7 +42,6 @@ import org.jboss.shrinkwrap.api.importer.ExplodedImporter;
 import org.jboss.shrinkwrap.api.importer.ZipImporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.resolver.api.ResolutionException;
 import org.jboss.shrinkwrap.resolver.api.maven.MavenResolvedArtifact;
 import org.jboss.shrinkwrap.resolver.api.maven.MavenWorkingSession;
 import org.jboss.shrinkwrap.resolver.api.maven.PackagingType;
@@ -119,8 +118,7 @@ public class LiferayWarPackagingProcessor
 	 */
 	@Override
 	public LiferayWarPackagingProcessor importBuildOutput(
-			MavenResolutionStrategy strategy)
-		throws IllegalArgumentException, ResolutionException {
+		MavenResolutionStrategy strategy) {
 
 		log.debug("Building Liferay Plugin Archive");
 

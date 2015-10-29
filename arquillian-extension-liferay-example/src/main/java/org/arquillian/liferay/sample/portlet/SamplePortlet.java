@@ -49,8 +49,8 @@ import org.osgi.service.component.annotations.Reference;
 )
 public class SamplePortlet extends MVCPortlet {
 
-	public void add(ActionRequest actionRequest, ActionResponse actionResponse)
-		throws Exception {
+	public void add(
+		ActionRequest actionRequest, ActionResponse actionResponse) {
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);

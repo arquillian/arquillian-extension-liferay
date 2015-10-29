@@ -114,9 +114,7 @@ public class OSGiAllInProcessor implements ApplicationArchiveProcessor {
 		}
 	}
 
-	private void addArquillianDependencies(JavaArchive javaArchive)
-		throws Exception {
-
+	private void addArquillianDependencies(JavaArchive javaArchive) {
 		javaArchive.addPackage(JMXTestRunner.class.getPackage());
 	}
 
