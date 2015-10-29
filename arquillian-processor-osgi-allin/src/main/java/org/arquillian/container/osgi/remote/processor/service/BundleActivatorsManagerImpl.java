@@ -33,6 +33,7 @@ import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;
  */
 public class BundleActivatorsManagerImpl implements BundleActivatorsManager {
 
+	@Override
 	public List<String> getBundleActivators(Archive archive, String fileName)
 		throws IOException {
 
@@ -49,6 +50,7 @@ public class BundleActivatorsManagerImpl implements BundleActivatorsManager {
 		return bundleActivators;
 	}
 
+	@Override
 	public void replaceBundleActivatorsFile(
 			Archive archive, String fileName, List<String> bundleActivators)
 		throws IOException {

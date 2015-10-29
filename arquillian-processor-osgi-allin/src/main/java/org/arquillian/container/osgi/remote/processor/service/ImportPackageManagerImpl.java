@@ -42,6 +42,7 @@ import org.jboss.shrinkwrap.api.exporter.ZipExporter;
  */
 public class ImportPackageManagerImpl implements ImportPackageManager {
 
+	@Override
 	public Manifest cleanRepeatedImports(
 			Manifest manifest, Collection<Archive<?>> auxiliaryArchives)
 		throws IOException {

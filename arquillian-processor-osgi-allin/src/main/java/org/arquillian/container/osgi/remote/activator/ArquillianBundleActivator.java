@@ -44,6 +44,7 @@ import org.osgi.framework.BundleContext;
  */
 public class ArquillianBundleActivator implements BundleActivator {
 
+	@Override
 	public void start(final BundleContext context) throws Exception {
 		final TestClassLoader testClassLoader = new TestClassLoader() {
 
@@ -79,6 +80,7 @@ public class ArquillianBundleActivator implements BundleActivator {
 		testRunner.registerMBean(mbeanServer);
 	}
 
+	@Override
 	public void stop(BundleContext context) throws Exception {
 
 		// Execute all activators

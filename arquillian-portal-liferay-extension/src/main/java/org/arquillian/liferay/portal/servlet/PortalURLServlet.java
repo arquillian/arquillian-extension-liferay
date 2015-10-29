@@ -46,6 +46,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class PortalURLServlet extends HttpServlet {
 
+	@Override
 	public void destroy() {
 		if (_layouts != null) {
 			for (Layout layout : _layouts) {
