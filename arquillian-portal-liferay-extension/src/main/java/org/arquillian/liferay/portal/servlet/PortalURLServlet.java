@@ -150,12 +150,12 @@ public class PortalURLServlet extends HttpServlet {
 		//There are not init actions for this server
 	}
 
-	private final CompanyLocalService _companyLocalService;
-	private final GroupLocalService _groupLocalService;
-	private final LayoutLocalService _layoutLocalService;
+	private final transient CompanyLocalService _companyLocalService;
+	private final transient GroupLocalService _groupLocalService;
+	private final transient LayoutLocalService _layoutLocalService;
 	private List<Layout> _layouts;
-	private final PortletPreferencesLocalService
+	private final transient PortletPreferencesLocalService
 		_portletPreferencesLocalService;
-	private final UserLocalService _userLocalService;
+	private final transient UserLocalService _userLocalService;
 
 }
