@@ -107,15 +107,15 @@ public class PortalURLServlet extends HttpServlet {
 
 			UUID uuid = UUID.randomUUID();
 
-			_layout = _layoutLocalService.addLayout(
+			Layout layout = _layoutLocalService.addLayout(
 				defaultUser.getUserId(), guestGroup.getGroupId(), false, 0,
 				uuid.toString(), null, null, "portlet", false,
-				"/"+uuid.toString(), new ServiceContext());
+				"/" + uuid.toString(), new ServiceContext());
 
-			_layouts.add(_layout);
+			_layouts.add(layout);
 
 			LayoutTypePortlet layoutTypePortlet =
-				(LayoutTypePortlet) _layout.getLayoutType();
+				(LayoutTypePortlet)layout.getLayoutType();
 
 			layoutTypePortlet.setLayoutTemplateId(
 				defaultUser.getUserId(), "1_column");
@@ -129,14 +129,14 @@ public class PortalURLServlet extends HttpServlet {
 			PortletPreferences prefs =
 				_portletPreferencesLocalService.getPreferences(
 					company.getCompanyId(), ownerId, ownerType,
-					_layout.getPlid(), portletIdAdded);
+					layout.getPlid(), portletIdAdded);
 
 			_portletPreferencesLocalService.updatePreferences(
-				ownerId, ownerType, _layout.getPlid(), portletIdAdded, prefs);
+				ownerId, ownerType, layout.getPlid(), portletIdAdded, prefs);
 
 			_layoutLocalService.updateLayout(
-				_layout.getGroupId(), _layout.isPrivateLayout(),
-				_layout.getLayoutId(), _layout.getTypeSettings());
+				layout.getGroupId(), layout.isPrivateLayout(),
+				layout.getLayoutId(), layout.getTypeSettings());
 
 			response.sendRedirect("/"+uuid.toString());
 		}
@@ -152,7 +152,6 @@ public class PortalURLServlet extends HttpServlet {
 
 	private final CompanyLocalService _companyLocalService;
 	private final GroupLocalService _groupLocalService;
-	private Layout _layout;
 	private final LayoutLocalService _layoutLocalService;
 	private List<Layout> _layouts;
 	private final PortletPreferencesLocalService
