@@ -40,48 +40,59 @@ public class PortalURLBundleActivator implements BundleActivator {
 
 	@Override
 	public void start(BundleContext context) throws Exception {
-		PortalURLServlet portalURLServlet = new PortalURLServlet();
-
 		_companyLocalServiceServiceReference = context.getServiceReference(
 			CompanyLocalService.class);
 
+		CompanyLocalService companyLocalService = null;
+
 		if (_companyLocalServiceServiceReference != null) {
-			portalURLServlet.setCompanyLocalService(
-				context.getService(_companyLocalServiceServiceReference));
+			companyLocalService = context.getService(
+				_companyLocalServiceServiceReference);
 		}
 
 		_groupLocalServiceServiceReference = context.getServiceReference(
 			GroupLocalService.class);
 
+		GroupLocalService groupLocalService = null;
+
 		if (_groupLocalServiceServiceReference != null) {
-			portalURLServlet.setGroupLocalService(
-				context.getService(_groupLocalServiceServiceReference));
+			groupLocalService = context.getService(
+				_groupLocalServiceServiceReference);
 		}
 
 		_layoutLocalServiceServiceReference = context.getServiceReference(
 			LayoutLocalService.class);
 
+		LayoutLocalService layoutLocalService = null;
+
 		if (_layoutLocalServiceServiceReference != null) {
-			portalURLServlet.setLayoutLocalService(
-				context.getService(_layoutLocalServiceServiceReference));
+			layoutLocalService = context.getService(
+				_layoutLocalServiceServiceReference);
 		}
 
 		_portletPreferencesLocalServiceServiceReference =
 			context.getServiceReference(PortletPreferencesLocalService.class);
 
+		PortletPreferencesLocalService portletPreferencesLocalService = null;
+
 		if (_portletPreferencesLocalServiceServiceReference != null) {
-			portalURLServlet.setPortletPreferencesLocalService(
-				context.getService(
-					_portletPreferencesLocalServiceServiceReference));
+			portletPreferencesLocalService = context.getService(
+				_portletPreferencesLocalServiceServiceReference);
 		}
 
 		_userLocalServiceServiceReference = context.getServiceReference(
 			UserLocalService.class);
 
+		UserLocalService userLocalService = null;
+
 		if (_userLocalServiceServiceReference != null) {
-			portalURLServlet.setUserLocalService(
-				context.getService(_userLocalServiceServiceReference));
+			userLocalService = context.getService(
+				_userLocalServiceServiceReference);
 		}
+
+		PortalURLServlet portalURLServlet = new PortalURLServlet(
+			companyLocalService, groupLocalService, layoutLocalService,
+			portletPreferencesLocalService, userLocalService);
 
 		Dictionary<String, Object> properties = new HashMapDictionary<>();
 

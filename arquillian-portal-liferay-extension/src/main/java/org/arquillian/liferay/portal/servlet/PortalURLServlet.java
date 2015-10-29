@@ -46,6 +46,24 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class PortalURLServlet extends HttpServlet {
 
+	public PortalURLServlet(
+		CompanyLocalService companyLocalService,
+		GroupLocalService groupLocalService,
+		LayoutLocalService layoutLocalService,
+		PortletPreferencesLocalService porletPreferencesLocalService,
+		UserLocalService userLocalService) {
+
+		_companyLocalService = companyLocalService;
+
+		_groupLocalService = groupLocalService;
+
+		_layoutLocalService = layoutLocalService;
+
+		_portletPreferencesLocalService = porletPreferencesLocalService;
+
+		_userLocalService = userLocalService;
+	}
+
 	@Override
 	public void destroy() {
 		if (_layouts != null) {
@@ -132,36 +150,13 @@ public class PortalURLServlet extends HttpServlet {
 		//There are not init actions for this server
 	}
 
-	public void setCompanyLocalService(
-		CompanyLocalService companyLocalService) {
-
-		_companyLocalService = companyLocalService;
-	}
-
-	public void setGroupLocalService(GroupLocalService groupLocalService) {
-		_groupLocalService = groupLocalService;
-	}
-
-	public void setLayoutLocalService(LayoutLocalService layoutLocalService) {
-		_layoutLocalService = layoutLocalService;
-	}
-
-	public void setPortletPreferencesLocalService(
-		PortletPreferencesLocalService porletPreferencesLocalService) {
-
-		_portletPreferencesLocalService = porletPreferencesLocalService;
-	}
-
-	public void setUserLocalService(UserLocalService userLocalService) {
-		_userLocalService = userLocalService;
-	}
-
-	private CompanyLocalService _companyLocalService;
-	private GroupLocalService _groupLocalService;
+	private final CompanyLocalService _companyLocalService;
+	private final GroupLocalService _groupLocalService;
 	private Layout _layout;
-	private LayoutLocalService _layoutLocalService;
+	private final LayoutLocalService _layoutLocalService;
 	private List<Layout> _layouts;
-	private PortletPreferencesLocalService _portletPreferencesLocalService;
-	private UserLocalService _userLocalService;
+	private final PortletPreferencesLocalService
+		_portletPreferencesLocalService;
+	private final UserLocalService _userLocalService;
 
 }
