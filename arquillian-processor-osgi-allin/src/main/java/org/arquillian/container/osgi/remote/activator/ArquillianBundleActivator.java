@@ -101,15 +101,15 @@ public class ArquillianBundleActivator implements BundleActivator {
 		List<MBeanServer> serverArr = MBeanServerFactory.findMBeanServer(null);
 
 		if (serverArr.size() > 1)
-			log.warning("Multiple MBeanServer instances: " + serverArr);
+			logger.warning("Multiple MBeanServer instances: " + serverArr);
 
 		if (!serverArr.isEmpty()) {
 			mbeanServer = serverArr.get(0);
-			log.fine("Found MBeanServer: " + mbeanServer.getDefaultDomain());
+			logger.fine("Found MBeanServer: " + mbeanServer.getDefaultDomain());
 		}
 
 		if (mbeanServer == null) {
-			log.fine("No MBeanServer, create one ...");
+			logger.fine("No MBeanServer, create one ...");
 			mbeanServer = ManagementFactory.getPlatformMBeanServer();
 		}
 
@@ -196,7 +196,7 @@ public class ArquillianBundleActivator implements BundleActivator {
 
 	// Provide logging
 
-	private static final Logger log = Logger.getLogger(
+	private static final Logger logger = Logger.getLogger(
 		ArquillianBundleActivator.class.getName());
 
 	private Set<BundleActivator> bundleActivators;
