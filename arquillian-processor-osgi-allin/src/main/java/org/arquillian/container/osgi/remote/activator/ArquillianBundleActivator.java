@@ -15,6 +15,7 @@
 package org.arquillian.container.osgi.remote.activator;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
@@ -95,6 +96,72 @@ public class ArquillianBundleActivator implements BundleActivator {
 		testRunner.unregisterMBean(mbeanServer);
 	}
 
+	private void addBundleActivatorToActivatorsListFromStringLine(
+		Set<BundleActivator> activators, String line) {
+
+		ClassLoader classLoader = getClass().getClassLoader();
+
+		boolean mustBeVetoed = line.startsWith("!");
+
+		String lineWithoutExclamation = line;
+
+		if (mustBeVetoed) {
+			lineWithoutExclamation = line.substring(1);
+		}
+
+		try {
+			Class<?> aClass = classLoader.loadClass(lineWithoutExclamation);
+
+			Class<? extends BundleActivator> bundleActivatorClass =
+				aClass.asSubclass(BundleActivator.class);
+
+			activators.add(bundleActivatorClass.newInstance());
+		}
+		catch (ClassNotFoundException cnfe) {
+			throw new IllegalStateException(
+				"Activator " + line + " class not found", cnfe);
+		}
+		catch (ClassCastException cce) {
+			throw new IllegalStateException(
+				"Activator " + line + " does not implement expected type " +
+					BundleActivator.class.getCanonicalName(),
+				cce);
+		}
+		catch (Exception e) {
+			throw new IllegalStateException(
+				"Activator " + line + " can't be created ", e);
+		}
+	}
+
+	private void addBundleActivatorToActivatorsListFromURL(
+			Set<BundleActivator> activators, URL url)
+		throws IOException {
+
+		final InputStream is = url.openStream();
+
+		BufferedReader reader = null;
+
+		try {
+			reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+
+			String line = reader.readLine();
+
+			while (null != line) {
+				line = skipCommentAndTrim(line);
+
+				addBundleActivatorToActivatorsListFromStringLine(
+					activators, line);
+
+				line = reader.readLine();
+			}
+		}
+		finally {
+			if (reader != null) {
+				reader.close();
+			}
+		}
+	}
+
 	private MBeanServer findOrCreateMBeanServer() {
 		MBeanServer mbeanServer = null;
 
@@ -122,55 +189,15 @@ public class ArquillianBundleActivator implements BundleActivator {
 
 		Set<BundleActivator> activators = new LinkedHashSet<>();
 
-		try {
-			ClassLoader classLoader = getClass().getClassLoader();
+		ClassLoader classLoader = getClass().getClassLoader();
 
+		try {
 			Enumeration<URL> enumeration = classLoader.getResources(
 				serviceFile);
 
 			while (enumeration.hasMoreElements()) {
-				final URL url = enumeration.nextElement();
-				final InputStream is = url.openStream();
-				BufferedReader reader = null;
-
-				try {
-					reader = new BufferedReader(
-						new InputStreamReader(is, "UTF-8"));
-					String line = reader.readLine();
-					while (null != line) {
-						line = skipCommentAndTrim(line);
-
-						if (line.length() > 0) {
-							try {
-								boolean mustBeVetoed = line.startsWith("!");
-
-								if (mustBeVetoed) {
-									line = line.substring(1);
-								}
-
-								Class<? extends BundleActivator> activator =
-									classLoader.loadClass(line).asSubclass(
-										BundleActivator.class);
-
-								activators.add(activator.newInstance());
-							}
-							catch (ClassCastException e) {
-								throw new IllegalStateException(
-									"Activator " + line +
-										" does not implement expected type " +
-										BundleActivator.class.
-											getCanonicalName(), e);
-							}
-						}
-
-						line = reader.readLine();
-					}
-				}
-				finally {
-					if (reader != null) {
-						reader.close();
-					}
-				}
+				addBundleActivatorToActivatorsListFromURL(
+					activators, enumeration.nextElement());
 			}
 		}
 		catch (Exception e) {
@@ -183,13 +210,13 @@ public class ArquillianBundleActivator implements BundleActivator {
 	private String skipCommentAndTrim(String line) {
 		final int comment = line.indexOf('#');
 
+		String lineWithoutComment = line;
+
 		if (comment > -1) {
-			line = line.substring(0, comment);
+			lineWithoutComment = line.substring(0, comment);
 		}
 
-		line = line.trim();
-
-		return line;
+		return lineWithoutComment.trim();
 	}
 
 	private static final String _SERVICES = "/META-INF/services";
