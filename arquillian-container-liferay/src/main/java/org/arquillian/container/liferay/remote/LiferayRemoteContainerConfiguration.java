@@ -22,16 +22,16 @@ import org.jboss.arquillian.container.osgi.karaf.remote.KarafRemoteContainerConf
 public class LiferayRemoteContainerConfiguration
 	extends KarafRemoteContainerConfiguration {
 
-	public static final String DEFAULT_HTTP_HOST = "localhost";
+	public static final String LIFERAY_DEFAULT_HTTP_HOST = "localhost";
 
-	public static final int DEFAULT_HTTP_PORT = 8080;
+	public static final int LIFERAY_DEFAULT_HTTP_PORT = 8080;
 
-	public static final String DEFAULT_JMX_PASSWORD = "";
+	public static final String LIFERAY_DEFAULT_JMX_PASSWORD = "";
 
-	public static final String DEFAULT_JMX_SERVICE_URL =
+	public static final String LIFERAY_DEFAULT_JMX_SERVICE_URL =
 		"service:jmx:rmi:///jndi/rmi://localhost:8099/jmxrmi";
 
-	public static final String DEFAULT_JMX_USERNAME = "";
+	public static final String LIFERAY_DEFAULT_JMX_USERNAME = "";
 
 	public String getHttpHost() {
 		return httpHost;
@@ -57,23 +57,23 @@ public class LiferayRemoteContainerConfiguration
 	@Override
 	public void validate() {
 		if (httpHost == null) {
-			setHttpHost(DEFAULT_HTTP_HOST);
+			setHttpHost(LIFERAY_DEFAULT_HTTP_HOST);
 		}
 
 		if (httpPort == null) {
-			setHttpPort(DEFAULT_HTTP_PORT);
+			setHttpPort(LIFERAY_DEFAULT_HTTP_PORT);
 		}
 
 		if (jmxServiceURL == null) {
-			setJmxServiceURL(DEFAULT_JMX_SERVICE_URL);
+			setJmxServiceURL(LIFERAY_DEFAULT_JMX_SERVICE_URL);
 		}
 
 		if (jmxUsername == null) {
-			setJmxUsername(DEFAULT_JMX_USERNAME);
+			setJmxUsername(LIFERAY_DEFAULT_JMX_USERNAME);
 		}
 
 		if (jmxPassword == null) {
-			setJmxPassword(DEFAULT_JMX_PASSWORD);
+			setJmxPassword(LIFERAY_DEFAULT_JMX_PASSWORD);
 		}
 	}
 
