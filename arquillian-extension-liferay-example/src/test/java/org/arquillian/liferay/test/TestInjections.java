@@ -17,21 +17,19 @@ package org.arquillian.liferay.test;
 import com.liferay.portal.model.Release;
 import com.liferay.portal.service.ReleaseLocalService;
 
-import java.io.InputStream;
-
-import java.util.UUID;
+import java.io.File;
 
 import org.arquillian.container.liferay.remote.enricher.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
-import org.jboss.osgi.metadata.OSGiManifestBuilder;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.Asset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.jboss.shrinkwrap.osgi.api.BndProjectBuilder;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -46,28 +44,21 @@ public class TestInjections {
 
 	@Deployment
 	public static JavaArchive create() {
-		final JavaArchive archive = ShrinkWrap.create(
-			JavaArchive.class, "bundle" + UUID.randomUUID() + ".jar");
+		BndProjectBuilder bndProjectBuilder = ShrinkWrap.create(
+			BndProjectBuilder.class);
 
-		archive.setManifest(new Asset() {
-			@Override
-			public InputStream openStream() {
-				OSGiManifestBuilder builder = OSGiManifestBuilder.newInstance();
-				builder.addBundleSymbolicName("bundle");
-				builder.addBundleManifestVersion(2);
-				builder.addImportPackages(
-					ReleaseLocalService.class.getPackage().getName());
-				builder.addImportPackages(Release.class.getPackage().getName());
-				return builder.openStream();
-			}
-		});
-		return archive;
+		bndProjectBuilder.setBndFile(new File("bnd-basic-portlet-test.bnd"));
+
+		bndProjectBuilder.generateManifest(true);
+
+		return bndProjectBuilder.as(JavaArchive.class);
 	}
 
 	@Test
 	public void shouldInjectBundle() {
 		Assert.assertNotNull(_bundle);
-		Assert.assertEquals("bundle", _bundle.getSymbolicName());
+		Assert.assertEquals(
+			"org.arquillian.liferay.sample", _bundle.getSymbolicName());
 	}
 
 	@Test
