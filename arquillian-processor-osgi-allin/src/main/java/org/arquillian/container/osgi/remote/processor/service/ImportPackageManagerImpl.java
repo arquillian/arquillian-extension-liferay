@@ -52,9 +52,9 @@ public class ImportPackageManagerImpl implements ImportPackageManager {
 
 		Attributes mainAttributes = manifest.getMainAttributes();
 
-		String importPackages = mainAttributes.getValue("Import-Package");
+		String importPackages = mainAttributes.getValue(IMPORT_PACKAGE);
 
-		mainAttributes.remove(new Attributes.Name("Import-Package"));
+		mainAttributes.remove(new Attributes.Name(IMPORT_PACKAGE));
 
 		Map<String, Set<String>> importsWithDirectivesMap =
 			toImportsWithDirectivesMap(importPackages);
@@ -80,8 +80,8 @@ public class ImportPackageManagerImpl implements ImportPackageManager {
 		ManifestManager manifestManager = _manifestManagerInstance.get();
 
 		manifest = manifestManager.putAttributeValue(
-			manifest, "Import-Package", resultImports.toArray(
-				new String[resultImports.size()]));
+			manifest, IMPORT_PACKAGE,
+			resultImports.toArray(new String[resultImports.size()]));
 
 		return manifest;
 	}
@@ -137,6 +137,8 @@ public class ImportPackageManagerImpl implements ImportPackageManager {
 
 		return packagesNameToDirectives;
 	}
+
+	private static final String IMPORT_PACKAGE = "Import-Package";
 
 	@Inject
 	private Instance<ManifestManager> _manifestManagerInstance;
