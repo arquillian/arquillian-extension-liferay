@@ -42,9 +42,7 @@ public class LiferayRemoteDeployableContainer
 
 	@Override
 	public Class<T> getConfigurationClass() {
-		@SuppressWarnings("uncheked")
-		Class<T> clazz = (Class<T>)LiferayRemoteContainerConfiguration.class;
-		return clazz;
+		return (Class<T>)LiferayRemoteContainerConfiguration.class;
 	}
 
 	@Override
