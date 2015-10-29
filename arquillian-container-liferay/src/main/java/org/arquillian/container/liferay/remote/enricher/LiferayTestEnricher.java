@@ -23,24 +23,14 @@ import org.jboss.arquillian.test.spi.TestEnricher;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
-import org.osgi.framework.ServiceReference;
+import org.osgi.framework.Filter;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * @author Carlos Sierra Andrés
  */
 public class LiferayTestEnricher implements TestEnricher {
-
-	public boolean contains(
-		Annotation[] annotations, Class<?> annotationClass) {
-
-		for (Annotation current : annotations) {
-			if (annotationClass.isAssignableFrom(current.annotationType())) {
-				return true;
-			}
-		}
-
-		return false;
-	}
 
 	@Override
 	public void enrich(Object testCase) {
@@ -50,9 +40,23 @@ public class LiferayTestEnricher implements TestEnricher {
 
 		for (Field declaredField : declaredFields) {
 			if (declaredField.isAnnotationPresent(Inject.class)) {
-				injectField(declaredField, testCase);
+				Inject inject = declaredField.getAnnotation(Inject.class);
+
+				injectField(declaredField, inject.value(), testCase);
 			}
 		}
+	}
+
+	public Annotation getAnnotation(
+		Annotation[] annotations, Class<?> annotationClass) {
+
+		for (Annotation current : annotations) {
+			if (annotationClass.isAssignableFrom(current.annotationType())) {
+				return current;
+			}
+		}
+
+		return null;
 	}
 
 	@Override
@@ -65,9 +69,13 @@ public class LiferayTestEnricher implements TestEnricher {
 		for (int i = 0; i < parameterTypes.length; i++) {
 			Annotation[] parameterAnnotations = parametersAnnotations[i];
 
-			if (contains(parameterAnnotations, Inject.class)) {
+			Inject injectAnnotation = (Inject)getAnnotation(
+				parameterAnnotations, Inject.class);
+
+			if (injectAnnotation != null) {
 				parameters[i] = resolve(
-					parameterTypes[i], method.getDeclaringClass());
+					parameterTypes[i], injectAnnotation.value(),
+					method.getDeclaringClass());
 			}
 		}
 
@@ -84,23 +92,48 @@ public class LiferayTestEnricher implements TestEnricher {
 		throw new RuntimeException("Test is not running inside BundleContext");
 	}
 
-	private void injectField(Field declaredField, Object testCase) {
+	private void injectField(
+		Field declaredField, String filterString, Object testCase) {
+
 		Class<?> componentClass = declaredField.getType();
 
-		Object service = resolve(componentClass, testCase.getClass());
+		Object service = resolve(
+			componentClass, filterString, testCase.getClass());
 
 		setField(declaredField, testCase, service);
 	}
 
-	private Object resolve(Class<?> componentClass, Class<?> testCaseClass) {
+	private Object resolve(
+		Class<?> componentClass, String filterString, Class<?> testCaseClass) {
+
 		Bundle bundle = getBundle(testCaseClass);
 
 		BundleContext bundleContext = bundle.getBundleContext();
 
-		ServiceReference<?> serviceReference =
-			bundleContext.getServiceReference(componentClass);
+		filterString =
+			"(&(objectClass=" + componentClass.getName() + ")" + filterString +
+				")";
 
-		return bundleContext.getService(serviceReference);
+		Filter filter = null;
+
+		try {
+			filter = bundleContext.createFilter(filterString);
+		}
+		catch (InvalidSyntaxException ise) {
+			throw new RuntimeException(
+				"Bad Syntax for the filter: " + filterString, ise);
+		}
+
+		ServiceTracker tracker = new ServiceTracker(
+			bundleContext, filter, null);
+
+		tracker.open();
+
+		Object service = tracker.getService();
+
+		tracker.close();
+
+		return service;
 	}
 
 	private void setField(
