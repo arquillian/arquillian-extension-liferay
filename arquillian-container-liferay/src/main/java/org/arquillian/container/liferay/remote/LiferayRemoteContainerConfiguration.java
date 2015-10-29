@@ -15,7 +15,6 @@
 package org.arquillian.container.liferay.remote;
 
 import org.jboss.arquillian.container.osgi.karaf.remote.KarafRemoteContainerConfiguration;
-import org.jboss.arquillian.container.spi.ConfigurationException;
 
 /**
  * @author Carlos Sierra Andrés
@@ -56,7 +55,7 @@ public class LiferayRemoteContainerConfiguration
 	}
 
 	@Override
-	public void validate() throws ConfigurationException {
+	public void validate() {
 		if (httpHost == null) {
 			setHttpHost(DEFAULT_HTTP_HOST);
 		}
