@@ -33,6 +33,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.portlet.PortletPreferences;
 
@@ -73,7 +75,9 @@ public class PortalURLServlet extends HttpServlet {
 						layout.getPlid(), new ServiceContext());
 				}
 				catch (PortalException e) {
-					e.printStackTrace();
+					_logger.log(
+						Level.WARNING,
+						"Error trying to delete layout " + layout.getPlid(), e);
 				}
 			}
 		}
@@ -141,7 +145,7 @@ public class PortalURLServlet extends HttpServlet {
 			response.sendRedirect("/"+uuid.toString());
 		}
 		catch (PortalException e) {
-			e.printStackTrace(out);
+			_logger.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
 
@@ -149,6 +153,9 @@ public class PortalURLServlet extends HttpServlet {
 	public void init() throws ServletException {
 		//There are not init actions for this server
 	}
+
+	private static final Logger _logger = Logger.getLogger(
+		PortalURLServlet.class.getName());
 
 	private final transient CompanyLocalService _companyLocalService;
 	private final transient GroupLocalService _groupLocalService;
