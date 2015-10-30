@@ -221,22 +221,17 @@ public class OSGiAllInProcessor implements ApplicationArchiveProcessor {
 			JavaArchive javaArchive, Collection<Archive<?>> auxiliaryArchives)
 		throws IOException {
 
-		try {
-			ImportPackageManager importPackageManager =
-				_importPackageManagerInstance.get();
+		ImportPackageManager importPackageManager =
+			_importPackageManagerInstance.get();
 
-			ManifestManager manifestManager = _manifestManagerInstance.get();
+		ManifestManager manifestManager = _manifestManagerInstance.get();
 
-			Manifest manifest = manifestManager.getManifest(javaArchive);
+		Manifest manifest = manifestManager.getManifest(javaArchive);
 
-			manifest = importPackageManager.cleanRepeatedImports(
-				manifest, auxiliaryArchives);
+		manifest = importPackageManager.cleanRepeatedImports(
+			manifest, auxiliaryArchives);
 
-			manifestManager.replaceManifest(javaArchive, manifest);
-		}
-		catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		manifestManager.replaceManifest(javaArchive, manifest);
 	}
 
 	private void handleAuxiliaryArchives(
