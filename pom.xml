@@ -40,6 +40,8 @@
 		<version.junit>4.12</version.junit>
 		<version.jboss_javaee6_spec>2.0.0.Final</version.jboss_javaee6_spec>
 		<version.jbossas_7>7.1.1.Final</version.jbossas_7>
+		<version.jacoco>0.7.4.201502262128</version.jacoco>
+		<version.arquillian_jacoco>1.0.0.Alpha8</version.arquillian_jacoco>
 	</properties>
 
 	<dependencyManagement>
@@ -133,6 +135,49 @@
 								<phase>compile</phase>
 								<goals>
 									<goal>format-source</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>jacoco</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.jacoco</groupId>
+					<artifactId>org.jacoco.core</artifactId>
+					<version>${version.jacoco}</version>
+					<scope>test</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.jboss.arquillian.extension</groupId>
+					<artifactId>arquillian-jacoco</artifactId>
+					<version>${version.arquillian_jacoco}</version>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<version>${version.jacoco}</version>
+						<executions>
+							<execution>
+								<goals>
+									<goal>prepare-agent</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>report</id>
+								<phase>test</phase>
+								<goals>
+									<goal>report</goal>
 								</goals>
 							</execution>
 						</executions>

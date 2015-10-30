@@ -2,3 +2,12 @@ jdk:
   - oraclejdk7
 
 language: java
+
+before_install:
+  - pip install --user codecov
+
+install:
+  - travis_wait mvn -DskipTests=true -Dmaven.javadoc.skip=true -B -Vinstall
+
+after_success:
+  - codecov
