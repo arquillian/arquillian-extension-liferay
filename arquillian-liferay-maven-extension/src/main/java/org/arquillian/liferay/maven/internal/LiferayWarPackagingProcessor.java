@@ -280,7 +280,6 @@ public class LiferayWarPackagingProcessor
 		final List<String> filesToIncludes = Arrays.asList(
 			includesFiles(
 				warPluginConfiguration.getWarSourceDirectory(),
-				warPluginConfiguration.getIncludes(),
 				warPluginConfiguration.getExcludes()));
 
 		return new Filter<ArchivePath>() {
@@ -305,9 +304,7 @@ public class LiferayWarPackagingProcessor
 		};
 	}
 
-	private String[] includesFiles(
-		File baseDir, String[] includes, String[] excludes) {
-
+	private String[] includesFiles(File baseDir, String[] excludes) {
 		DirectoryScanner dirScanner = new DirectoryScanner();
 		dirScanner.setBasedir(baseDir);
 
