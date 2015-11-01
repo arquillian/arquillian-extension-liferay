@@ -75,7 +75,7 @@
 								<phase>process-test-sources</phase>
 								<configuration>
 									<target>
-										<echo file="${arquillian.liferay.bundle}/liferay-portal-7.0-ce-m7/portal-ext.properties" >browser.launcher.url=</echo>
+										<echo file="${liferay.home}/portal-ext.properties" >browser.launcher.url=</echo>
 									</target>
 								</configuration>
 								<goals>
