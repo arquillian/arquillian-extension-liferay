@@ -101,35 +101,6 @@
 			</build>
 		</profile>
 		<profile>
-			<id>clean-tomcat</id>
-			<activation>
-				<file>
-					<exists>${arquillian.liferay.bundle}/unziped-successfully</exists>
-				</file>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>exec-maven-plugin</artifactId>
-						<version>1.1</version>
-						<executions>
-							<execution>
-								<id>clean-tomcat</id>
-								<phase>clean</phase>
-								<goals>
-									<goal>exec</goal>
-								</goals>
-								<configuration>
-									<executable>${liferay.executable.stop}</executable>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
 			<id>windows-profile</id>
 			<activation>
 				<os>
@@ -295,6 +266,23 @@
 									<filtering>true</filtering>
 								</resource>
 							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<id>clean-tomcat</id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>${liferay.executable.stop}</executable>
 						</configuration>
 					</execution>
 				</executions>
