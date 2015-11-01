@@ -15,6 +15,7 @@
 	<description>Arquillian Liferay Extension Example</description>
 
 	<properties>
+		<test.resources>src/test/resources</test.resources>
 		<arquillian.liferay.bundle>${project.basedir}/../../arquillian-liferay-bundle</arquillian.liferay.bundle>
 		<liferay.home>${arquillian.liferay.bundle}/liferay-portal-7.0-ce-a1</liferay.home>
 		<liferay.version>7.0.0-a1</liferay.version>
@@ -27,7 +28,7 @@
 			<id>download-test-environment</id>
 			<activation>
 				<file>
-					<missing>${arquillian.liferay.bundle}/unziped-successfully</missing>
+					<missing>../../arquillian-liferay-bundle/unziped-successfully</missing>
 				</file>
 			</activation>
 			<build>
@@ -258,7 +259,7 @@
 			<resource>
 				<targetPath>${liferay.home}</targetPath>
 				<filtering>true</filtering>
-				<directory>test-resources/liferay/config/liferay</directory>
+				<directory>${test.resources}/liferay</directory>
 				<includes><include>portal-setup-wizard.properties</include></includes>
 			</resource>
 		</resources>
@@ -290,7 +291,7 @@
 							<outputDirectory>${liferay.home}/tomcat-7.0.62/bin</outputDirectory>
 							<resources>
 								<resource>
-									<directory>test-resources/liferay/config/bin</directory>
+									<directory>${test.resources}/tomcat</directory>
 									<filtering>true</filtering>
 								</resource>
 							</resources>
