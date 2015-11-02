@@ -43,52 +43,65 @@ public class PortalURLBundleActivator implements BundleActivator {
 		_companyLocalServiceServiceReference = context.getServiceReference(
 			CompanyLocalService.class);
 
-		CompanyLocalService companyLocalService = null;
+		CompanyLocalService companyLocalService;
 
-		if (_companyLocalServiceServiceReference != null) {
-			companyLocalService = context.getService(
-				_companyLocalServiceServiceReference);
+		if (_companyLocalServiceServiceReference == null) {
+			throw new IllegalStateException(
+				"Can not access CompanyLocalService");
 		}
+
+		companyLocalService = context.getService(
+			_companyLocalServiceServiceReference);
 
 		_groupLocalServiceServiceReference = context.getServiceReference(
 			GroupLocalService.class);
 
-		GroupLocalService groupLocalService = null;
+		GroupLocalService groupLocalService;
 
-		if (_groupLocalServiceServiceReference != null) {
-			groupLocalService = context.getService(
-				_groupLocalServiceServiceReference);
+		if (_groupLocalServiceServiceReference == null) {
+			throw new IllegalStateException("Can not access GroupLocalService");
 		}
+
+		groupLocalService = context.getService(
+			_groupLocalServiceServiceReference);
 
 		_layoutLocalServiceServiceReference = context.getServiceReference(
 			LayoutLocalService.class);
 
-		LayoutLocalService layoutLocalService = null;
+		LayoutLocalService layoutLocalService;
 
-		if (_layoutLocalServiceServiceReference != null) {
-			layoutLocalService = context.getService(
-				_layoutLocalServiceServiceReference);
+		if (_layoutLocalServiceServiceReference == null) {
+			throw new IllegalStateException(
+				"Can not access LayoutLocalService");
 		}
+
+		layoutLocalService = context.getService(
+			_layoutLocalServiceServiceReference);
 
 		_portletPreferencesLocalServiceServiceReference =
 			context.getServiceReference(PortletPreferencesLocalService.class);
 
-		PortletPreferencesLocalService portletPreferencesLocalService = null;
+		PortletPreferencesLocalService portletPreferencesLocalService;
 
-		if (_portletPreferencesLocalServiceServiceReference != null) {
-			portletPreferencesLocalService = context.getService(
-				_portletPreferencesLocalServiceServiceReference);
+		if (_portletPreferencesLocalServiceServiceReference == null) {
+			throw new IllegalStateException(
+				"Can not access PortletPreferencesLocalService");
 		}
+
+		portletPreferencesLocalService = context.getService(
+			_portletPreferencesLocalServiceServiceReference);
 
 		_userLocalServiceServiceReference = context.getServiceReference(
 			UserLocalService.class);
 
-		UserLocalService userLocalService = null;
+		UserLocalService userLocalService;
 
-		if (_userLocalServiceServiceReference != null) {
-			userLocalService = context.getService(
-				_userLocalServiceServiceReference);
+		if (_userLocalServiceServiceReference == null) {
+			throw new IllegalStateException("Can not access UserLocalService");
 		}
+
+		userLocalService = context.getService(
+			_userLocalServiceServiceReference);
 
 		PortalURLServlet portalURLServlet = new PortalURLServlet(
 			companyLocalService, groupLocalService, layoutLocalService,
