@@ -41,6 +41,7 @@ public class LiferayRemoteDeployableContainer
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public Class<T> getConfigurationClass() {
 		return (Class<T>)LiferayRemoteContainerConfiguration.class;
 	}
