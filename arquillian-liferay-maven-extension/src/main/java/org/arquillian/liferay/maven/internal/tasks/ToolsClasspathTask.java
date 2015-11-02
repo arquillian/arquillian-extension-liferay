@@ -55,8 +55,6 @@ public enum ToolsClasspathTask
 	 */
 	@Override
 	public URLClassLoader execute(MavenWorkingSession session) {
-		final Logger log = LoggerFactory.getLogger(ToolsClasspathTask.class);
-
 		final ParsedPomFile pomFile = session.getParsedPomFile();
 
 		LiferayPluginConfiguration configuration =
@@ -107,9 +105,11 @@ public enum ToolsClasspathTask
 			}
 		}
 
-		log.trace(
-			"Jars count in Tools classpath Archive:" +
-				liferayToolArchives.size());
+		if (_log.isTraceEnabled()) {
+			_log.trace(
+				"Jars count in Tools classpath Archive:" +
+					liferayToolArchives.size());
+		}
 
 		List<URL> classpathUrls = new ArrayList<>();
 
@@ -124,11 +124,14 @@ public enum ToolsClasspathTask
 			}
 		}
 		catch (MalformedURLException e) {
-			log.error("Error building Tools classpath", e);
+			_log.error("Error building Tools classpath", e);
 		}
 
 		return new URLClassLoader(
 			classpathUrls.toArray(new URL[classpathUrls.size()]), null);
 	}
+
+	private static final Logger _log = LoggerFactory.getLogger(
+		ToolsClasspathTask.class);
 
 }

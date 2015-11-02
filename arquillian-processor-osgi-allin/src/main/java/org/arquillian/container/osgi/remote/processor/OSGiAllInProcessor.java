@@ -114,9 +114,7 @@ public class OSGiAllInProcessor implements ApplicationArchiveProcessor {
 		}
 	}
 
-	private void addArquillianDependencies(JavaArchive javaArchive)
-		throws Exception {
-
+	private void addArquillianDependencies(JavaArchive javaArchive) {
 		javaArchive.addPackage(JMXTestRunner.class.getPackage());
 	}
 
@@ -204,7 +202,7 @@ public class OSGiAllInProcessor implements ApplicationArchiveProcessor {
 					}
 				}
 
-				if (testClassFound == false) {
+				if (!testClassFound) {
 					((ClassContainer<?>)javaArchive).addClass(clazz);
 				}
 			}
@@ -223,27 +221,22 @@ public class OSGiAllInProcessor implements ApplicationArchiveProcessor {
 			JavaArchive javaArchive, Collection<Archive<?>> auxiliaryArchives)
 		throws IOException {
 
-		try {
-			ImportPackageManager importPackageManager =
-				_importPackageManagerInstance.get();
+		ImportPackageManager importPackageManager =
+			_importPackageManagerInstance.get();
 
-			ManifestManager manifestManager = _manifestManagerInstance.get();
+		ManifestManager manifestManager = _manifestManagerInstance.get();
 
-			Manifest manifest = manifestManager.getManifest(javaArchive);
+		Manifest manifest = manifestManager.getManifest(javaArchive);
 
-			manifest = importPackageManager.cleanRepeatedImports(
-				manifest, auxiliaryArchives);
+		manifest = importPackageManager.cleanRepeatedImports(
+			manifest, auxiliaryArchives);
 
-			manifestManager.replaceManifest(javaArchive, manifest);
-		}
-		catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		manifestManager.replaceManifest(javaArchive, manifest);
 	}
 
 	private void handleAuxiliaryArchives(
 			JavaArchive javaArchive, Collection<Archive<?>> auxiliaryArchives)
-		throws Exception {
+		throws IOException {
 
 		for (Archive auxiliaryArchive : auxiliaryArchives) {
 			Map<ArchivePath, Node> remoteLoadableExtensionMap =
@@ -353,7 +346,9 @@ public class OSGiAllInProcessor implements ApplicationArchiveProcessor {
 		return archives;
 	}
 
-	private void validateBundleArchive(Archive<?> archive) throws Exception {
+	private void validateBundleArchive(Archive<?> archive)
+		throws BundleException, IOException {
+
 		Manifest manifest = null;
 
 		Node node = archive.get(JarFile.MANIFEST_NAME);

@@ -54,7 +54,13 @@ public class PortalURLTestEnricher implements TestEnricher {
 				PortalURL annotation = declaredField.getAnnotation(
 					PortalURL.class);
 
-				injectField(declaredField, testCase, annotation.value());
+				try {
+					injectField(declaredField, testCase, annotation.value());
+				}
+				catch (IllegalAccessException e) {
+					throw new RuntimeException(
+						"Exception when injecting the field", e);
+				}
 			}
 		}
 	}
@@ -93,7 +99,8 @@ public class PortalURLTestEnricher implements TestEnricher {
 	}
 
 	private void injectField(
-		Field declaredField, Object testCase, String portletId) {
+			Field declaredField, Object testCase, String portletId)
+		throws IllegalAccessException {
 
 		setField(declaredField, testCase, resolve(portletId));
 	}
@@ -125,17 +132,14 @@ public class PortalURLTestEnricher implements TestEnricher {
 		return null;
 	}
 
-	private void setField(Field declaredField, Object testCase, URL service) {
+	private void setField(Field declaredField, Object testCase, URL service)
+		throws IllegalAccessException {
+
 		boolean accessible = declaredField.isAccessible();
 
 		declaredField.setAccessible(true);
 
-		try {
-			declaredField.set(testCase, service);
-		}
-		catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
+		declaredField.set(testCase, service);
 
 		declaredField.setAccessible(accessible);
 	}

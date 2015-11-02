@@ -15,6 +15,7 @@
 package org.arquillian.container.osgi.remote.activator;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
@@ -22,9 +23,9 @@ import java.lang.management.ManagementFactory;
 
 import java.net.URL;
 
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -44,6 +45,7 @@ import org.osgi.framework.BundleContext;
  */
 public class ArquillianBundleActivator implements BundleActivator {
 
+	@Override
 	public void start(final BundleContext context) throws Exception {
 		final TestClassLoader testClassLoader = new TestClassLoader() {
 
@@ -79,6 +81,7 @@ public class ArquillianBundleActivator implements BundleActivator {
 		testRunner.registerMBean(mbeanServer);
 	}
 
+	@Override
 	public void stop(BundleContext context) throws Exception {
 
 		// Execute all activators
@@ -93,22 +96,83 @@ public class ArquillianBundleActivator implements BundleActivator {
 		testRunner.unregisterMBean(mbeanServer);
 	}
 
+	private void addBundleActivatorToActivatorsListFromStringLine(
+		Set<BundleActivator> activators, String line) {
+
+		ClassLoader classLoader = getClass().getClassLoader();
+
+		if (line.startsWith("!")) {
+			return;
+		}
+
+		try {
+			Class<?> aClass = classLoader.loadClass(line);
+
+			Class<? extends BundleActivator> bundleActivatorClass =
+				aClass.asSubclass(BundleActivator.class);
+
+			activators.add(bundleActivatorClass.newInstance());
+		}
+		catch (ClassNotFoundException cnfe) {
+			throw new IllegalStateException(
+				"Activator " + line + " class not found", cnfe);
+		}
+		catch (ClassCastException cce) {
+			throw new IllegalStateException(
+				"Activator " + line + " does not implement expected type " +
+					BundleActivator.class.getCanonicalName(),
+				cce);
+		}
+		catch (Exception e) {
+			throw new IllegalStateException(
+				"Activator " + line + " can't be created ", e);
+		}
+	}
+
+	private void addBundleActivatorToActivatorsListFromURL(
+			Set<BundleActivator> activators, URL url)
+		throws IOException {
+
+		final InputStream is = url.openStream();
+
+		BufferedReader reader = null;
+
+		try {
+			reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+
+			String line = reader.readLine();
+
+			while (null != line) {
+				line = skipCommentAndTrim(line);
+
+				addBundleActivatorToActivatorsListFromStringLine(
+					activators, line);
+
+				line = reader.readLine();
+			}
+		}
+		finally {
+			if (reader != null) {
+				reader.close();
+			}
+		}
+	}
+
 	private MBeanServer findOrCreateMBeanServer() {
 		MBeanServer mbeanServer = null;
 
-		ArrayList<MBeanServer> serverArr = MBeanServerFactory.findMBeanServer(
-			null);
+		List<MBeanServer> serverArr = MBeanServerFactory.findMBeanServer(null);
 
 		if (serverArr.size() > 1)
-			log.warning("Multiple MBeanServer instances: " + serverArr);
+			logger.warning("Multiple MBeanServer instances: " + serverArr);
 
-		if (serverArr.size() > 0) {
+		if (!serverArr.isEmpty()) {
 			mbeanServer = serverArr.get(0);
-			log.fine("Found MBeanServer: " + mbeanServer.getDefaultDomain());
+			logger.fine("Found MBeanServer: " + mbeanServer.getDefaultDomain());
 		}
 
 		if (mbeanServer == null) {
-			log.fine("No MBeanServer, create one ...");
+			logger.fine("No MBeanServer, create one ...");
 			mbeanServer = ManagementFactory.getPlatformMBeanServer();
 		}
 
@@ -119,57 +183,17 @@ public class ArquillianBundleActivator implements BundleActivator {
 		String serviceFile =
 			_SERVICES + "/" + BundleActivator.class.getCanonicalName();
 
-		LinkedHashSet<BundleActivator> activators = new LinkedHashSet<>();
+		Set<BundleActivator> activators = new LinkedHashSet<>();
+
+		ClassLoader classLoader = getClass().getClassLoader();
 
 		try {
-			ClassLoader classLoader = getClass().getClassLoader();
-
 			Enumeration<URL> enumeration = classLoader.getResources(
 				serviceFile);
 
 			while (enumeration.hasMoreElements()) {
-				final URL url = enumeration.nextElement();
-				final InputStream is = url.openStream();
-				BufferedReader reader = null;
-
-				try {
-					reader = new BufferedReader(
-						new InputStreamReader(is, "UTF-8"));
-					String line = reader.readLine();
-					while (null != line) {
-						line = skipCommentAndTrim(line);
-
-						if (line.length() > 0) {
-							try {
-								boolean mustBeVetoed = line.startsWith("!");
-
-								if (mustBeVetoed) {
-									line = line.substring(1);
-								}
-
-								Class<? extends BundleActivator> activator =
-									classLoader.loadClass(line).asSubclass(
-										BundleActivator.class);
-
-								activators.add(activator.newInstance());
-							}
-							catch (ClassCastException e) {
-								throw new IllegalStateException(
-									"Activator " + line +
-										" does not implement expected type " +
-										BundleActivator.class.
-											getCanonicalName());
-							}
-						}
-
-						line = reader.readLine();
-					}
-				}
-				finally {
-					if (reader != null) {
-						reader.close();
-					}
-				}
+				addBundleActivatorToActivatorsListFromURL(
+					activators, enumeration.nextElement());
 			}
 		}
 		catch (Exception e) {
@@ -182,20 +206,20 @@ public class ArquillianBundleActivator implements BundleActivator {
 	private String skipCommentAndTrim(String line) {
 		final int comment = line.indexOf('#');
 
-		if (comment > -1)
-		{
-			line = line.substring(0, comment);
+		String lineWithoutComment = line;
+
+		if (comment > -1) {
+			lineWithoutComment = line.substring(0, comment);
 		}
 
-		line = line.trim();
-		return line;
+		return lineWithoutComment.trim();
 	}
 
 	private static final String _SERVICES = "/META-INF/services";
 
 	// Provide logging
 
-	private static final Logger log = Logger.getLogger(
+	private static final Logger logger = Logger.getLogger(
 		ArquillianBundleActivator.class.getName());
 
 	private Set<BundleActivator> bundleActivators;

@@ -17,6 +17,7 @@ package org.arquillian.liferay.maven.internal.tasks;
 import java.io.File;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.arquillian.liferay.maven.internal.LiferayPluginConfiguration;
 
@@ -43,11 +44,11 @@ public enum PortletDeployerTask
 	 */
 	@Override
 	public MavenWorkingSession execute(MavenWorkingSession session) {
-		final Logger log = LoggerFactory.getLogger(PortletDeployerTask.class);
+		if (_log.isDebugEnabled()) {
+			_log.debug("Building Portlet Archive");
+		}
 
-		log.debug("Building Portlet Archive");
-
-		HashMap<String, Object> args = new HashMap<>();
+		Map<String, Object> args = new HashMap<>();
 		args.put(
 			"deployerClassName",
 			"com.liferay.portal.tools.deploy.PortletDeployer");
@@ -96,5 +97,8 @@ public enum PortletDeployerTask
 
 		return session;
 	}
+
+	private static final Logger _log = LoggerFactory.getLogger(
+		PortletDeployerTask.class);
 
 }

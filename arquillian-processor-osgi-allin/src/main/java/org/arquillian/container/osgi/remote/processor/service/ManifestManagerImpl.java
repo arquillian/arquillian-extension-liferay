@@ -35,6 +35,7 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
  */
 public class ManifestManagerImpl implements ManifestManager {
 
+	@Override
 	public Manifest getManifest(JavaArchive javaArchive) throws IOException {
 		Node manifestNode = javaArchive.get(JarFile.MANIFEST_NAME);
 
@@ -43,6 +44,7 @@ public class ManifestManagerImpl implements ManifestManager {
 		return new Manifest(manifestAsset.openStream());
 	}
 
+	@Override
 	public Manifest putAttributeValue(
 			Manifest manifest, String attributeName, String... attributeValue)
 		throws IOException {
@@ -77,6 +79,7 @@ public class ManifestManagerImpl implements ManifestManager {
 		return manifest;
 	}
 
+	@Override
 	public void replaceManifest(Archive archive, Manifest manifest )
 		throws IOException {
 

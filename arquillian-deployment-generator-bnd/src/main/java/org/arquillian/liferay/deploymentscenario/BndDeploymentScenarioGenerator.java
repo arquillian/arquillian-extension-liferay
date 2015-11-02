@@ -61,7 +61,7 @@ public class BndDeploymentScenarioGenerator
 
 	@Override
 	public List<DeploymentDescription> generate(TestClass testClass) {
-		ArrayList<DeploymentDescription> deployments = new ArrayList<>();
+		List<DeploymentDescription> deployments = new ArrayList<>();
 
 		DeploymentScenarioGenerator defaultDeploymentScenarioGenerator =
 			getDefaultDeploymentScenarioGenerator();
@@ -77,7 +77,7 @@ public class BndDeploymentScenarioGenerator
 			}
 		}
 
-		try {
+		try (Analyzer analyzer = new Analyzer()) {
 			bndFile = getBndFile(testClass);
 
 			BndProjectBuilder bndProjectBuilder = ShrinkWrap.create(
@@ -87,8 +87,6 @@ public class BndDeploymentScenarioGenerator
 
 			bndProjectBuilder.generateManifest(true);
 
-			File commonBndFile = getCommonBndFile();
-
 			if (commonBndFile != null) {
 				bndProjectBuilder.addProjectPropertiesFile(commonBndFile);
 			}
@@ -96,8 +94,6 @@ public class BndDeploymentScenarioGenerator
 			JavaArchive javaArchive = bndProjectBuilder.as(JavaArchive.class);
 
 			javaArchive.addClass(BndFile.class);
-
-			Analyzer analyzer = new Analyzer();
 
 			Properties analyzerProperties = new Properties();
 
@@ -165,10 +161,6 @@ public class BndDeploymentScenarioGenerator
 		}
 
 		return bndFile;
-	}
-
-	public File getCommonBndFile() {
-		return commonBndFile;
 	}
 
 	public void setBndFile(File bndFile) {

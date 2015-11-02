@@ -42,7 +42,6 @@ import org.jboss.shrinkwrap.api.importer.ExplodedImporter;
 import org.jboss.shrinkwrap.api.importer.ZipImporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.resolver.api.ResolutionException;
 import org.jboss.shrinkwrap.resolver.api.maven.MavenResolvedArtifact;
 import org.jboss.shrinkwrap.resolver.api.maven.MavenWorkingSession;
 import org.jboss.shrinkwrap.resolver.api.maven.PackagingType;
@@ -119,8 +118,7 @@ public class LiferayWarPackagingProcessor
 	 */
 	@Override
 	public LiferayWarPackagingProcessor importBuildOutput(
-			MavenResolutionStrategy strategy)
-		throws IllegalArgumentException, ResolutionException {
+		MavenResolutionStrategy strategy) {
 
 		log.debug("Building Liferay Plugin Archive");
 
@@ -282,7 +280,6 @@ public class LiferayWarPackagingProcessor
 		final List<String> filesToIncludes = Arrays.asList(
 			includesFiles(
 				warPluginConfiguration.getWarSourceDirectory(),
-				warPluginConfiguration.getIncludes(),
 				warPluginConfiguration.getExcludes()));
 
 		return new Filter<ArchivePath>() {
@@ -307,9 +304,7 @@ public class LiferayWarPackagingProcessor
 		};
 	}
 
-	private String[] includesFiles(
-		File baseDir, String[] includes, String[] excludes) {
-
+	private String[] includesFiles(File baseDir, String[] excludes) {
 		DirectoryScanner dirScanner = new DirectoryScanner();
 		dirScanner.setBasedir(baseDir);
 

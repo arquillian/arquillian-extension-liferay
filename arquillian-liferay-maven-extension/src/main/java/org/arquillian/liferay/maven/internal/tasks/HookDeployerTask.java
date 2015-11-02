@@ -17,6 +17,7 @@ package org.arquillian.liferay.maven.internal.tasks;
 import java.io.File;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.arquillian.liferay.maven.internal.LiferayPluginConfiguration;
 
@@ -43,11 +44,12 @@ public enum HookDeployerTask
 	 */
 	@Override
 	public MavenWorkingSession execute(MavenWorkingSession session) {
-		final Logger log = LoggerFactory.getLogger(HookDeployerTask.class);
+		if (_log.isDebugEnabled()) {
+			_log.debug("Building Hook Archive");
+		}
 
-		log.debug("Building Hook Archive");
+		Map<String, Object> args = new HashMap<>();
 
-		HashMap<String, Object> args = new HashMap<>();
 		args.put(
 			"deployerClassName",
 			"com.liferay.portal.tools.deploy.HookDeployer");
@@ -69,5 +71,8 @@ public enum HookDeployerTask
 
 		return session;
 	}
+
+	private static final Logger _log = LoggerFactory.getLogger(
+		HookDeployerTask.class);
 
 }

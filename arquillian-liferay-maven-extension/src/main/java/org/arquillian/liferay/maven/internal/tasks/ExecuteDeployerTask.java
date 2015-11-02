@@ -28,6 +28,7 @@ import java.util.Map;
 import org.arquillian.liferay.maven.internal.LiferayPluginConfiguration;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -52,8 +53,6 @@ public enum ExecuteDeployerTask {
 	public WebArchive execute(
 		MavenWorkingSession session, LiferayPluginConfiguration configuration,
 		Map<String, Object> params) {
-
-		final Logger log = LoggerFactory.getLogger(ExecuteDeployerTask.class);
 
 		final ParsedPomFile pomFile = session.getParsedPomFile();
 
@@ -87,7 +86,8 @@ public enum ExecuteDeployerTask {
 			initUtils(classLoader);
 		}
 		catch (Exception e) {
-			log.error("Error executing deployer task :" + deployerClassName, e);
+			_log.error(
+				"Error executing deployer task :" + deployerClassName, e);
 		}
 
 		// START Execute Deployer
@@ -96,7 +96,8 @@ public enum ExecuteDeployerTask {
 			executeTool(deployerClassName, classLoader, jars);
 		}
 		catch (Exception e) {
-			log.error("Error executing deployer task :" + deployerClassName, e);
+			_log.error(
+				"Error executing deployer task :" + deployerClassName, e);
 		}
 
 		// END Execute Deployer
@@ -112,7 +113,7 @@ public enum ExecuteDeployerTask {
 	public static final class SAXReaderUtil {
 
 		public static Document read(File file, boolean validate)
-			throws Exception {
+			throws DocumentException {
 
 			SAXReader saxReader = new SAXReader(validate);
 
@@ -123,6 +124,9 @@ public enum ExecuteDeployerTask {
 
 		public static void setEntityResolver(EntityResolver entityResolver) {
 			_entityResolver = entityResolver;
+		}
+
+		private SAXReaderUtil() {
 		}
 
 		private static EntityResolver _entityResolver;
@@ -147,6 +151,7 @@ public enum ExecuteDeployerTask {
 
 			@Override
 			public void checkPermission(Permission permission) {
+				//It is not needed to check permissions
 			}
 
 			@Override
@@ -192,5 +197,8 @@ public enum ExecuteDeployerTask {
 
 		SAXReaderUtil.setEntityResolver(entityResolver);
 	}
+
+	private static final Logger _log = LoggerFactory.getLogger(
+		ExecuteDeployerTask.class);
 
 }

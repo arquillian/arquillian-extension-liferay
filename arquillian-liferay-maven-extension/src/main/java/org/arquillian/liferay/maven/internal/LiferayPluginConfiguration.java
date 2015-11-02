@@ -97,8 +97,8 @@ public class LiferayPluginConfiguration
 
 		appServerDeployDir = (String)configValues.get("appServerDeployDir");
 
-		customPortletXml = Boolean.valueOf(
-			(String)configValues.get("customPortletXml")).booleanValue();
+		customPortletXml = Boolean.parseBoolean(
+			(String)configValues.get("customPortletXml"));
 
 		baseDir = pomFile.getBuildOutputDirectory().getAbsolutePath();
 		destDir = pomFile.getBuildOutputDirectory().getAbsolutePath() + "/..";
@@ -231,8 +231,9 @@ public class LiferayPluginConfiguration
 	// TODO change
 
 	private static final String _APP_SERVER_TYPE = "tomcat";
-	private final Logger _log = LoggerFactory.getLogger(
+	private static final Logger _log = LoggerFactory.getLogger(
 		LiferayPluginConfiguration.class);
+
 	private String appServerClassesPortalDir;
 	private String appServerDeployDir;
 	private String appServerLibGlobalDir;

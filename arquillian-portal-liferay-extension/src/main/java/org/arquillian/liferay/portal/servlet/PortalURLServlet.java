@@ -33,6 +33,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.portlet.PortletPreferences;
 
@@ -46,6 +48,25 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class PortalURLServlet extends HttpServlet {
 
+	public PortalURLServlet(
+		CompanyLocalService companyLocalService,
+		GroupLocalService groupLocalService,
+		LayoutLocalService layoutLocalService,
+		PortletPreferencesLocalService porletPreferencesLocalService,
+		UserLocalService userLocalService) {
+
+		_companyLocalService = companyLocalService;
+
+		_groupLocalService = groupLocalService;
+
+		_layoutLocalService = layoutLocalService;
+
+		_portletPreferencesLocalService = porletPreferencesLocalService;
+
+		_userLocalService = userLocalService;
+	}
+
+	@Override
 	public void destroy() {
 		if (_layouts != null) {
 			for (Layout layout : _layouts) {
@@ -54,7 +75,9 @@ public class PortalURLServlet extends HttpServlet {
 						layout.getPlid(), new ServiceContext());
 				}
 				catch (PortalException e) {
-					e.printStackTrace();
+					_logger.log(
+						Level.WARNING,
+						"Error trying to delete layout " + layout.getPlid(), e);
 				}
 			}
 		}
@@ -88,15 +111,15 @@ public class PortalURLServlet extends HttpServlet {
 
 			UUID uuid = UUID.randomUUID();
 
-			_layout = _layoutLocalService.addLayout(
+			Layout layout = _layoutLocalService.addLayout(
 				defaultUser.getUserId(), guestGroup.getGroupId(), false, 0,
 				uuid.toString(), null, null, "portlet", false,
-				"/"+uuid.toString(), new ServiceContext());
+				"/" + uuid.toString(), new ServiceContext());
 
-			_layouts.add(_layout);
+			_layouts.add(layout);
 
 			LayoutTypePortlet layoutTypePortlet =
-				(LayoutTypePortlet) _layout.getLayoutType();
+				(LayoutTypePortlet)layout.getLayoutType();
 
 			layoutTypePortlet.setLayoutTemplateId(
 				defaultUser.getUserId(), "1_column");
@@ -110,56 +133,36 @@ public class PortalURLServlet extends HttpServlet {
 			PortletPreferences prefs =
 				_portletPreferencesLocalService.getPreferences(
 					company.getCompanyId(), ownerId, ownerType,
-					_layout.getPlid(), portletIdAdded);
+					layout.getPlid(), portletIdAdded);
 
 			_portletPreferencesLocalService.updatePreferences(
-				ownerId, ownerType, _layout.getPlid(), portletIdAdded, prefs);
+				ownerId, ownerType, layout.getPlid(), portletIdAdded, prefs);
 
 			_layoutLocalService.updateLayout(
-				_layout.getGroupId(), _layout.isPrivateLayout(),
-				_layout.getLayoutId(), _layout.getTypeSettings());
+				layout.getGroupId(), layout.isPrivateLayout(),
+				layout.getLayoutId(), layout.getTypeSettings());
 
 			response.sendRedirect("/"+uuid.toString());
 		}
 		catch (PortalException e) {
-			e.printStackTrace(out);
+			_logger.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
 
 	@Override
 	public void init() throws ServletException {
+		//There are not init actions for this servlet
 	}
 
-	public void setCompanyLocalService(
-		CompanyLocalService companyLocalService) {
+	private static final Logger _logger = Logger.getLogger(
+		PortalURLServlet.class.getName());
 
-		_companyLocalService = companyLocalService;
-	}
-
-	public void setGroupLocalService(GroupLocalService groupLocalService) {
-		_groupLocalService = groupLocalService;
-	}
-
-	public void setLayoutLocalService(LayoutLocalService layoutLocalService) {
-		_layoutLocalService = layoutLocalService;
-	}
-
-	public void setPortletPreferencesLocalService(
-		PortletPreferencesLocalService porletPreferencesLocalService) {
-
-		_portletPreferencesLocalService = porletPreferencesLocalService;
-	}
-
-	public void setUserLocalService(UserLocalService userLocalService) {
-		_userLocalService = userLocalService;
-	}
-
-	private CompanyLocalService _companyLocalService;
-	private GroupLocalService _groupLocalService;
-	private Layout _layout;
-	private LayoutLocalService _layoutLocalService;
+	private final transient CompanyLocalService _companyLocalService;
+	private final transient GroupLocalService _groupLocalService;
+	private final transient LayoutLocalService _layoutLocalService;
 	private List<Layout> _layouts;
-	private PortletPreferencesLocalService _portletPreferencesLocalService;
-	private UserLocalService _userLocalService;
+	private final transient PortletPreferencesLocalService
+		_portletPreferencesLocalService;
+	private final transient UserLocalService _userLocalService;
 
 }
