@@ -23,9 +23,8 @@ import org.jboss.arquillian.test.spi.TestEnricher;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
-import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.framework.ServiceReference;
 
 /**
  * @author Carlos Sierra Andrés
@@ -42,7 +41,12 @@ public class LiferayTestEnricher implements TestEnricher {
 			if (declaredField.isAnnotationPresent(Inject.class)) {
 				Inject inject = declaredField.getAnnotation(Inject.class);
 
-				injectField(declaredField, inject.value(), testCase);
+				if (inject.value().equals("")) {
+					injectField(declaredField, null, testCase);
+				}
+				else {
+					injectField(declaredField, inject.value(), testCase);
+				}
 			}
 		}
 	}
@@ -73,9 +77,15 @@ public class LiferayTestEnricher implements TestEnricher {
 				parameterAnnotations, Inject.class);
 
 			if (injectAnnotation != null) {
-				parameters[i] = resolve(
-					parameterTypes[i], injectAnnotation.value(),
-					method.getDeclaringClass());
+				if (injectAnnotation.value().equals("")) {
+					parameters[i] = resolve(
+						parameterTypes[i], null, method.getDeclaringClass());
+				}
+				else {
+					parameters[i] = resolve(
+						parameterTypes[i], injectAnnotation.value(),
+						method.getDeclaringClass());
+				}
 			}
 		}
 
@@ -110,30 +120,18 @@ public class LiferayTestEnricher implements TestEnricher {
 
 		BundleContext bundleContext = bundle.getBundleContext();
 
-		filterString =
-			"(&(objectClass=" + componentClass.getName() + ")" + filterString +
-				")";
-
-		Filter filter = null;
+		ServiceReference<?>[] serviceReferences;
 
 		try {
-			filter = bundleContext.createFilter(filterString);
+			serviceReferences = bundleContext.getServiceReferences(
+				componentClass.getName(), filterString);
 		}
 		catch (InvalidSyntaxException ise) {
 			throw new RuntimeException(
 				"Bad Syntax for the filter: " + filterString, ise);
 		}
 
-		ServiceTracker tracker = new ServiceTracker(
-			bundleContext, filter, null);
-
-		tracker.open();
-
-		Object service = tracker.getService();
-
-		tracker.close();
-
-		return service;
+		return bundleContext.getService(serviceReferences[0]);
 	}
 
 	private void setField(
