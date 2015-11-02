@@ -59,9 +59,7 @@ public class PortalURLTestEnricher implements TestEnricher {
 				}
 				catch (IllegalAccessException e) {
 					throw new RuntimeException(
-						"It is not possible to inject the field " +
-							e.getMessage(),
-						e);
+						"Exception when injecting the field", e);
 				}
 			}
 		}
