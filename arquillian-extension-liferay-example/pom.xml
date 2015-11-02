@@ -76,7 +76,7 @@
 								<phase>process-test-sources</phase>
 								<configuration>
 									<target>
-										<echo file="${liferay.home}/portal-ext.properties" >browser.launcher.url=</echo>
+										<echo file="${liferay.home}/portal-ext.properties">browser.launcher.url=</echo>
 									</target>
 								</configuration>
 								<goals>
