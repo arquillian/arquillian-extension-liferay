@@ -77,7 +77,7 @@ public class BndDeploymentScenarioGenerator
 			}
 		}
 
-		try {
+		try (Analyzer analyzer = new Analyzer()) {
 			bndFile = getBndFile(testClass);
 
 			BndProjectBuilder bndProjectBuilder = ShrinkWrap.create(
@@ -94,8 +94,6 @@ public class BndDeploymentScenarioGenerator
 			JavaArchive javaArchive = bndProjectBuilder.as(JavaArchive.class);
 
 			javaArchive.addClass(BndFile.class);
-
-			Analyzer analyzer = new Analyzer();
 
 			Properties analyzerProperties = new Properties();
 
@@ -147,8 +145,6 @@ public class BndDeploymentScenarioGenerator
 				baos.toByteArray());
 
 			replaceManifest(javaArchive, byteArrayAsset);
-
-			analyzer.close();
 
 			return deployments;
 		}
