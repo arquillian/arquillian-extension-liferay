@@ -23,24 +23,13 @@ import org.jboss.arquillian.test.spi.TestEnricher;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 
 /**
  * @author Carlos Sierra Andrés
  */
 public class LiferayTestEnricher implements TestEnricher {
-
-	public boolean contains(
-		Annotation[] annotations, Class<?> annotationClass) {
-
-		for (Annotation current : annotations) {
-			if (annotationClass.isAssignableFrom(current.annotationType())) {
-				return true;
-			}
-		}
-
-		return false;
-	}
 
 	@Override
 	public void enrich(Object testCase) {
@@ -50,9 +39,28 @@ public class LiferayTestEnricher implements TestEnricher {
 
 		for (Field declaredField : declaredFields) {
 			if (declaredField.isAnnotationPresent(Inject.class)) {
-				injectField(declaredField, testCase);
+				Inject inject = declaredField.getAnnotation(Inject.class);
+
+				if (inject.value().equals("")) {
+					injectField(declaredField, null, testCase);
+				}
+				else {
+					injectField(declaredField, inject.value(), testCase);
+				}
 			}
 		}
+	}
+
+	public Annotation getAnnotation(
+		Annotation[] annotations, Class<?> annotationClass) {
+
+		for (Annotation current : annotations) {
+			if (annotationClass.isAssignableFrom(current.annotationType())) {
+				return current;
+			}
+		}
+
+		return null;
 	}
 
 	@Override
@@ -65,9 +73,19 @@ public class LiferayTestEnricher implements TestEnricher {
 		for (int i = 0; i < parameterTypes.length; i++) {
 			Annotation[] parameterAnnotations = parametersAnnotations[i];
 
-			if (contains(parameterAnnotations, Inject.class)) {
-				parameters[i] = resolve(
-					parameterTypes[i], method.getDeclaringClass());
+			Inject injectAnnotation = (Inject)getAnnotation(
+				parameterAnnotations, Inject.class);
+
+			if (injectAnnotation != null) {
+				if (injectAnnotation.value().equals("")) {
+					parameters[i] = resolve(
+						parameterTypes[i], null, method.getDeclaringClass());
+				}
+				else {
+					parameters[i] = resolve(
+						parameterTypes[i], injectAnnotation.value(),
+						method.getDeclaringClass());
+				}
 			}
 		}
 
@@ -84,23 +102,36 @@ public class LiferayTestEnricher implements TestEnricher {
 		throw new RuntimeException("Test is not running inside BundleContext");
 	}
 
-	private void injectField(Field declaredField, Object testCase) {
+	private void injectField(
+		Field declaredField, String filterString, Object testCase) {
+
 		Class<?> componentClass = declaredField.getType();
 
-		Object service = resolve(componentClass, testCase.getClass());
+		Object service = resolve(
+			componentClass, filterString, testCase.getClass());
 
 		setField(declaredField, testCase, service);
 	}
 
-	private Object resolve(Class<?> componentClass, Class<?> testCaseClass) {
+	private Object resolve(
+		Class<?> componentClass, String filterString, Class<?> testCaseClass) {
+
 		Bundle bundle = getBundle(testCaseClass);
 
 		BundleContext bundleContext = bundle.getBundleContext();
 
-		ServiceReference<?> serviceReference =
-			bundleContext.getServiceReference(componentClass);
+		ServiceReference<?>[] serviceReferences;
 
-		return bundleContext.getService(serviceReference);
+		try {
+			serviceReferences = bundleContext.getServiceReferences(
+				componentClass.getName(), filterString);
+		}
+		catch (InvalidSyntaxException ise) {
+			throw new RuntimeException(
+				"Bad Syntax for the filter: " + filterString, ise);
+		}
+
+		return bundleContext.getService(serviceReferences[0]);
 	}
 
 	private void setField(
