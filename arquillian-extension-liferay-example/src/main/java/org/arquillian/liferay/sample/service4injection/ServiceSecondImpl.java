@@ -27,7 +27,7 @@ public class ServiceSecondImpl implements Service {
 
 	@Override
 	public int operation(int a) {
-		return a + 3;
+		return a + 5;
 	}
 
 }
