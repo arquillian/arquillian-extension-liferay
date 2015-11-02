@@ -29,6 +29,7 @@ import org.jboss.arquillian.test.spi.TestClass;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.archive.importer.MavenImporter;
+import org.jboss.shrinkwrap.resolver.api.maven.archive.importer.PomlessMavenImporter;
 import org.jboss.shrinkwrap.resolver.impl.maven.util.Validate;
 
 import org.slf4j.Logger;
@@ -106,9 +107,38 @@ public class MavenDeploymentScenarioGenerator
 			log.debug(
 				"Loading project from pom file:" + pomFile.getAbsolutePath());
 
-			WebArchive archive =
-				ShrinkWrap.create(MavenImporter.class).loadPomFromFile(
-					pomFile).importBuildOutput().as(WebArchive.class);
+			String globalSettings = System.getProperty(
+				"maven.execution.global-settings");
+
+			String userSettings = System.getProperty(
+				"maven.execution.user-settings");
+
+			String profilesString = System.getProperty(
+				"maven.execution.active-profiles");
+
+			PomlessMavenImporter mavenImporter = ShrinkWrap.create(
+				MavenImporter.class);
+
+			if (globalSettings != null) {
+				mavenImporter =
+					((MavenImporter)mavenImporter).configureFromFile(
+						globalSettings);
+			}
+
+			if (userSettings != null) {
+				mavenImporter =
+					((MavenImporter)mavenImporter).configureFromFile(
+						userSettings);
+			}
+
+			String[] profiles = new String[0];
+
+			if (profilesString != null) {
+				profiles = profilesString.split(",");
+			}
+
+			WebArchive archive = mavenImporter.loadPomFromFile(
+				pomFile, profiles).importBuildOutput().as(WebArchive.class);
 
 			DeploymentDescription deploymentDescription =
 				new DeploymentDescription("_DEFAULT", archive);
