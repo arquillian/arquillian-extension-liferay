@@ -101,16 +101,12 @@ public class ArquillianBundleActivator implements BundleActivator {
 
 		ClassLoader classLoader = getClass().getClassLoader();
 
-		boolean mustBeVetoed = line.startsWith("!");
-
-		String lineWithoutExclamation = line;
-
-		if (mustBeVetoed) {
-			lineWithoutExclamation = line.substring(1);
+		if (line.startsWith("!")) {
+			return;
 		}
 
 		try {
-			Class<?> aClass = classLoader.loadClass(lineWithoutExclamation);
+			Class<?> aClass = classLoader.loadClass(line);
 
 			Class<? extends BundleActivator> bundleActivatorClass =
 				aClass.asSubclass(BundleActivator.class);
