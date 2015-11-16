@@ -14,8 +14,12 @@
 
 package org.arquillian.container.liferay.remote.installdependency;
 
+import com.liferay.hot.deploy.jmx.listener.mbean.manager.PluginMBeanManager;
+
 import java.io.File;
 import java.io.IOException;
+
+import java.net.URL;
 
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -36,6 +40,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.management.MBeanServerConnection;
 import javax.management.MBeanServerInvocationHandler;
 import javax.management.ObjectName;
@@ -77,6 +83,8 @@ public class LiferayInstallDependenciesObserver {
 			_configurationInstance.get();
 
 		_initOSGiJMXAttributes(config);
+
+		_initLiferayJMXAttributes();
 
 		String dependencyPropertyFile = config.getDependencyPropertyFile();
 
@@ -285,6 +293,30 @@ public class LiferayInstallDependenciesObserver {
 		}
 	}
 
+	private void _initLiferayJMXAttributes() throws LifecycleException {
+		_installBundle(_getMavenDependencyPath(_HOT_DEPLOY_JMX_LISTENER_MVN));
+
+		try {
+
+			// Get the PluginsMBean
+
+			ObjectName oname = new ObjectName(
+				"com.liferay.portal.monitoring:classification=" +
+					"plugin_statistics,name=PluginsManager");
+
+			_pluginsManagerMBean = _getMBeanProxy(
+				mbeanServerInstance.get(), oname, PluginMBeanManager.class, 30,
+				TimeUnit.SECONDS);
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new LifecycleException(
+				"Cannot get a Liferay JMX connection", e);
+		}
+	}
+
 	private void _initOSGiJMXAttributes(
 			LiferayRemoteContainerConfiguration configuration)
 		throws LifecycleException {
@@ -331,6 +363,28 @@ public class LiferayInstallDependenciesObserver {
 		try {
 			String pathWithProtocol = "file://" + filePath;
 
+			String contextName = "";
+
+			if (filePath.endsWith(".war")) {
+				int x = filePath.lastIndexOf("/");
+				int y = filePath.lastIndexOf(".war");
+
+				contextName = filePath.substring(x + 1, y);
+
+				Matcher matcher = _pattern.matcher(contextName);
+
+				if (matcher.matches()) {
+					contextName = matcher.group(1);
+				}
+
+				String pathWithQueryString =
+					filePath + "?Web-ContextPath=/" + contextName;
+
+				URL url = new URL("file", null, pathWithQueryString);
+
+				pathWithProtocol = "webbundle:" + url.toString();
+			}
+
 			long bundleId = _frameworkMBean.installBundle(pathWithProtocol);
 
 			_installedBundles.add(bundleId);
@@ -338,6 +392,10 @@ public class LiferayInstallDependenciesObserver {
 			_frameworkMBean.startBundle(bundleId);
 
 			_awaitUntilBundleActive(bundleId);
+
+			if (!contextName.isEmpty()) {
+				_awaitUntilLegacyPluginDeployed(contextName);
+			}
 		}
 		catch (IOException e) {
 			throw new LifecycleException(
@@ -353,12 +411,35 @@ public class LiferayInstallDependenciesObserver {
 		}
 	}
 
+	private void _awaitUntilLegacyPluginDeployed(String contextName)
+		throws InterruptedException, IOException, TimeoutException {
+
+		long timeoutMillis = System.currentTimeMillis() + 3000;
+
+		while (System.currentTimeMillis() < timeoutMillis) {
+			List<String> legacyPluginsList =
+				_pluginsManagerMBean.listLegacyPlugins();
+
+			if (legacyPluginsList.contains(contextName)) {
+				return;
+			}
+
+			Thread.sleep(500L);
+		}
+
+		throw new TimeoutException(
+			"The plugin [" + contextName + "] is not Well Deployed");
+	}
+
 	private static final String _FILE_PREFIX = "file";
 
 	private static final String _MAVEN_PREFIX = "mvn";
 
 	private static final Logger _log = Logger.getLogger(
 		LiferayInstallDependenciesObserver.class.getName());
+
+	private static final Pattern _pattern = Pattern.compile(
+		"(.*?)(-\\d+\\.\\d+\\.\\d+\\.\\d+)?");
 
 	private BundleStateMBean _bundleStateMBean;
 
@@ -367,11 +448,15 @@ public class LiferayInstallDependenciesObserver {
 	private Instance<LiferayRemoteContainerConfiguration>
 		_configurationInstance;
 
+	private static final String _HOT_DEPLOY_JMX_LISTENER_MVN =
+		"com.liferay:com.liferay.hot.deploy.jmx.listener:1.0.0-SNAPSHOT";
+
 	@Inject
 	private Instance<ContainerRegistry> _containerRegistryInstance;
 
 	private FrameworkMBean _frameworkMBean;
 	private List<Long> _installedBundles;
+	private PluginMBeanManager _pluginsManagerMBean;
 
 	@ContainerScoped
 	@Inject
