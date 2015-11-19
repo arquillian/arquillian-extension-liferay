@@ -52,7 +52,9 @@ public class InstallDependenciesTest {
 	public void testInstallDependency() {
 		boolean found = true;
 
-		for (Bundle bundle : _bundleContext.getBundles()) {
+		Bundle[] bundles = _bundleContext.getBundles();
+
+		for (Bundle bundle : bundles) {
 			if ("portal-test".equals(bundle.getSymbolicName())) {
 				found = true;
 

@@ -115,7 +115,8 @@ public class LiferayInstallDependenciesObserver {
 					_installBundle(
 						Paths.get(dependencyPath).toAbsolutePath().toString());
 				}
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 				throw new LifecycleException(
 					"Can't find file " +
 						dependencyPropertyFilePath.toAbsolutePath(),
