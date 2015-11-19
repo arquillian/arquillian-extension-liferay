@@ -82,8 +82,9 @@ public class LiferayInstallDependenciesObserver {
 
 		String dependencyPropertyFile = config.getDependencyPropertyFile();
 
+		_installedBundles = new ArrayList<>();
+
 		if (dependencyPropertyFile != null) {
-			_installedBundles = new ArrayList<>();
 
 			_initOSGiJMXAttributes(config);
 
