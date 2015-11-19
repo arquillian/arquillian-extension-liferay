@@ -77,18 +77,18 @@ public class LiferayInstallDependenciesObserver {
 	public void startContainer(@Observes StartContainer context)
 		throws Exception {
 
-		_installedBundles = new ArrayList<>();
-
 		LiferayRemoteContainerConfiguration config =
 			_configurationInstance.get();
-
-		_initOSGiJMXAttributes(config);
-
-		_initLiferayJMXAttributes();
 
 		String dependencyPropertyFile = config.getDependencyPropertyFile();
 
 		if (dependencyPropertyFile != null) {
+			_installedBundles = new ArrayList<>();
+
+			_initOSGiJMXAttributes(config);
+
+			_initLiferayJMXAttributes();
+
 			Path dependencyPropertyFilePath = Paths.get(dependencyPropertyFile);
 
 			Charset charset = Charset.forName("UTF-8");
