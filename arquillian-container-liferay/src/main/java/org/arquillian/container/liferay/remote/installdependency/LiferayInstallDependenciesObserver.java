@@ -148,7 +148,7 @@ public class LiferayInstallDependenciesObserver {
 				return;
 			}
 
-			Thread.sleep(500L);
+			Thread.sleep(100L);
 		}
 
 		throw new TimeoutException(
