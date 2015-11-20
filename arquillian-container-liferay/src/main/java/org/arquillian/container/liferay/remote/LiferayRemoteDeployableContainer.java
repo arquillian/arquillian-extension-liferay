@@ -19,10 +19,6 @@ import org.arquillian.container.osgi.allin.remote.KarafWithoutBundleRemoteDeploy
 import org.jboss.arquillian.container.spi.client.container.DeploymentException;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.HTTPContext;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.ProtocolMetaData;
-import org.jboss.arquillian.core.api.Instance;
-import org.jboss.arquillian.core.api.InstanceProducer;
-import org.jboss.arquillian.core.api.annotation.ApplicationScoped;
-import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.shrinkwrap.api.Archive;
 
 /**
@@ -35,9 +31,6 @@ public class LiferayRemoteDeployableContainer
 	@Override
 	public ProtocolMetaData deploy(Archive<?> archive)
 		throws DeploymentException {
-
-		LiferayRemoteContainerConfiguration config =
-			_configurationInstance.get();
 
 		ProtocolMetaData protocolMetaData = super.deploy(archive);
 
@@ -55,19 +48,11 @@ public class LiferayRemoteDeployableContainer
 
 	@Override
 	public void setup(T config) {
-		_configurationInstanceProducer.set(config);
+		this.config = config;
 
 		super.setup(config);
 	}
 
-	@ApplicationScoped
-	@Inject
-	protected Instance<LiferayRemoteContainerConfiguration>
-		_configurationInstance;
-
-	@ApplicationScoped
-	@Inject
-	protected InstanceProducer<LiferayRemoteContainerConfiguration>
-		_configurationInstanceProducer;
+	protected LiferayRemoteContainerConfiguration config;
 
 }

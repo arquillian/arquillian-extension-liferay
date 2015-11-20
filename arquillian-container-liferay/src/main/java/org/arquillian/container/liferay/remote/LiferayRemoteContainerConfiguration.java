@@ -33,10 +33,6 @@ public class LiferayRemoteContainerConfiguration
 
 	public static final String LIFERAY_DEFAULT_JMX_USERNAME = "";
 
-	public String getDependencyPropertyFile() {
-		return dependencyPropertyFile;
-	}
-
 	public String getHttpHost() {
 		return httpHost;
 	}
@@ -48,10 +44,6 @@ public class LiferayRemoteContainerConfiguration
 	@Override
 	public boolean isAutostartBundle() {
 		return true;
-	}
-
-	public void setDependencyPropertyFile(String dependencyPropertyFile) {
-		this.dependencyPropertyFile = dependencyPropertyFile;
 	}
 
 	public void setHttpHost(String httpHost) {
@@ -85,7 +77,6 @@ public class LiferayRemoteContainerConfiguration
 		}
 	}
 
-	private String dependencyPropertyFile;
 	private String httpHost;
 	private Integer httpPort;
 
