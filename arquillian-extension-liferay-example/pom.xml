@@ -17,9 +17,9 @@
 	<properties>
 		<test.resources>src/test/resources</test.resources>
 		<arquillian.liferay.bundle>${project.basedir}/../../arquillian-liferay-bundle</arquillian.liferay.bundle>
-		<liferay.home>${arquillian.liferay.bundle}/liferay-portal-7.0-ce-a1</liferay.home>
-		<liferay.version>7.0.0-a1</liferay.version>
-		<url.liferay><![CDATA[http://downloads.sourceforge.net/project/lportal/Liferay%20Portal/7.0.0%20A1/liferay-portal-tomcat-7.0-ce-a1-20150925145631643.zip?r=&ts=1446478480&use_mirror=skylink]]></url.liferay>
+		<liferay.home>${arquillian.liferay.bundle}/liferay-portal-7.0-ce-a3</liferay.home>
+		<liferay.version>7.0.0-a3</liferay.version>
+		<url.liferay><![CDATA[http://downloads.sourceforge.net/project/lportal/Liferay%20Portal/7.0.0%20A3/liferay-portal-tomcat-7.0-ce-a3-20151119130239619.zip?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Flportal%2Ffiles%2FLiferay%2520Portal%2F7.0.0%2520A3%2F&ts=1448364010&use_mirror=netcologne]]></url.liferay>
 		<browser>phantomjs</browser>
 	</properties>
 
