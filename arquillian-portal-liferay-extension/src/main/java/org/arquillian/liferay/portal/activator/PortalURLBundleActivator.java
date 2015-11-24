@@ -31,7 +31,6 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.http.whiteboard.HttpWhiteboardConstants;
 
 /**
  * @author Cristina González Castellano
@@ -81,7 +80,7 @@ public class PortalURLBundleActivator implements BundleActivator {
 		_portletPreferencesLocalServiceServiceReference =
 			context.getServiceReference(PortletPreferencesLocalService.class);
 
-		PortletPreferencesLocalService portletPreferencesLocalService;
+		PortletPreferencesLocalService portletPreferencesLocalService = null;
 
 		if (_portletPreferencesLocalServiceServiceReference == null) {
 			throw new IllegalStateException(
@@ -110,11 +109,10 @@ public class PortalURLBundleActivator implements BundleActivator {
 		Dictionary<String, Object> properties = new HashMapDictionary<>();
 
 		properties.put(
-			HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_NAME,
-			"Install Portlet Servlet");
+			"osgi.http.whiteboard.servlet.name", "Install Portlet Servlet");
 
 		properties.put(
-			HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_PATTERN,
+			"osgi.http.whiteboard.servlet.pattern",
 			"/install-portlet-servlet/*");
 
 		_servletServiceRegistration = context.registerService(
