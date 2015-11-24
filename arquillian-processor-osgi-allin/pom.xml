@@ -4,13 +4,13 @@
 	<parent>
 		<artifactId>arquillian-extension-liferay</artifactId>
 		<groupId>org.arquillian.liferay</groupId>
-		<version>1.0.0.Alpha2</version>
+		<version>1.0.0.Final-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<groupId>org.arquillian.liferay</groupId>
 	<artifactId>arquillian-processor-osgi-allin</artifactId>
-	<version>1.0.0.Alpha2</version>
+	<version>1.0.0.Final-SNAPSHOT</version>
 	<name>Arquillian Liferay Processor OSGi All In</name>
 	<description>Arquillian Processor OSGi that allow to use standars extensions</description>
 
