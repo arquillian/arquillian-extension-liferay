@@ -80,7 +80,7 @@ public class PortalURLBundleActivator implements BundleActivator {
 		_portletPreferencesLocalServiceServiceReference =
 			context.getServiceReference(PortletPreferencesLocalService.class);
 
-		PortletPreferencesLocalService portletPreferencesLocalService = null;
+		PortletPreferencesLocalService portletPreferencesLocalService;
 
 		if (_portletPreferencesLocalServiceServiceReference == null) {
 			throw new IllegalStateException(
