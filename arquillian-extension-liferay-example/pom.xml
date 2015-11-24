@@ -4,13 +4,13 @@
 <parent>
 	<artifactId>arquillian-extension-liferay</artifactId>
 	<groupId>org.arquillian.liferay</groupId>
-	<version>1.0.0.Final-SNAPSHOT</version>
+	<version>1.0.0.Alpha2</version>
 	<relativePath>../pom.xml</relativePath>
 </parent>
 
 	<groupId>org.arquillian.liferay</groupId>
 	<artifactId>arquillian-liferay-extension-example</artifactId>
-	<version>1.0.0.Final-SNAPSHOT</version>
+	<version>1.0.0.Alpha2</version>
 	<name>Arquillian Liferay Extension Example</name>
 	<description>Arquillian Liferay Extension Example</description>
 
@@ -245,7 +245,7 @@
 		<dependency>
 			<groupId>org.arquillian.liferay</groupId>
 			<artifactId>arquillian-container-liferay</artifactId>
-			<version>1.0.0.Final-SNAPSHOT</version>
+			<version>1.0.0.Alpha2</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

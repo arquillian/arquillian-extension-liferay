@@ -5,13 +5,13 @@
 	<parent>
 		<artifactId>arquillian-extension-liferay</artifactId>
 		<groupId>org.arquillian.liferay</groupId>
-		<version>1.0.0.Final-SNAPSHOT</version>
+		<version>1.0.0.Alpha2</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<groupId>org.arquillian.liferay</groupId>
 	<artifactId>arquillian-container-liferay</artifactId>
-	<version>1.0.0.Final-SNAPSHOT</version>
+	<version>1.0.0.Alpha2</version>
 	<name>Arquillian Liferay Container Adapter</name>
 	<description>Arquillian Container Adapter for Liferay Portal Server. OSGi incontainer deployment.</description>
 
@@ -30,17 +30,17 @@
 		<dependency>
 			<groupId>org.arquillian.liferay</groupId>
 			<artifactId>arquillian-container-osgi-allin</artifactId>
-			<version>1.0.0.Final-SNAPSHOT</version>
+			<version>1.0.0.Alpha2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.arquillian.liferay</groupId>
 			<artifactId>arquillian-processor-osgi-allin</artifactId>
-			<version>1.0.0.Final-SNAPSHOT</version>
+			<version>1.0.0.Alpha2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.arquillian.liferay</groupId>
 			<artifactId>arquillian-portal-liferay-extension</artifactId>
-			<version>1.0.0.Final-SNAPSHOT</version>
+			<version>1.0.0.Alpha2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>

@@ -4,13 +4,13 @@
 	<parent>
 		<artifactId>arquillian-extension-liferay</artifactId>
 		<groupId>org.arquillian.liferay</groupId>
-		<version>1.0.0.Final-SNAPSHOT</version>
+		<version>1.0.0.Alpha2</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<groupId>org.arquillian.liferay</groupId>
 	<artifactId>arquillian-portal-liferay-extension</artifactId>
-	<version>1.0.0.Final-SNAPSHOT</version>
+	<version>1.0.0.Alpha2</version>
 	<name>Arquillian Portal Liferay Extension</name>
 	<description>Arquillian Portal Liferay Extension</description>
 	<packaging>bundle</packaging>
