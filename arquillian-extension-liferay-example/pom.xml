@@ -205,8 +205,8 @@
 									<host>localhost</host>
 									<port>8080</port>
 									<file>/</file>
-									<maxcount>100</maxcount>
-									<timeout>100000</timeout>
+									<maxcount>10</maxcount>
+									<timeout>10000</timeout>
 									<read>true</read>
 								</configuration>
 							</execution>
