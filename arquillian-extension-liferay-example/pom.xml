@@ -16,7 +16,7 @@
 
 	<properties>
 		<test.resources>src/test/resources</test.resources>
-		<arquillian.liferay.bundle>${project.basedir}/../../arquillian-liferay-bundle</arquillian.liferay.bundle>
+		<arquillian.liferay.bundle>${project.basedir}/../arquillian-liferay-bundle</arquillian.liferay.bundle>
 		<liferay.home>${arquillian.liferay.bundle}/liferay-portal-7.0-ce-b2</liferay.home>
 		<liferay.version>7.0.0-b2</liferay.version>
 		<url.liferay><![CDATA[http://downloads.sourceforge.net/project/lportal/Liferay%20Portal/7.0.0%20B2/liferay-portal-tomcat-7.0-ce-b2-20160105152151933.zip?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Flportal%2Ffiles%2FLiferay%2520Portal%2F7.0.0%2520B2%2F&ts=1452254140&use_mirror=netix]]></url.liferay>
@@ -28,7 +28,7 @@
 			<id>download-test-environment</id>
 			<activation>
 				<file>
-					<missing>../../arquillian-liferay-bundle/unziped-successfully</missing>
+					<missing>../arquillian-liferay-bundle/unziped-successfully</missing>
 				</file>
 			</activation>
 			<build>
