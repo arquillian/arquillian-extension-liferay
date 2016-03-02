@@ -42,7 +42,7 @@
 		<dependency>
 			<groupId>com.liferay.portal</groupId>
 			<artifactId>portal-service</artifactId>
-			<version>7.0.0-m7</version>
+			<version>7.0.0-b8</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.portlet</groupId>

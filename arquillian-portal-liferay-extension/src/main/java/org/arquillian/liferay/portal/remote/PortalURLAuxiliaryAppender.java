@@ -50,7 +50,7 @@ public class PortalURLAuxiliaryAppender implements AuxiliaryArchiveAppender {
 				builder.addImportPackages(
 					"com.liferay.portal.kernel.exception",
 					"com.liferay.portal.kernel.util",
-					"com.liferay.portal.model", "com.liferay.portal.service",
+					"com.liferay.portal.kernel.model", "com.liferay.portal.kernel.service",
 					"javax.servlet.http", "javax.portlet", "javax.servlet",
 					"org.osgi.framework");
 				builder.addBundleActivator(PortalURLBundleActivator.class);

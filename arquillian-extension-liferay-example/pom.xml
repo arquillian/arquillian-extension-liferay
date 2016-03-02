@@ -17,9 +17,9 @@
 	<properties>
 		<test.resources>src/test/resources</test.resources>
 		<arquillian.liferay.bundle>${project.basedir}/../arquillian-liferay-bundle</arquillian.liferay.bundle>
-		<liferay.home>${arquillian.liferay.bundle}/liferay-portal-7.0-ce-b2</liferay.home>
-		<liferay.version>7.0.0-b2</liferay.version>
-		<url.liferay><![CDATA[http://downloads.sourceforge.net/project/lportal/Liferay%20Portal/7.0.0%20B2/liferay-portal-tomcat-7.0-ce-b2-20160105152151933.zip?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Flportal%2Ffiles%2FLiferay%2520Portal%2F7.0.0%2520B2%2F&ts=1452254140&use_mirror=netix]]></url.liferay>
+		<liferay.home>${arquillian.liferay.bundle}/liferay-portal-7.0-ce-b8</liferay.home>
+		<liferay.version>7.0.0-b8</liferay.version>
+		<url.liferay><![CDATA[http://downloads.sourceforge.net/project/lportal/Liferay%20Portal/7.0.0%20B8/liferay-portal-tomcat-7.0-ce-b8-20160223094645600.zip?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Flportal%2Ffiles%2FLiferay%2520Portal%2F7.0.0%2520B8%2F&ts=1456902865&use_mirror=netix]]></url.liferay>
 		<browser>phantomjs</browser>
 	</properties>
 
@@ -110,8 +110,8 @@
 				</os>
 			</activation>
 			<properties>
-				<liferay.executable.start>${liferay.home}/tomcat-7.0.62/bin/startup.bat</liferay.executable.start>
-				<liferay.executable.stop>${liferay.home}/tomcat-7.0.62/bin/shutdown.bat</liferay.executable.stop>
+				<liferay.executable.start>${liferay.home}/tomcat-8.0.30/bin/startup.bat</liferay.executable.start>
+				<liferay.executable.stop>${liferay.home}/tomcat-8.0.30/bin/shutdown.bat</liferay.executable.stop>
 			</properties>
 		</profile>
 		<profile>
@@ -122,8 +122,8 @@
 				</os>
 			</activation>
 			<properties>
-				<liferay.executable.start>${liferay.home}/tomcat-7.0.62/bin/startup.sh</liferay.executable.start>
-				<liferay.executable.stop>${liferay.home}/tomcat-7.0.62/bin/shutdown.sh</liferay.executable.stop>
+				<liferay.executable.start>${liferay.home}/tomcat-8.0.30/bin/startup.sh</liferay.executable.start>
+				<liferay.executable.stop>${liferay.home}/tomcat-8.0.30/bin/shutdown.sh</liferay.executable.stop>
 			</properties>
 		</profile>
 		<profile>
@@ -335,7 +335,7 @@
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${liferay.home}/tomcat-7.0.62/bin</outputDirectory>
+							<outputDirectory>${liferay.home}/tomcat-8.0.30/bin</outputDirectory>
 							<resources>
 								<resource>
 									<directory>${test.resources}/tomcat</directory>

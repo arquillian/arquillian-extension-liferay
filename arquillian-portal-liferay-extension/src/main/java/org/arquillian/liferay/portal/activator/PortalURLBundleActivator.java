@@ -15,11 +15,11 @@
 package org.arquillian.liferay.portal.activator;
 
 import com.liferay.portal.kernel.util.HashMapDictionary;
-import com.liferay.portal.service.CompanyLocalService;
-import com.liferay.portal.service.GroupLocalService;
-import com.liferay.portal.service.LayoutLocalService;
-import com.liferay.portal.service.PortletPreferencesLocalService;
-import com.liferay.portal.service.UserLocalService;
+import com.liferay.portal.kernel.service.CompanyLocalService;
+import com.liferay.portal.kernel.service.GroupLocalService;
+import com.liferay.portal.kernel.service.LayoutLocalService;
+import com.liferay.portal.kernel.service.PortletPreferencesLocalService;
+import com.liferay.portal.kernel.service.UserLocalService;
 
 import java.util.Dictionary;
 

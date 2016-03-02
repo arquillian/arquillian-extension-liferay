@@ -14,9 +14,9 @@
 
 package org.arquillian.liferay.test;
 
-import com.liferay.portal.model.Release;
-import com.liferay.portal.service.ReleaseLocalService;
 
+import com.liferay.portal.kernel.model.Release;
+import com.liferay.portal.kernel.service.ReleaseLocalService;
 import java.io.File;
 
 import org.arquillian.container.liferay.remote.enricher.Inject;
