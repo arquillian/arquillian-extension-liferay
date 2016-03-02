@@ -5,6 +5,7 @@ jdk:
 language: java
 
 before_install:
+  - rm -rf arquillian-liferay-bundle
   - pip install --user codecov
 
 install:
