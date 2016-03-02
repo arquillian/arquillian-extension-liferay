@@ -19,7 +19,7 @@ We have defined a complete example of how to use it in [arquillian-extension-lif
 
 [![Build Status](https://arquillian.ci.cloudbees.com/buildStatus/icon?job=Arquillian-Extension-Liferay)](https://arquillian.ci.cloudbees.com/job/Arquillian-Extension-Liferay/)
 
-![codecov.io](https://codecov.io/github/arquillian/arquillian-extension-liferay/branch.svg?branch=master)
+![codecov.io](https://codecov.io/github/arquillian/arquillian-extension-liferay/coverage.svg?branch=master)
 
 ## Testing Pull Requests
 If you want any pull request you receive to be automatically tested by Travis CI, please set up your job directly in Travis.

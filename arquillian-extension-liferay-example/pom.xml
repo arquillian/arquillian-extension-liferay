@@ -46,8 +46,11 @@
 								</goals>
 								<configuration>
 									<url>${url.liferay}</url>
-									<outputDirectory>${arquillian.liferay.bundle}/zip/</outputDirectory>
+									<outputDirectory>${arquillian.liferay.bundle}/</outputDirectory>
 									<outputFileName>liferay.zip</outputFileName>
+									<overwrite>true</overwrite>
+									<cacheDirectory>${arquillian.liferay.bundle}/cache/</cacheDirectory>
+									<unpack>true</unpack>
 								</configuration>
 							</execution>
 						</executions>
@@ -63,8 +66,7 @@
 								<configuration>
 									<target>
 										<echo message="unzip Liferay" />
-										<unzip src="${arquillian.liferay.bundle}/zip/liferay.zip" dest="${arquillian.liferay.bundle}" />
-										<chmod dir="${liferay.home}/tomcat-7.0.62/bin/" perm="ugo+rx" includes="**/*.sh" />
+										<chmod dir="${liferay.home}/tomcat-8.0.30/bin/" perm="ugo+rx" includes="**/*.sh" />
 									</target>
 								</configuration>
 								<goals>
@@ -190,25 +192,20 @@
 						</executions>
 					</plugin>
 					<plugin>
-						<groupId>org.sonatype.plugins</groupId>
-						<artifactId>wait-maven-plugin</artifactId>
-						<version>1.0</version>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<configuration>
+							<tasks>
+								<sleep seconds="70" />
+							</tasks>
+						</configuration>
 						<executions>
 							<execution>
-								<id>tomcat-server</id>
+								<id>sleep-for-a-while</id>
 								<phase>test-compile</phase>
 								<goals>
-									<goal>wait</goal>
+									<goal>run</goal>
 								</goals>
-								<configuration>
-									<protocol>http</protocol>
-									<host>localhost</host>
-									<port>8080</port>
-									<file>/</file>
-									<maxcount>10</maxcount>
-									<timeout>20000</timeout>
-									<read>true</read>
-								</configuration>
 							</execution>
 						</executions>
 					</plugin>

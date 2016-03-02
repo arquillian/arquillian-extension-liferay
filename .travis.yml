@@ -1,9 +1,11 @@
 jdk:
   - oraclejdk7
+  - oraclejdk8
 
 language: java
 
 before_install:
+  - rm -rf arquillian-liferay-bundle
   - pip install --user codecov
 
 install:
@@ -11,3 +13,7 @@ install:
 
 after_success:
   - codecov
+
+after_failure:
+  - cat arquillian-liferay-bundle/liferay-portal-7.0-ce-b8/tomcat-8.0.30/logs/catalina.out
+

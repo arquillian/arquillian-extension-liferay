@@ -17,6 +17,8 @@ package org.arquillian.container.osgi.remote.deploy.processor.test;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -115,17 +117,39 @@ public class ManifestManagerTest {
 		manifest.getMainAttributes().put(
 			new Attributes.Name("Bundle-ManifestVersion"), "1");
 
+		String importPackage1 = "com.import.example1";
+		String importPackage2 = "com.import.example2";
+
 		//when:
 		Manifest actualManifest = _manifestManager.putAttributeValue(
-			manifest, "Import-Package", "com.import.example1",
-			"com.import.example2");
+			manifest, "Import-Package", importPackage1, importPackage2);
 
 		//then:
 		Attributes mainAttributes = actualManifest.getMainAttributes();
 
-		Assert.assertEquals(
-			mainAttributes.get(new Attributes.Name("Import-Package")),
-			"com.import.example1,com.import.example2");
+		String importPackageHeader = (String)mainAttributes.get(
+			new Attributes.Name("Import-Package"));
+
+		Assert.assertNotNull(
+			"The header Import-Package is empty", importPackageHeader);
+
+		String[] importPackages = importPackageHeader.split(",");
+
+		Assert.assertEquals(2, importPackages.length);
+
+		List<String> importPackagesList = Arrays.asList(importPackages);
+
+		Assert.assertTrue(
+			"The import package " + importPackage1 +
+				" is not present in the header Import-Package " +
+				importPackagesList,
+			importPackagesList.contains("com.import.example1"));
+
+		Assert.assertTrue(
+			"The import package " + importPackage2 +
+				" is not present in the header Import-Package " +
+				importPackagesList,
+			importPackagesList.contains(importPackage2));
 	}
 
 	@Test
