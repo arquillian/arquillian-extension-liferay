@@ -18,7 +18,6 @@
 		<test.resources>src/test/resources</test.resources>
 		<arquillian.liferay.bundle>${project.basedir}/../arquillian-liferay-bundle</arquillian.liferay.bundle>
 		<liferay.home>${arquillian.liferay.bundle}/liferay-portal-7.0-ce-b8</liferay.home>
-		<liferay.version>7.0.0-b8</liferay.version>
 		<url.liferay><![CDATA[http://downloads.sourceforge.net/project/lportal/Liferay%20Portal/7.0.0%20B8/liferay-portal-tomcat-7.0-ce-b8-20160223094645600.zip?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Flportal%2Ffiles%2FLiferay%2520Portal%2F7.0.0%2520B8%2F&ts=1456902865&use_mirror=netix]]></url.liferay>
 		<browser>phantomjs</browser>
 	</properties>
@@ -217,26 +216,26 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.liferay.portal</groupId>
-			<artifactId>portal-service</artifactId>
-			<version>${liferay.version}</version>
+			<artifactId>com.liferay.portal.kernel</artifactId>
+			<version>1.0.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.liferay.portal</groupId>
-			<artifactId>util-bridges</artifactId>
-			<version>${liferay.version}</version>
+			<artifactId>com.liferay.util.bridges</artifactId>
+			<version>1.0.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.liferay.portal</groupId>
-			<artifactId>util-taglib</artifactId>
-			<version>${liferay.version}</version>
+			<artifactId>com.liferay.util.taglib</artifactId>
+			<version>1.0.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.liferay.portal</groupId>
-			<artifactId>util-java</artifactId>
-			<version>${liferay.version}</version>
+			<artifactId>com.liferay.util.java</artifactId>
+			<version>1.0.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
