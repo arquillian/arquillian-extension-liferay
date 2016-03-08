@@ -1,1 +1,1 @@
-org.arquillian.liferay.deploymentscenario.BndDeploymentScenarioGeneratorExtension
+com.liferay.arquillian.deploymentscenario.BndDeploymentScenarioGeneratorExtension

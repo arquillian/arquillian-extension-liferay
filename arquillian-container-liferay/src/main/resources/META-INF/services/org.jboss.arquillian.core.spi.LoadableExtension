@@ -1,1 +1,1 @@
-org.arquillian.container.liferay.remote.LiferayRemoteContainerExtension
+com.liferay.arquillian.containter.remote.LiferayRemoteContainerExtension

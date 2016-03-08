@@ -3,13 +3,13 @@
 
 	<parent>
 		<artifactId>arquillian-extension-liferay</artifactId>
-		<groupId>org.arquillian.liferay</groupId>
+		<groupId>com.liferay.arquillian</groupId>
 		<version>1.0.0.Final-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>arquillian-deployment-generator-bnd</artifactId>
-	<groupId>org.arquillian.liferay</groupId>
+	<groupId>com.liferay.arquillian</groupId>
 	<modelVersion>4.0.0</modelVersion>
 	<version>1.0.0.Final-SNAPSHOT</version>
 	<name>Arquillian Liferay Deployment Scenario Generator</name>

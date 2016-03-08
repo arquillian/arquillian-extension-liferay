@@ -1,7 +1,7 @@
 Bundle-Name: Basic Portlet Test
-Bundle-SymbolicName: org.arquillian.liferay.sample
+Bundle-SymbolicName: com.liferay.arquillian.sample
 Bundle-Version: 1.0.0
-Export-Package: org.arquillian.liferay.sample
+Export-Package: com.liferay.arquillian.sample
 Include-Resource:\
 	target/classes,\
 	META-INF/resources=src/main/resources/META-INF/resources

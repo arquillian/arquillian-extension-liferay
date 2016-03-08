@@ -12,8 +12,8 @@
 	</extension>
 
 	<extension qualifier="jacoco">
-		<property name="excludes">org.arquillian.liferay.test.*</property>
-		<property name="includes">org.arquillian.liferay.sample.*</property>
+		<property name="excludes">com.liferay.arquillian.test.*</property>
+		<property name="includes">com.liferay.arquillian.sample.*</property>
 	</extension>
 
 </arquillian>

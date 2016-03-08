@@ -14,16 +14,16 @@
 
 package org.arquillian.container.osgi.remote;
 
-import org.arquillian.container.osgi.remote.bundleclasspath.BundleClassPathAuxiliaryAppender;
-import org.arquillian.container.osgi.remote.commandservice.CommandServiceAuxiliaryAppender;
-import org.arquillian.container.osgi.remote.instanceproducer.OSGiAllInBundleInstanceProducer;
-import org.arquillian.container.osgi.remote.processor.OSGiAllInProcessor;
-import org.arquillian.container.osgi.remote.processor.service.BundleActivatorsManager;
-import org.arquillian.container.osgi.remote.processor.service.BundleActivatorsManagerImpl;
-import org.arquillian.container.osgi.remote.processor.service.ImportPackageManager;
-import org.arquillian.container.osgi.remote.processor.service.ImportPackageManagerImpl;
-import org.arquillian.container.osgi.remote.processor.service.ManifestManager;
-import org.arquillian.container.osgi.remote.processor.service.ManifestManagerImpl;
+import com.liferay.arquillian.container.osgi.remote.bundleclasspath.BundleClassPathAuxiliaryAppender;
+import com.liferay.arquillian.container.osgi.remote.commandservice.CommandServiceAuxiliaryAppender;
+import com.liferay.arquillian.container.osgi.remote.instanceproducer.OSGiAllInBundleInstanceProducer;
+import com.liferay.arquillian.container.osgi.remote.processor.OSGiAllInProcessor;
+import com.liferay.arquillian.container.osgi.remote.processor.service.BundleActivatorsManager;
+import com.liferay.arquillian.container.osgi.remote.processor.service.BundleActivatorsManagerImpl;
+import com.liferay.arquillian.container.osgi.remote.processor.service.ImportPackageManager;
+import com.liferay.arquillian.container.osgi.remote.processor.service.ImportPackageManagerImpl;
+import com.liferay.arquillian.container.osgi.remote.processor.service.ManifestManager;
+import com.liferay.arquillian.container.osgi.remote.processor.service.ManifestManagerImpl;
 
 import org.jboss.arquillian.container.test.spi.client.deployment.ApplicationArchiveProcessor;
 import org.jboss.arquillian.container.test.spi.client.deployment.AuxiliaryArchiveAppender;

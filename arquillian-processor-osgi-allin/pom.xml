@@ -3,12 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>arquillian-extension-liferay</artifactId>
-		<groupId>org.arquillian.liferay</groupId>
+		<groupId>com.liferay.arquillian</groupId>
 		<version>1.0.0.Final-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<groupId>org.arquillian.liferay</groupId>
+	<groupId>com.liferay.arquillian</groupId>
 	<artifactId>arquillian-processor-osgi-allin</artifactId>
 	<version>1.0.0.Final-SNAPSHOT</version>
 	<name>Arquillian Liferay Processor OSGi All In</name>

@@ -14,6 +14,11 @@
 
 package org.arquillian.container.osgi.remote.deploy.processor.test;
 
+import com.liferay.arquillian.container.osgi.remote.processor.service.ImportPackageManager;
+import com.liferay.arquillian.container.osgi.remote.processor.service.ImportPackageManagerImpl;
+import com.liferay.arquillian.container.osgi.remote.processor.service.ManifestManager;
+import com.liferay.arquillian.container.osgi.remote.processor.service.ManifestManagerImpl;
+
 import java.io.IOException;
 
 import java.lang.reflect.Field;
@@ -25,10 +30,6 @@ import java.util.jar.Manifest;
 
 import org.arquillian.container.osgi.remote.deploy.processor.test.mock.DummyInstanceProducerImpl;
 import org.arquillian.container.osgi.remote.deploy.processor.test.util.ManifestUtil;
-import org.arquillian.container.osgi.remote.processor.service.ImportPackageManager;
-import org.arquillian.container.osgi.remote.processor.service.ImportPackageManagerImpl;
-import org.arquillian.container.osgi.remote.processor.service.ManifestManager;
-import org.arquillian.container.osgi.remote.processor.service.ManifestManagerImpl;
 
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;

@@ -3,12 +3,12 @@
 
 	<parent>
 		<artifactId>arquillian-extension-liferay</artifactId>
-		<groupId>org.arquillian.liferay</groupId>
+		<groupId>com.liferay.arquillian</groupId>
 		<version>1.0.0.Final-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<groupId>org.arquillian.liferay</groupId>
+	<groupId>com.liferay.arquillian</groupId>
 	<artifactId>arquillian-portal-liferay-extension</artifactId>
 	<version>1.0.0.Final-SNAPSHOT</version>
 	<name>Arquillian Portal Liferay Extension</name>
@@ -75,7 +75,7 @@
 				<configuration>
 					<instructions>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-						<Export-Package>org.arquillian.liferay.installportlet</Export-Package>
+						<Export-Package>com.liferay.arquillian.installportlet</Export-Package>
 						<_dsannotations>*</_dsannotations>
 					</instructions>
 				</configuration>
