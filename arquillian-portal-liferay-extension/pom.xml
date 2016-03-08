@@ -2,15 +2,15 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<artifactId>arquillian-extension-liferay</artifactId>
+		<artifactId>com.liferay.arquillian.arquillian-extension-liferay</artifactId>
 		<groupId>com.liferay.arquillian</groupId>
-		<version>1.0.0.Final-SNAPSHOT</version>
+		<version>1.0.0.Alpha3</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<groupId>com.liferay.arquillian</groupId>
-	<artifactId>arquillian-portal-liferay-extension</artifactId>
-	<version>1.0.0.Final-SNAPSHOT</version>
+	<artifactId>com.liferay.arquillian.arquillian-portal-liferay-extension</artifactId>
+	<version>1.0.0.Alpha3</version>
 	<name>Arquillian Portal Liferay Extension</name>
 	<description>Arquillian Portal Liferay Extension</description>
 	<packaging>bundle</packaging>
