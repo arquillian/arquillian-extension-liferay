@@ -2,15 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<artifactId>arquillian-extension-liferay</artifactId>
-		<groupId>org.arquillian.liferay</groupId>
-		<version>1.0.0.Final-SNAPSHOT</version>
+		<artifactId>com.liferay.arquillian.arquillian-extension-liferay</artifactId>
+		<groupId>com.liferay.arquillian</groupId>
+		<version>1.0.0.Alpha3</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<groupId>org.arquillian.liferay</groupId>
-	<artifactId>arquillian-processor-osgi-allin</artifactId>
-	<version>1.0.0.Final-SNAPSHOT</version>
+	<groupId>com.liferay.arquillian</groupId>
+	<artifactId>com.liferay.arquillian.arquillian-processor-osgi-allin</artifactId>
+	<version>1.0.0.Alpha3</version>
 	<name>Arquillian Liferay Processor OSGi All In</name>
 	<description>Arquillian Processor OSGi that allow to use standars extensions</description>
 

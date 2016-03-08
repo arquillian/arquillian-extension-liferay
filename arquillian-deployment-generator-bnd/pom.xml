@@ -2,16 +2,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<parent>
-		<artifactId>arquillian-extension-liferay</artifactId>
-		<groupId>org.arquillian.liferay</groupId>
-		<version>1.0.0.Final-SNAPSHOT</version>
+		<artifactId>com.liferay.arquillian.arquillian-extension-liferay</artifactId>
+		<groupId>com.liferay.arquillian</groupId>
+		<version>1.0.0.Alpha3</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>arquillian-deployment-generator-bnd</artifactId>
-	<groupId>org.arquillian.liferay</groupId>
+	<artifactId>com.liferay.arquillian.arquillian-deployment-generator-bnd</artifactId>
+	<groupId>com.liferay.arquillian</groupId>
 	<modelVersion>4.0.0</modelVersion>
-	<version>1.0.0.Final-SNAPSHOT</version>
+	<version>1.0.0.Alpha3</version>
 	<name>Arquillian Liferay Deployment Scenario Generator</name>
 	<description>Arquillian Deployment Scenario Generator for BND liferay plugins</description>
 

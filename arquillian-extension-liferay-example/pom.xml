@@ -2,15 +2,15 @@
 <modelVersion>4.0.0</modelVersion>
 
 <parent>
-	<artifactId>arquillian-extension-liferay</artifactId>
-	<groupId>org.arquillian.liferay</groupId>
-	<version>1.0.0.Final-SNAPSHOT</version>
+	<artifactId>com.liferay.arquillian.arquillian-extension-liferay</artifactId>
+	<groupId>com.liferay.arquillian</groupId>
+	<version>1.0.0.Alpha3</version>
 	<relativePath>../pom.xml</relativePath>
 </parent>
 
-	<groupId>org.arquillian.liferay</groupId>
-	<artifactId>arquillian-liferay-extension-example</artifactId>
-	<version>1.0.0.Final-SNAPSHOT</version>
+	<groupId>com.liferay.arquillian</groupId>
+	<artifactId>com.liferay.arquillian.arquillian-liferay-extension-example</artifactId>
+	<version>1.0.0.Alpha3</version>
 	<name>Arquillian Liferay Extension Example</name>
 	<description>Arquillian Liferay Extension Example</description>
 
@@ -239,9 +239,9 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.arquillian.liferay</groupId>
-			<artifactId>arquillian-container-liferay</artifactId>
-			<version>1.0.0.Final-SNAPSHOT</version>
+			<groupId>com.liferay.arquillian</groupId>
+			<artifactId>com.liferay.arquillian.arquillian-container-liferay</artifactId>
+			<version>1.0.0.Alpha3</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

@@ -14,11 +14,11 @@
 
 package org.arquillian.container.osgi.remote.deploy.processor.test.mock;
 
+import com.liferay.arquillian.container.osgi.remote.processor.service.ImportPackageManager;
+import com.liferay.arquillian.container.osgi.remote.processor.service.ImportPackageManagerImpl;
+
 import java.util.ArrayList;
 import java.util.Collection;
-
-import org.arquillian.container.osgi.remote.processor.service.ImportPackageManager;
-import org.arquillian.container.osgi.remote.processor.service.ImportPackageManagerImpl;
 
 import org.jboss.arquillian.core.spi.ServiceLoader;
 

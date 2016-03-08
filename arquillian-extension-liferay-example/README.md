@@ -80,7 +80,7 @@ For testing purpouse we are going to create a new OSGI Service that add two numb
 First of all, we need to create a new Interface
 
 ```java
-package org.arquillian.liferay.sample.service;
+package com.liferay.arquillian.sample.service;
 
 public interface SampleService {
 
@@ -92,7 +92,7 @@ public interface SampleService {
 And a new implementation for the interface
 
 ```java
-package org.arquillian.liferay.sample.service;
+package com.liferay.arquillian.sample.service;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -112,7 +112,7 @@ public class SampleServiceImpl implements SampleService {
 Create a MVC Portlet that call the previous service
 
 ```java
-package org.arquillian.liferay.sample.portlet;
+package com.liferay.arquillian.sample.portlet;
 
 import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
@@ -126,7 +126,7 @@ import javax.portlet.Portlet;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
 
-import org.arquillian.liferay.sample.service.SampleService;
+import com.liferay.arquillian.sample.service.SampleService;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -245,9 +245,9 @@ And create a bnd-basic-portlet-test.bnd file:
 
 ```bnd
 Bundle-Name: Basic Portlet Test
-Bundle-SymbolicName: org.arquillian.liferay.sample
+Bundle-SymbolicName: com.liferay.arquillian.sample
 Bundle-Version: 1.0.0
-Export-Package: org.arquillian.liferay.sample
+Export-Package: com.liferay.arquillian.sample
 Include-Resource:\
 	target/classes,\
 	META-INF/resources=src/main/resources/META-INF/resources
@@ -290,7 +290,7 @@ CATALINA_OPTS="${CATALINA_OPTS} ${JMX_OPTS}"
 	<dependencies>
 	....
 		<dependency>
-			<groupId>org.arquillian.liferay</groupId>
+			<groupId>com.liferay.arquillian</groupId>
 			<artifactId>arquillian-container-liferay</artifactId>
 			<version>1.0.0.Final-SNAPSHOT</version>
 			<scope>test</scope>
@@ -318,15 +318,15 @@ Create a simple test that:
 2) Test SampleService
 
 ```java
-package org.arquillian.liferay.test;
+package com.liferay.arquillian.test;
 
 import com.liferay.portal.kernel.exception.PortalException;
 
 import java.io.File;
 import java.io.IOException;
 
-import org.arquillian.container.liferay.remote.enricher.Inject;
-import org.arquillian.liferay.sample.service.SampleService;
+import com.liferay.arquillian.containter.liferay.remote.enricher.Inject;
+import com.liferay.arquillian.sample.service.SampleService;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -437,7 +437,7 @@ Next you need to setup arquillian.xml in order to change the Arquillian settings
 #### Create a Portlet functional test
 
 ```java
-package org.arquillian.liferay.test;
+package com.liferay.arquillian.test;
 
 import com.liferay.portal.kernel.exception.PortalException;
 
@@ -446,9 +446,9 @@ import java.io.IOException;
 
 import java.net.URL;
 
-import org.arquillian.container.liferay.remote.enricher.Inject;
-import org.arquillian.liferay.installportlet.annotation.InstallPortlet;
-import org.arquillian.liferay.sample.service.SampleService;
+import com.liferay.arquillian.containter.liferay.remote.enricher.Inject;
+import com.liferay.arquillian.installportlet.annotation.InstallPortlet;
+import com.liferay.arquillian.sample.service.SampleService;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;

@@ -3,15 +3,15 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<artifactId>arquillian-extension-liferay</artifactId>
-		<groupId>org.arquillian.liferay</groupId>
-		<version>1.0.0.Final-SNAPSHOT</version>
+		<artifactId>com.liferay.arquillian.arquillian-extension-liferay</artifactId>
+		<groupId>com.liferay.arquillian</groupId>
+		<version>1.0.0.Alpha3</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<groupId>org.arquillian.liferay</groupId>
-	<artifactId>arquillian-container-osgi-allin</artifactId>
-	<version>1.0.0.Final-SNAPSHOT</version>
+	<groupId>com.liferay.arquillian</groupId>
+	<artifactId>com.liferay.arquillian.arquillian-container-osgi-allin</artifactId>
+	<version>1.0.0.Alpha3</version>
 	<name>Arquillian Container OSGi All In</name>
 	<description>Arquillian Remote Container OSGi that allow to use standars extensions</description>
 
@@ -30,7 +30,7 @@
 		<dependency>
 			<groupId>org.jboss.arquillian.container</groupId>
 			<artifactId>arquillian-container-karaf-remote</artifactId>
-			<version>2.1.0.CR18</version>
+			<version>2.1.0.Final</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.jboss.arquillian.junit</groupId>

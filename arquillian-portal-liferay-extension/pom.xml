@@ -2,15 +2,15 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<artifactId>arquillian-extension-liferay</artifactId>
-		<groupId>org.arquillian.liferay</groupId>
-		<version>1.0.0.Final-SNAPSHOT</version>
+		<artifactId>com.liferay.arquillian.arquillian-extension-liferay</artifactId>
+		<groupId>com.liferay.arquillian</groupId>
+		<version>1.0.0.Alpha3</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<groupId>org.arquillian.liferay</groupId>
-	<artifactId>arquillian-portal-liferay-extension</artifactId>
-	<version>1.0.0.Final-SNAPSHOT</version>
+	<groupId>com.liferay.arquillian</groupId>
+	<artifactId>com.liferay.arquillian.arquillian-portal-liferay-extension</artifactId>
+	<version>1.0.0.Alpha3</version>
 	<name>Arquillian Portal Liferay Extension</name>
 	<description>Arquillian Portal Liferay Extension</description>
 	<packaging>bundle</packaging>
@@ -75,7 +75,7 @@
 				<configuration>
 					<instructions>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-						<Export-Package>org.arquillian.liferay.installportlet</Export-Package>
+						<Export-Package>com.liferay.arquillian.installportlet</Export-Package>
 						<_dsannotations>*</_dsannotations>
 					</instructions>
 				</configuration>

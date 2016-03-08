@@ -14,6 +14,12 @@
 
 package org.arquillian.container.osgi.remote.deploy.processor.test;
 
+import com.liferay.arquillian.container.osgi.remote.activator.ArquillianBundleActivator;
+import com.liferay.arquillian.container.osgi.remote.processor.OSGiAllInProcessor;
+import com.liferay.arquillian.container.osgi.remote.processor.service.BundleActivatorsManagerImpl;
+import com.liferay.arquillian.container.osgi.remote.processor.service.ImportPackageManagerImpl;
+import com.liferay.arquillian.container.osgi.remote.processor.service.ManifestManagerImpl;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
@@ -26,17 +32,12 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import org.arquillian.container.osgi.remote.activator.ArquillianBundleActivator;
 import org.arquillian.container.osgi.remote.deploy.processor.test.mock.DummyInstanceProducerImpl;
 import org.arquillian.container.osgi.remote.deploy.processor.test.mock.DummyServiceLoaderWithJarAuxiliaryArchive;
 import org.arquillian.container.osgi.remote.deploy.processor.test.mock.DummyServiceLoaderWithOSGIBundleAuxiliaryArchive;
 import org.arquillian.container.osgi.remote.deploy.processor.test.mock.DummyServiceLoaderWithOSGIBundleAuxiliaryArchiveWithActivator;
 import org.arquillian.container.osgi.remote.deploy.processor.test.mock.DummyServiceLoaderWithoutAuxiliaryArchive;
 import org.arquillian.container.osgi.remote.deploy.processor.test.util.ManifestUtil;
-import org.arquillian.container.osgi.remote.processor.OSGiAllInProcessor;
-import org.arquillian.container.osgi.remote.processor.service.BundleActivatorsManagerImpl;
-import org.arquillian.container.osgi.remote.processor.service.ImportPackageManagerImpl;
-import org.arquillian.container.osgi.remote.processor.service.ManifestManagerImpl;
 
 import org.jboss.arquillian.core.spi.ServiceLoader;
 import org.jboss.arquillian.test.spi.TestClass;
