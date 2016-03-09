@@ -2,14 +2,14 @@
 <modelVersion>4.0.0</modelVersion>
 
 <parent>
-	<artifactId>com.liferay.arquillian.arquillian-extension-liferay</artifactId>
-	<groupId>com.liferay.arquillian</groupId>
-	<version>1.0.0.Alpha3</version>
+	<artifactId>arquillian-extension-liferay</artifactId>
+	<groupId>org.arquillian.liferay</groupId>
+	<version>1.0.0.Final-SNAPSHOT</version>
 	<relativePath>../pom.xml</relativePath>
 </parent>
 
-<artifactId>com.liferay.arquillian.arquillian-liferay-maven-extension</artifactId>
-<groupId>com.liferay.arquillian.maven</groupId>
+<artifactId>arquillian-liferay-maven-extension</artifactId>
+<groupId>org.arquillian.liferay.maven</groupId>
 <name>Arquillian Maven Extension for Liferay</name>
 <description>The Deployment Scenario for Liferay Maven projects</description>
 
@@ -164,14 +164,6 @@
 	  <artifactId>file-management</artifactId>
 	  <version>1.2</version>
 	  <scope>test</scope>
-	</dependency>
-
-	<!-- Guice -->
-
-	<dependency>
-		<groupId>com.google.inject</groupId>
-		<artifactId>guice</artifactId>
-		<version>3.0</version>
 	</dependency>
 
 </dependencies>

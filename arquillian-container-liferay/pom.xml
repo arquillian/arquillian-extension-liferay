@@ -3,15 +3,15 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<artifactId>com.liferay.arquillian.arquillian-extension-liferay</artifactId>
-		<groupId>com.liferay.arquillian</groupId>
-		<version>1.0.0.Alpha3</version>
+		<artifactId>arquillian-extension-liferay</artifactId>
+		<groupId>org.arquillian.liferay</groupId>
+		<version>1.0.0.Final-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<groupId>com.liferay.arquillian</groupId>
-	<artifactId>com.liferay.arquillian.arquillian-container-liferay</artifactId>
-	<version>1.0.0.Alpha3</version>
+	<groupId>org.arquillian.liferay</groupId>
+	<artifactId>arquillian-container-liferay</artifactId>
+	<version>1.0.0.Final-SNAPSHOT</version>
 	<name>Arquillian Liferay Container Adapter</name>
 	<description>Arquillian Container Adapter for Liferay Portal Server. OSGi incontainer deployment.</description>
 
@@ -28,19 +28,19 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.liferay.arquillian</groupId>
-			<artifactId>com.liferay.arquillian.arquillian-container-osgi-allin</artifactId>
-			<version>1.0.0.Alpha3</version>
+			<groupId>org.arquillian.liferay</groupId>
+			<artifactId>arquillian-container-osgi-allin</artifactId>
+			<version>1.0.0.Final-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>com.liferay.arquillian</groupId>
-			<artifactId>com.liferay.arquillian.arquillian-processor-osgi-allin</artifactId>
-			<version>1.0.0.Alpha3</version>
+			<groupId>org.arquillian.liferay</groupId>
+			<artifactId>arquillian-processor-osgi-allin</artifactId>
+			<version>1.0.0.Final-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>com.liferay.arquillian</groupId>
-			<artifactId>com.liferay.arquillian.arquillian-portal-liferay-extension</artifactId>
-			<version>1.0.0.Alpha3</version>
+			<groupId>org.arquillian.liferay</groupId>
+			<artifactId>arquillian-portal-liferay-extension</artifactId>
+			<version>1.0.0.Final-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>

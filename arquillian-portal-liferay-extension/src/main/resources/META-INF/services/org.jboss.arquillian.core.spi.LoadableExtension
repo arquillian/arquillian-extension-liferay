@@ -1,1 +1,1 @@
-com.liferay.arquillian.portal.PortalURLExtension
+org.arquillian.liferay.portal.PortalURLExtension

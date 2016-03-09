@@ -14,9 +14,6 @@
 
 package org.arquillian.container.osgi.remote.deploy.processor.test;
 
-import com.liferay.arquillian.container.osgi.remote.processor.service.ManifestManager;
-import com.liferay.arquillian.container.osgi.remote.processor.service.ManifestManagerImpl;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
@@ -25,6 +22,9 @@ import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+
+import org.arquillian.container.osgi.remote.processor.service.ManifestManager;
+import org.arquillian.container.osgi.remote.processor.service.ManifestManagerImpl;
 
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;

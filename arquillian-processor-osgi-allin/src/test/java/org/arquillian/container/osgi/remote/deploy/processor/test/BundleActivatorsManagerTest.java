@@ -14,15 +14,14 @@
 
 package org.arquillian.container.osgi.remote.deploy.processor.test;
 
-import com.liferay.arquillian.container.osgi.remote.processor.service.BundleActivatorsManager;
-import com.liferay.arquillian.container.osgi.remote.processor.service.BundleActivatorsManagerImpl;
-
 import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.arquillian.container.osgi.remote.deploy.processor.test.util.ManifestUtil;
+import org.arquillian.container.osgi.remote.processor.service.BundleActivatorsManager;
+import org.arquillian.container.osgi.remote.processor.service.BundleActivatorsManagerImpl;
 
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;

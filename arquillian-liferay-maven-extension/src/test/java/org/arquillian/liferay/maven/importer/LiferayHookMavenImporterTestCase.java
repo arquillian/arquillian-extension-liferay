@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.arquillian.maven.importer;
+package org.arquillian.liferay.maven.importer;
 
 import static org.junit.Assert.assertNotNull;
 

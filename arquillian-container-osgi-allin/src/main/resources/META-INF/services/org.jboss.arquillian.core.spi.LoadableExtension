@@ -1,1 +1,1 @@
-com.liferay.arquillian.containter.osgi.allin.remote.OSGiAllInContainerExtension
+org.arquillian.container.osgi.allin.remote.OSGiAllInContainerExtension

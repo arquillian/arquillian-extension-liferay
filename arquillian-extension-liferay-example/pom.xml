@@ -2,15 +2,15 @@
 <modelVersion>4.0.0</modelVersion>
 
 <parent>
-	<artifactId>com.liferay.arquillian.arquillian-extension-liferay</artifactId>
-	<groupId>com.liferay.arquillian</groupId>
-	<version>1.0.0.Alpha3</version>
+	<artifactId>arquillian-extension-liferay</artifactId>
+	<groupId>org.arquillian.liferay</groupId>
+	<version>1.0.0.Final-SNAPSHOT</version>
 	<relativePath>../pom.xml</relativePath>
 </parent>
 
-	<groupId>com.liferay.arquillian</groupId>
-	<artifactId>com.liferay.arquillian.arquillian-liferay-extension-example</artifactId>
-	<version>1.0.0.Alpha3</version>
+	<groupId>org.arquillian.liferay</groupId>
+	<artifactId>arquillian-liferay-extension-example</artifactId>
+	<version>1.0.0.Final-SNAPSHOT</version>
 	<name>Arquillian Liferay Extension Example</name>
 	<description>Arquillian Liferay Extension Example</description>
 
@@ -18,6 +18,7 @@
 		<test.resources>src/test/resources</test.resources>
 		<arquillian.liferay.bundle>${project.basedir}/../arquillian-liferay-bundle</arquillian.liferay.bundle>
 		<liferay.home>${arquillian.liferay.bundle}/liferay-portal-7.0-ce-b8</liferay.home>
+		<liferay.version>7.0.0-b8</liferay.version>
 		<url.liferay><![CDATA[http://downloads.sourceforge.net/project/lportal/Liferay%20Portal/7.0.0%20B8/liferay-portal-tomcat-7.0-ce-b8-20160223094645600.zip?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Flportal%2Ffiles%2FLiferay%2520Portal%2F7.0.0%2520B8%2F&ts=1456902865&use_mirror=netix]]></url.liferay>
 		<browser>phantomjs</browser>
 	</properties>
@@ -195,7 +196,7 @@
 						<artifactId>maven-antrun-plugin</artifactId>
 						<configuration>
 							<tasks>
-								<sleep seconds="100" />
+								<sleep seconds="70" />
 							</tasks>
 						</configuration>
 						<executions>
@@ -216,32 +217,32 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.liferay.portal</groupId>
-			<artifactId>com.liferay.portal.kernel</artifactId>
-			<version>1.0.1</version>
+			<artifactId>portal-service</artifactId>
+			<version>${liferay.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.liferay.portal</groupId>
-			<artifactId>com.liferay.util.bridges</artifactId>
-			<version>1.0.0</version>
+			<artifactId>util-bridges</artifactId>
+			<version>${liferay.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.liferay.portal</groupId>
-			<artifactId>com.liferay.util.taglib</artifactId>
-			<version>1.0.0</version>
+			<artifactId>util-taglib</artifactId>
+			<version>${liferay.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.liferay.portal</groupId>
-			<artifactId>com.liferay.util.java</artifactId>
-			<version>1.0.0</version>
+			<artifactId>util-java</artifactId>
+			<version>${liferay.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.liferay.arquillian</groupId>
-			<artifactId>com.liferay.arquillian.arquillian-container-liferay</artifactId>
-			<version>1.0.0.Alpha3</version>
+			<groupId>org.arquillian.liferay</groupId>
+			<artifactId>arquillian-container-liferay</artifactId>
+			<version>1.0.0.Final-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

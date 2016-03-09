@@ -1,1 +1,1 @@
-com.liferay.arquillian.maven.internal.LiferayWarPackagingProcessor
+org.arquillian.liferay.maven.internal.LiferayWarPackagingProcessor
