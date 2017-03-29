@@ -1,6 +1,6 @@
-# IMPORTANT
+# ![Obsolete](https://dummyimage.com/700x100/fff/f00&text=This%20Repository%20Is%20Obsolete!)
 
-This repository is obsolete. Current development takes place in [liferay-labs/arquillian-liferay](https://github.com/liferay-labs/arquillian-liferay).
+We don't maintain this code base anymore. Current development takes place in [liferay-labs/arquillian-liferay](https://github.com/liferay-labs/arquillian-liferay), so feel free to check it out!
 
 # Arquillian Liferay
 Arquillian Extension for Liferay Portal Server. OSGi incontainer deployment.
